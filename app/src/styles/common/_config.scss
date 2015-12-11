@@ -1,0 +1,23 @@
+$fs-tablet-min: 768px;
+$fs-desktop-min: 992px;
+$fs-desktop-high-min: 1200px;
+
+$fs-mobile-max: $fs-tablet-min - 1;
+$fs-tablet-max: $fs-desktop-min - 1;
+$fs-desktop-max: $fs-desktop-high-min - 1;
+
+$fs-mobile-low-max: 479px;
+$fs-tablet-low-max: 850px;
+
+
+@include add-breakpoint('mobile', max-width $fs-mobile-max);
+@include add-breakpoint('mobile-low', max-width $fs-mobile-low-max);
+
+@include add-breakpoint('tablet', min-width $fs-tablet-min);
+@include add-breakpoint('tablet-ex', (min-width $fs-tablet-min, max-width $fs-tablet-max));
+@include add-breakpoint('tablet-low', (min-width $fs-tablet-min, max-width $fs-tablet-low-max));
+@include add-breakpoint('tablet-high', (min-width ($fs-tablet-low-max + 1), max-width $fs-tablet-max));
+
+@include add-breakpoint('desktop', (min-width $fs-desktop-min));
+@include add-breakpoint('desktop-low', (min-width $fs-desktop-min, max-width ($fs-desktop-high-min - 1)));
+@include add-breakpoint('desktop-high', min-width $fs-desktop-high-min);

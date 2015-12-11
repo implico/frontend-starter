@@ -1,0 +1,13 @@
+{
+	"name": "frontend-starter",
+	"version": "1.0.0",
+	"dependencies": {
+		"jquery": "1.*.*",
+		"compass-breakpoint": "2.*.*"
+	},
+    "overrides": {
+        "compass-breakpoint": {
+            "ignore": true
+        }
+    }
+}
