@@ -20,30 +20,31 @@
 
 /* VARS */
 var configMod    = require('./gulpfile.config'),
-    extend       = require('extend'),
-    gulp         = require('gulp'),
-    plumber      = require('gulp-plumber'),
-    rename       = require('gulp-rename'),
-    batch        = require('gulp-batch'),
-    concat       = require('gulp-concat'),
-    changed      = require('gulp-changed'),
-    jshint       = require('gulp-jshint'),
-    uglify       = require('gulp-uglify'),
-    imagemin     = require('gulp-imagemin'),
-    minifyCss    = require('gulp-minify-css'),
-    compass      = require('gulp-compass'),
-    addsrc       = require('gulp-add-src'),
-    browserSync  = require('browser-sync'),
-    postcss      = require('gulp-postcss'),
-    sourcemaps   = require('gulp-sourcemaps'),
-    twig         = require('gulp-twig'),
-    watch        = require('gulp-watch'),
-    runSequence  = require('run-sequence'),
-    mainBowerFiles = require('main-bower-files'),
+
     autoprefixer = require('autoprefixer'),
+    del          = require('del'),
+    extend       = require('extend'),
+    mainBowerFiles = require('main-bower-files'),
     merge2       = require('merge2'),
-    bowerMain    = require('bower-main'),
-    del          = require('del');
+    runSequence  = require('run-sequence'),
+
+    gulp         = require('gulp'),
+    addsrc       = require('gulp-add-src'),
+    batch        = require('gulp-batch'),
+    browserSync  = require('browser-sync'),
+    changed      = require('gulp-changed'),
+    compass      = require('gulp-compass'),
+    concat       = require('gulp-concat'),
+    imagemin     = require('gulp-imagemin'),
+    jshint       = require('gulp-jshint'),
+    minifyCss    = require('gulp-minify-css'),
+    plumber      = require('gulp-plumber'),
+    postcss      = require('gulp-postcss'),
+    rename       = require('gulp-rename'),
+    sourcemaps   = require('gulp-sourcemaps'),
+    uglify       = require('gulp-uglify'),
+    twig         = require('gulp-twig'),
+    watch        = require('gulp-watch');
 
 
 /*
