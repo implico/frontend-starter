@@ -73,9 +73,11 @@ dirs.dist.views = dirs.dist.main;
 /* CONFIG */
 
 var config = {
+
   autoprefixer: {
     browsers: ['> 1%', 'last 3 versions', 'IE 8']
   },
+
   sass: {
     common: {
       //configFile: './config.rb',
@@ -94,6 +96,7 @@ var config = {
       sourcemap: true
     }
   },
+  
   twig: {
     common: {
       base: dirs.src.views.layouts

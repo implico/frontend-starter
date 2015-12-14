@@ -9,11 +9,11 @@ var APP = APP || {};
 
   /*
       Pages code
-      for particular pages (layout is common for all)
+      for particular pages
   */
   APP.pages = {
 
-    //returns true if the current page has an id: #page-[page-name], to enable individual page code
+    //returns true if the current page has an id (or one of passed ids if array): #page-[id], to enable individual page code
     _check: function(id) {
 
       var isCurrent = false;
@@ -31,14 +31,16 @@ var APP = APP || {};
       return isCurrent ? id : false;
     },
 
-      
+    
+    //layout - common for all
     layout: {
       
       init: function() {
-        
+
       }
     },
 
+    //index - homepage
     index: {
       
       init: function() {
