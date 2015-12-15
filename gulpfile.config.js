@@ -74,37 +74,74 @@ dirs.dist.views = dirs.dist.main;
 
 var config = {
 
-  autoprefixer: {
-    browsers: ['> 1%', 'last 3 versions', 'IE 8']
+  styles: {
+
+    common: {
+      autoprefixer: {
+        browsers: ['> 1%', 'last 3 versions', 'IE 8']
+      },
+
+      sass: {
+        //configFile: './config.rb',
+        project: path.join(__dirname, '.'),
+        css: dirs.dist.styles,
+        sass: dirs.src.styles,
+        image: dirs.src.img,
+        font: dirs.dist.fonts
+      }
+    },
+
+    dev: {
+
+      sass: {
+        style: 'expanded',
+        sourcemap: true
+      }
+    },
+
+    prod: {
+
+      sass: {
+        style: 'compressed'
+      }
+    }
   },
 
-  sass: {
+  js: {
     common: {
-      //configFile: './config.rb',
-      project: path.join(__dirname, '.'),
-      css: dirs.dist.styles,
-      sass: dirs.src.styles,
-      image: dirs.src.img,
-      font: dirs.dist.fonts,
-      cache_path: dirs.vendor + './sass-cache'
+      sourcemaps: true,
+      minify: false
     },
+
     dev: {
-      style: 'expanded'
     },
+
     prod: {
-      style: 'compressed',
-      sourcemap: true
+      sourcemaps: false,
+      minify: true
     }
   },
-  
-  twig: {
+
+  views: {
+
     common: {
-      base: dirs.src.views.layouts
+      twig: {
+        base: dirs.src.views.layouts
+      }
     },
+
     dev: {
+      twig: {
+
+      }
     },
+
     prod: {
+      twig: {
+
+      }
     }
+
   }
 }
 

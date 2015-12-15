@@ -61,7 +61,7 @@ gulp.task('default', ['dev']);
 
 gulp.task('dev', function() {
 
-  runSequence('clean', ['images', 'styles:dev', 'js:dev', 'views:dev', 'browser-sync']);
+  runSequence('clean', 'browser-sync', ['images', 'styles:dev', 'js:dev', 'views:dev']);
 
   //styles
   watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles + '**/*.scss', dirs.src.styles + '**/*.css'], batch(function (events, done) {
@@ -108,7 +108,7 @@ gulp.task('prod', function() {
 var tasks = {
   styles: function(isDev) {
 
-    var compassOptions = extend(true, config.sass.common, config.sass[isDev ? 'dev': 'prod']);
+    var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
 
     var ret = gulp.src(dirs.src.styles + '*.scss')
       .pipe(plumber({
@@ -117,8 +117,10 @@ var tasks = {
           this.emit('end');
         }
       }))
-      .pipe(compass(compassOptions))
-      .pipe(postcss([ autoprefixer({ browsers: config.autoprefixer.browsers }) ]))
+      .pipe(compass(configStyles.sass))
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]))
+      .pipe(sourcemaps.write({ includeContent: false }))
       .pipe(concat('style.css'))
       .pipe(gulp.dest(dirs.dist.styles));
 
@@ -126,14 +128,17 @@ var tasks = {
   },
 
   js: function(isMain, isDev) {
-    var ret;
+    var ret,
+        configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
 
     //get files
     if (isMain) {
-      ret = gulp.src(dirs.src.js.mainGlob);
+      ret = gulp.src(dirs.src.js.mainGlob, { base: '.' });
     }
     else {
-      ret = gulp.src(mainBowerFiles()).pipe(addsrc(dirs.src.js.vendor + '**/*.js'));
+      var files = mainBowerFiles();
+      files.push(dirs.src.js.vendor + '**/*.js');
+      ret = gulp.src(files, { base: '.' });
     }
 
     //plumber
@@ -150,20 +155,26 @@ var tasks = {
       ret = ret
         .pipe(jshint())
     }
-    else {
-      //init sourcemaps for prod
+
+    if (configJs.sourcemaps) {
+      //init sourcemaps
       ret = ret
         .pipe(sourcemaps.init({ loadMaps: false }));
     }
 
-    //conacat files
+    //concat files
     ret = ret
       .pipe(concat(isMain ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
 
-    if (!isDev) {
-      //sourcemaps & minify for prod
+    if (configJs.sourcemaps) {
+      //write sourcemaps
       ret = ret
-       .pipe(sourcemaps.write({ includeContent: false }))
+       .pipe(sourcemaps.write({ includeContent: true }))
+    }
+
+    if (configJs.minify) {
+      //minify
+      ret = ret
        .pipe(uglify());
     }
 
@@ -171,10 +182,12 @@ var tasks = {
       //when main app, prepend vendor.js
       ret = ret
         .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'))
-        .pipe(concat('app.js', { newLine:'\n;' }));
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(concat('app.js', { newLine:'\n;' }))
+        .pipe(sourcemaps.write({ includeContent: false }));
     }
 
-    //save file
+    //save the file
     ret = ret
       .pipe(gulp.dest(dirs.dist.js));
 
@@ -183,10 +196,10 @@ var tasks = {
   },
 
   views: function(isDev) {
-    var twigOptions = extend(true, config.twig.common, config.twig[isDev ? 'dev': 'prod']);
+    var configViews = extend(true, config.views.common, config.views[isDev ? 'dev': 'prod']);
 
     return gulp.src(dirs.src.views.scripts + '**/*')
-      .pipe(twig(twigOptions))
+      .pipe(twig(configViews.twig))
       .pipe(gulp.dest(dirs.dist.views));
 
   }
