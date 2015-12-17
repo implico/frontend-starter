@@ -12,12 +12,16 @@
 //common
 @import 'common/config';
 @import 'common/mixins';
+@import 'common/mixins/fonts';
+@import 'common/mixins/images';
+@import 'common/mixins/responsive';
 @import 'common/fonts';
 
 
 
 //layout
 @import 'layout';
+@import '_partials/utils';
 @import '_partials/header';
 @import '_partials/footer';
 

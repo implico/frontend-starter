@@ -1,3 +1,7 @@
+// =============================================================================
+// Breakpoints
+// =============================================================================
+
 $fs-tablet-min: 768px;
 $fs-desktop-min: 992px;
 $fs-desktop-lg-min: 1200px;
@@ -22,3 +26,19 @@ $fs-tablet-sm-max: 850px;
 @include add-breakpoint('desktop', (min-width $fs-desktop-min));
 @include add-breakpoint('desktop-sm', (min-width $fs-desktop-min, max-width ($fs-desktop-lg-min - 1)));
 @include add-breakpoint('desktop-lg', min-width $fs-desktop-lg-min);
+
+
+// =============================================================================
+// Fonts
+// =============================================================================
+$font-size-mobile: 16px;
+$font-size-tablet: 16px;
+$font-size-desktop: 16px;
+
+$font-breakpoints: (mobile: 600px);//(mobile: 600px, ... etc., specify only if different than main breakpoints)
+
+$font-sets: (
+	sm: (mobile: 14px, tablet: 14px, desktop: 14px),
+	md: (mobile: $font-size-mobile, tablet: $font-size-tablet, desktop: $font-size-desktop),
+	lg: (mobile: 22px, tablet: 22px, desktop: 22px)
+);
