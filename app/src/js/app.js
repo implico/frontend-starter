@@ -95,8 +95,6 @@ var APP = APP || {};
   }
 
 
-
-
   /*
       Init
   */

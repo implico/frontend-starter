@@ -86,7 +86,7 @@ gulp.task('dev', function() {
   //images
   watch([dirs.src.img + '**/*'], batch(function (events, done) {
     gulp.start('images', done);
-  })).on('unlink', path => {
+  })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
   });
 
@@ -98,7 +98,7 @@ gulp.task('dev', function() {
 });
 
 gulp.task('prod', function() {
-  runSequence('clean', ['images', 'styles:prod', 'js:prod', 'views:prod']);
+  runSequence('clean', ['images', 'styles:prod', 'js:prod', 'views:prod']/*, 'browser-sync', function() { setTimeout(function() { browserSync.exit(); process.exit(); }, 4000); }*/);
 });
 
 
@@ -109,6 +109,7 @@ var tasks = {
   styles: function(isDev) {
 
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
+    configStyles.sass.sourcemap = configStyles.sourcemaps;
 
     var ret = gulp.src(dirs.src.styles + '*.scss')
       .pipe(plumber({
@@ -117,10 +118,22 @@ var tasks = {
           this.emit('end');
         }
       }))
-      .pipe(compass(configStyles.sass))
-      .pipe(sourcemaps.init({ loadMaps: true }))
-      .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]))
-      .pipe(sourcemaps.write({ includeContent: false }))
+      .pipe(compass(configStyles.sass));
+
+    if (configStyles.sourcemaps) {
+      ret = ret
+        .pipe(sourcemaps.init({ loadMaps: true }));
+    }
+
+    ret = ret
+      .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]));
+
+    if (configStyles.sourcemaps) {
+      ret = ret
+        .pipe(sourcemaps.write({ includeContent: false }));
+    }
+
+    ret = ret
       .pipe(concat('style.css'))
       .pipe(gulp.dest(dirs.dist.styles));
 
@@ -181,10 +194,20 @@ var tasks = {
     if (isMain) {
       //when main app, prepend vendor.js
       ret = ret
-        .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'))
-        .pipe(sourcemaps.init({ loadMaps: true }))
-        .pipe(concat('app.js', { newLine:'\n;' }))
-        .pipe(sourcemaps.write({ includeContent: false }));
+        .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
+
+      if (configJs.sourcemaps) {
+        ret = ret
+          .pipe(sourcemaps.init({ loadMaps: true }));
+      }
+
+      ret = ret
+        .pipe(concat('app.js', { newLine:'\n;' }));
+
+      if (configJs.sourcemaps) {
+        ret = ret
+          .pipe(sourcemaps.write({ includeContent: false }));
+      }
     }
 
     //save the file

@@ -77,6 +77,8 @@ var config = {
   styles: {
 
     common: {
+      sourcemaps: true,
+
       autoprefixer: {
         browsers: ['> 1%', 'last 3 versions', 'IE 8']
       },
@@ -94,12 +96,13 @@ var config = {
     dev: {
 
       sass: {
-        style: 'expanded',
-        sourcemap: true
+        style: 'expanded'
       }
     },
 
     prod: {
+
+      sourcemaps: false,
 
       sass: {
         style: 'compressed'

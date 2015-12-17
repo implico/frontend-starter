@@ -1,0 +1,95 @@
+@function font-rem($sizePx, $breakpoint: mobile) {
+  $baseSize: $font-size-mobile;
+
+  @if $breakpoint == tablet {
+    $baseSize: $font-size-tablet;
+  }
+  @else if $breakpoint == desktop {
+    $baseSize: $font-size-desktop;
+  }
+
+  @return $sizePx / $baseSize * 1rem;
+}
+
+@mixin font-vw($fontSet: null, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $fallbackRatio: 0.9) {
+  $breakpointInfo: ();
+  @if ($fontSet) {
+    $breakpointInfo: map_get($font-sets, $fontSet);
+  }
+
+  @if ($mobile) {
+    $breakpointInfo: map-merge($breakpointInfo, ('mobile': $mobile));
+  }
+  @if ($mobile-sm) {
+    $breakpointInfo: map-merge($breakpointInfo, ('mobile-sm': $mobile-sm));
+  }
+  @if ($tablet) {
+    $breakpointInfo: map-merge($breakpointInfo, ('tablet': $tablet));
+  }
+  @if ($tablet-sm) {
+    $breakpointInfo: map-merge($breakpointInfo, ('tablet-sm': $tablet-sm));
+  }
+  @if ($desktop) {
+    $breakpointInfo: map-merge($breakpointInfo, ('desktop': $desktop));
+  }
+
+  @each $breakpoint, $size in $breakpointInfo {
+    @include respond-to($breakpoint) {
+      @if $breakpoint == desktop {
+        font-size: $size;
+      }
+      @else {
+        font-size: round($size * $fallbackRatio); //fallback
+        font-size: unit-vw($size, $breakpoint, true);
+      }
+    }
+  }
+}
+
+
+//Font face (alternative to Compass): https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6#file-_mixins-scss-L30
+
+// =============================================================================
+// String Replace
+// =============================================================================
+
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
+
+// =============================================================================
+// Font Face
+// =============================================================================
+
+@mixin font-face-custom($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+  $src: null;
+
+  $extmods: (
+    eot: "?",
+    svg: "#" + str-replace($name, " ", "_")
+  );
+
+  $formats: (
+    otf: "opentype",
+    ttf: "truetype"
+  );
+
+  @each $ext in $exts {
+    $extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+    $format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+    $src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+  }
+
+  @font-face {
+    font-family: quote($name);
+    font-style: $style;
+    font-weight: $weight;
+    src: $src;
+  }
+}

@@ -1,0 +1,82 @@
+@function breakpoint-px($breakpoint: mobile) {
+  @if ($breakpoint == mobile) {
+    @return $fs-mobile-max;
+  }
+  @elseif ($breakpoint == mobile-sm) {
+    @return $fs-mobile-sm-max;
+  }
+  @else if ($breakpoint == tablet) {
+    @return $fs-tablet-max;
+  }
+  @else if ($breakpoint == tablet-sm) {
+    @return $fs-tablet-sm-max;
+  }
+  @else if ($breakpoint == desktop) {
+    @return $fs-desktop-min;
+  }
+}
+
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+@function unit-vw($values, $breakpoint, $useFontBreakpoints: false) {
+
+  $breakpointWidth: $breakpoint;
+  @if type-of($breakpoint) == string {
+    @if $useFontBreakpoints and map-has-key($font-breakpoints, $breakpoint) {
+      $breakpointWidth: map-get($font-breakpoints, $breakpoint);
+    }
+    @else {
+      $breakpointWidth: breakpoint-px($breakpoint);
+    }
+
+  }
+  $breakpointWidth: strip-unit($breakpointWidth);
+
+  $length: length($values);
+  $newValues: ();
+
+  @if $length == 1 {
+    $values: ($values);
+  }
+
+  @if $length > 0 {
+    @each $value in $values {
+      $newValue: (strip-unit($value) * 100 / $breakpointWidth) * 1vw;
+      $newValues: append($newValues, $newValue, space);
+    }
+  }
+  @else {
+    $newValues: 0vw;
+  }
+
+  @return $newValues;
+}
+
+@function unit-percent($values, $dimension) {
+  $breakpointWidth: $breakpoint;
+  @if unitless($breakpoint) {
+    $breakpointWidth: breakpoint-px($breakpoint);
+  }
+  $breakpointWidth: strip-unit($breakpointWidth);
+
+  $length: length($values);
+  $newValues: ();
+
+  @if($unit=='px') {
+    $dimension: strip-units($dimension);
+  }
+  @else if ($unit=='em') {
+    $dimension: strip-units($dimension) * 16;
+  }
+  @each $value in $values {
+    $new_value: percentage((strip-units($value) / $dimension));
+    $new_values: append($new_values, $new_value, space);
+  }
+  // @warn $new_values;
+  @return $new_values;
+}

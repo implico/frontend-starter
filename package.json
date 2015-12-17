@@ -4,9 +4,11 @@
   "version": "1.0.0",
   "author": "Bartosz Sak <bartosz.sak@gmail.com>",
   "license": "MIT",
+  "devDependecies": {
+    "browser-sync": "^2.9.11"
+  },
   "dependencies": {
     "autoprefixer": "^6.0.3",
-    "browser-sync": "^2.9.11",
     "del": "^1.2.0",
     "extend": "*",
     "main-bower-files": "*",
