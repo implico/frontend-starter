@@ -16,7 +16,7 @@
   }
 }
 
-@function strip-unit($number) {
+@function strip-units($number) {
   @if type-of($number) == 'number' and not unitless($number) {
     @return $number / ($number * 0 + 1);
   }
@@ -35,18 +35,14 @@
     }
 
   }
-  $breakpointWidth: strip-unit($breakpointWidth);
+  $breakpointWidth: strip-units($breakpointWidth);
 
   $length: length($values);
   $newValues: ();
 
-  @if $length == 1 {
-    $values: ($values);
-  }
-
   @if $length > 0 {
     @each $value in $values {
-      $newValue: (strip-unit($value) * 100 / $breakpointWidth) * 1vw;
+      $newValue: (strip-units($value) * 100 / $breakpointWidth) * 1vw;
       $newValues: append($newValues, $newValue, space);
     }
   }
@@ -57,26 +53,20 @@
   @return $newValues;
 }
 
-@function unit-percent($values, $dimension) {
+@function unit-percent($values, $breakpoint) {
   $breakpointWidth: $breakpoint;
-  @if unitless($breakpoint) {
+  @if type-of($breakpoint) == string {
     $breakpointWidth: breakpoint-px($breakpoint);
   }
-  $breakpointWidth: strip-unit($breakpointWidth);
+  $breakpointWidth: strip-units($breakpointWidth);
 
   $length: length($values);
   $newValues: ();
 
-  @if($unit=='px') {
-    $dimension: strip-units($dimension);
-  }
-  @else if ($unit=='em') {
-    $dimension: strip-units($dimension) * 16;
-  }
   @each $value in $values {
-    $new_value: percentage((strip-units($value) / $dimension));
-    $new_values: append($new_values, $new_value, space);
+    $newValue: percentage((strip-units($value) / $breakpointWidth));
+    $newValues: append($newValues, $newValue, space);
   }
-  // @warn $new_values;
-  @return $new_values;
+
+  @return $newValues;
 }
