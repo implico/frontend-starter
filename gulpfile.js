@@ -278,7 +278,7 @@ gulp.task('js:prod', function() {
 
 /* IMAGES */
 gulp.task('images', function() {
-  return gulp.src(dirs.src.img + '**/*')
+  return gulp.src([dirs.src.img + '**/*', '!' + dirs.src.img + '**/*.tmp'])
     .pipe(changed(dirs.dist.img))
     .pipe(imagemin({ optimizationLevel: 0, progessive: true, interlaced: true }))
     .pipe(gulp.dest(dirs.dist.img));
