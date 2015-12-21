@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "Bartosz Sak <bartosz.sak@gmail.com>",
   "license": "MIT",
-  "devDependecies": {
+  "devDependencies": {
     "browser-sync": "^2.9.11"
   },
   "dependencies": {
