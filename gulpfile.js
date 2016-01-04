@@ -61,7 +61,7 @@ gulp.task('default', ['dev']);
 
 gulp.task('dev', function() {
 
-  runSequence('clean', 'browser-sync', ['images', 'styles:dev', 'js:dev', 'views:dev']);
+  runSequence('clean', ['images', 'styles:dev', 'js:dev', 'views:dev'], 'browser-sync');
 
   //styles
   watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles + '**/*.scss', dirs.src.styles + '**/*.css'], batch(function (events, done) {
@@ -191,7 +191,7 @@ var tasks = {
        .pipe(uglify());
     }
 
-    if (isMain) {
+    if (isMain && configJs.concatAppVendor) {
       //when main app, prepend vendor.js
       ret = ret
         .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
@@ -304,7 +304,7 @@ gulp.task('views:prod', function() {
 gulp.task('clean', function(cb) {
 
   var p = [
-    del([dirs.dist.styles + '*', dirs.dist.js + '*', dirs.dist.img + '**/*', dirs.dist.views + '*.*'], { force: false }, function (err, paths) {
+    del([dirs.dist.styles + '*', dirs.dist.js + '*', dirs.dist.img + '**/*', dirs.dist.views + '*.*'], { force: true }, function (err, paths) {
         console.log('Deleted files/folders:\n', paths.join('\n'));
     }),
 
@@ -317,15 +317,5 @@ gulp.task('clean', function(cb) {
 
 /* BROWSER SYNC */
 gulp.task('browser-sync', function() {
-  browserSync({
-    //proxy: 'localhost:63383',
-    host: 'localhost',
-    port: 80,
-    open: 'external',
-    //startPath: '/uk/',
-    reloadOnRestart: true,
-    server: {
-      baseDir: dirs.dist.main
-    }
-  });
+  browserSync(config.browserSync.options);
 });

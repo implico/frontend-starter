@@ -49,7 +49,7 @@ dirs.src.fonts = dirs.src.styles + 'fonts/';
 
 dirs.src.js.main = dirs.src.main + 'js/';
 dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
-dirs.src.js.mainGlob = [dirs.src.js.main + '*.js', '!{' + dirs.src.js.vendor + ',' + dirs.src.js.vendor + '**}'];
+dirs.src.js.mainGlob = [dirs.src.js.main + '**/*.js', '!{' + dirs.src.js.vendor + ',' + dirs.src.js.vendor + '**}'];
 
 dirs.src.img = dirs.src.main + 'img/';
 
@@ -113,7 +113,8 @@ var config = {
   js: {
     common: {
       sourcemaps: true,
-      minify: false
+      minify: false,
+      concatAppVendor: true   //if true, app.js and vendor.js are concatenated into app.js
     },
 
     dev: {
@@ -144,7 +145,17 @@ var config = {
 
       }
     }
+  },
 
+  browserSync: {
+    options: {
+      host: 'localhost',
+      port: 80,
+      reloadOnRestart: true,
+      server: {
+        baseDir: dirs.dist.main
+      }
+    }
   }
 }
 
