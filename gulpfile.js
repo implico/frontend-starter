@@ -14,6 +14,10 @@
 
   gulp prod
     prepare clean project and compile optimized production app without browsersync
+
+  gulp prod:preview
+    same as prod, additionally launches browsersync
+
 */
 
 
@@ -22,16 +26,18 @@
 var configMod    = require('./gulpfile.config'),
 
     autoprefixer = require('autoprefixer'),
+    browserSync  = require('browser-sync'),
+    buffer       = require('vinyl-buffer'),
     del          = require('del'),
     extend       = require('extend'),
     mainBowerFiles = require('main-bower-files'),
-    merge2       = require('merge2'),
+    merge        = require('merge-stream'),
     runSequence  = require('run-sequence'),
 
     gulp         = require('gulp'),
     addsrc       = require('gulp-add-src'),
+    debug        = require('gulp-debug'),
     batch        = require('gulp-batch'),
-    browserSync  = require('browser-sync'),
     changed      = require('gulp-changed'),
     compass      = require('gulp-compass'),
     concat       = require('gulp-concat'),
@@ -42,6 +48,7 @@ var configMod    = require('./gulpfile.config'),
     postcss      = require('gulp-postcss'),
     rename       = require('gulp-rename'),
     sourcemaps   = require('gulp-sourcemaps'),
+    spritesmith  = require('gulp.spritesmith'),
     uglify       = require('gulp-uglify'),
     twig         = require('gulp-twig'),
     watch        = require('gulp-watch');
@@ -52,19 +59,26 @@ var configMod    = require('./gulpfile.config'),
 */
 var dirs = configMod.dirs,
     config = configMod.config;
-    
+
+//image dirs    
+var imagesDirs = [dirs.src.img + '**/*', '!' + dirs.src.img + '**/*.tmp'];
+//exclude sprite dirs
+config.sprites.items.forEach(function(itemInfo) {
+  imagesDirs.push('!' + itemInfo.imgSource);
+  imagesDirs.push('!' + itemInfo.imgSource + '**');
+});
 
 
 
 /* MAIN TASKS */
 gulp.task('default', ['dev']);
 
-gulp.task('dev', function() {
+gulp.task('dev', function(cb) {
 
-  runSequence('clean', ['images', 'styles:dev', 'js:dev', 'views:dev'], 'browser-sync');
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev'], 'browser-sync', cb);
 
   //styles
-  watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles + '**/*.scss', dirs.src.styles + '**/*.css'], batch(function (events, done) {
+  watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
     gulp.start('styles:dev', done);
   }));
 
@@ -73,7 +87,15 @@ gulp.task('dev', function() {
     gulp.start('fonts', done);
   }));
 
-  //js - app    
+  //sprites
+  config.sprites.items.forEach(function(itemInfo) {
+    watch([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp'], batch(function (events, done) {
+      tasks.sprites(itemInfo, done);
+    }));
+  });
+
+
+  //js - app
   watch(dirs.src.js.mainGlob, batch(function (events, done) {
     gulp.start('js:dev:main', done);
   }));
@@ -84,7 +106,7 @@ gulp.task('dev', function() {
   }));
   
   //images
-  watch([dirs.src.img + '**/*'], batch(function (events, done) {
+  watch(imagesDirs, batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -97,8 +119,12 @@ gulp.task('dev', function() {
 
 });
 
-gulp.task('prod', function() {
-  runSequence('clean', ['images', 'styles:prod', 'js:prod', 'views:prod']/*, 'browser-sync', function() { setTimeout(function() { browserSync.exit(); process.exit(); }, 4000); }*/);
+gulp.task('prod', function(cb) {
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod'], cb/*, 'browser-sync', function() { setTimeout(function() { browserSync.exit(); process.exit(); }, 4000); }*/);
+});
+
+gulp.task('prod:preview', ['prod'], function(cb) {
+  runSequence('browser-sync', cb);
 });
 
 
@@ -111,7 +137,7 @@ var tasks = {
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
     configStyles.sass.sourcemap = configStyles.sourcemaps;
 
-    var ret = gulp.src(dirs.src.styles + '*.scss')
+    var ret = gulp.src(dirs.src.styles.main + '*.scss')
       .pipe(plumber({
         errorHandler: function (error) {
           console.log(error.message);
@@ -138,6 +164,31 @@ var tasks = {
       .pipe(gulp.dest(dirs.dist.styles));
 
     return ret;
+  },
+
+  sprites: function(itemInfo, done) {
+
+    if (done)
+      console.log('Starting \'sprites\'...');
+
+    var spriteData = gulp.src([itemInfo.imgSource + '**/*', '!' + itemInfo.imgSource + '**/*.tmp']).pipe(spritesmith(itemInfo.options));
+
+    var imgStream = spriteData.img
+      .pipe(buffer())
+      .pipe(imagemin(config.images.imagemin))
+      .pipe(gulp.dest(itemInfo.imgDest));
+
+    var cssStream = spriteData.css
+        .pipe(gulp.dest(dirs.src.styles.sprites));
+
+    return merge(imgStream, cssStream).on('finish', function() {
+      if (done) {
+        done();
+        console.log('Finished \'sprites\'');
+      }
+      browserSync.reload();
+    });
+
   },
 
   js: function(isMain, isDev) {
@@ -240,9 +291,20 @@ gulp.task('styles:prod', function() {
 });
 
 gulp.task('fonts', function() {
+
   return gulp.src(dirs.src.fonts + '**/*')
     .pipe(changed(dirs.dist.fonts))
     .pipe(gulp.dest(dirs.dist.fonts));
+});
+
+gulp.task('sprites', function() {
+  var ret = null;
+
+  config.sprites.items.forEach(function(itemInfo) {
+    ret = tasks.sprites(itemInfo);
+  });
+
+  return ret;
 });
 
 
@@ -278,9 +340,11 @@ gulp.task('js:prod', function() {
 
 /* IMAGES */
 gulp.task('images', function() {
-  return gulp.src([dirs.src.img + '**/*', '!' + dirs.src.img + '**/*.tmp'])
+
+  return gulp.src(imagesDirs)
     .pipe(changed(dirs.dist.img))
-    .pipe(imagemin({ optimizationLevel: 0, progessive: true, interlaced: true }))
+    //.pipe(debug())
+    .pipe(imagemin(config.images.imagemin))
     .pipe(gulp.dest(dirs.dist.img));
 });
 
@@ -303,15 +367,13 @@ gulp.task('views:prod', function() {
 /* CLEAN PUBLIC FOLDERS */
 gulp.task('clean', function(cb) {
 
-  var p = [
-    del([dirs.dist.styles + '*', dirs.dist.js + '*', dirs.dist.img + '**/*', dirs.dist.views + '*.*'], { force: true }, function (err, paths) {
-        console.log('Deleted files/folders:\n', paths.join('\n'));
-    }),
+  var delFiles = del.sync([dirs.dist.styles + '**/*', dirs.src.styles.sprites + '**/*', dirs.dist.js + '**/*', dirs.dist.img + '**/*', dirs.dist.views + '*.*'], { force: true });
+  del.sync(dirs.sassCache);
 
-    del(dirs.sassCache)
-  ];
+  console.log('Deleted files/folders:\n', delFiles.join('\n'));
 
-  return Promise.all(p);
+  return Promise.resolve();
+
 });
 
 

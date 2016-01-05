@@ -5,16 +5,18 @@
   "author": "Bartosz Sak <bartosz.sak@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^2.9.11"
+    "browser-sync": "^2.9.11",
+    "gulp-debug": "*"
   },
   "dependencies": {
     "autoprefixer": "^6.0.3",
     "del": "^1.2.0",
     "extend": "*",
     "main-bower-files": "*",
-    "merge2": "^0.3.6",
+    "merge-stream": "*",
     "path": "^0.11.14",
     "run-sequence": "*",
+    "vinyl-buffer": "*",
 
     "gulp": "3.*.*",
     "gulp-add-src": "*",
@@ -29,6 +31,7 @@
     "gulp-postcss": "^6.0.1",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "^1.5.2",
+    "gulp.spritesmith": "*",
     "gulp-twig": "*",
     "gulp-watch": "*",
     "gulp-uglify": "^1.4.2"

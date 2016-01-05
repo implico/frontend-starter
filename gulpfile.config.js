@@ -9,7 +9,10 @@ var dirs = {
 
   src: {
     main: '',
-    styles: '',
+    styles: {
+      main: '',
+      sprites: ''
+    },
     fonts: '',
 
     js:  {
@@ -44,8 +47,10 @@ dirs.app = './app/';
 dirs.src.main = dirs.app + 'src/';
 
 
-dirs.src.styles = dirs.src.main + 'styles/';
-dirs.src.fonts = dirs.src.styles + 'fonts/';
+dirs.src.styles.main = dirs.src.main + 'styles/';
+dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
+
+dirs.src.fonts = dirs.src.main + 'fonts/';
 
 dirs.src.js.main = dirs.src.main + 'js/';
 dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
@@ -87,7 +92,7 @@ var config = {
         //configFile: './config.rb',
         project: path.join(__dirname, '.'),
         css: dirs.dist.styles,
-        sass: dirs.src.styles,
+        sass: dirs.src.styles.main,
         image: dirs.src.img,
         font: dirs.dist.fonts
       }
@@ -108,6 +113,21 @@ var config = {
         style: 'compressed'
       }
     }
+  },
+
+  sprites: {
+    items: [
+      {
+        imgSource: dirs.src.img + 'sprites/',
+        imgDest: dirs.dist.img,
+        //additional options passed to the plugin
+        options: {
+          imgName: 'sprites.png',
+          imgPath: '../img/sprites.png',
+          cssName: '_sprites.scss',
+        }
+      }
+    ]
   },
 
   js: {
@@ -144,6 +164,14 @@ var config = {
       twig: {
 
       }
+    }
+  },
+
+  images: {
+    imagemin: {
+      optimizationLevel: 0,
+      progessive: true,
+      interlaced: true
     }
   },
 
