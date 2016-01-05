@@ -54,6 +54,7 @@ var configMod    = require('./gulpfile.config'),
     watch        = require('gulp-watch');
 
 
+
 /*
     Main config, dirs
 */
@@ -96,7 +97,7 @@ gulp.task('dev', function(cb) {
 
 
   //js - app
-  watch(dirs.src.js.mainGlob, batch(function (events, done) {
+  watch(dirs.src.js.appGlob, batch(function (events, done) {
     gulp.start('js:dev:main', done);
   }));
 
@@ -191,13 +192,13 @@ var tasks = {
 
   },
 
-  js: function(isMain, isDev) {
+  js: function(isApp, isDev) {
     var ret,
         configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
 
     //get files
-    if (isMain) {
-      ret = gulp.src(dirs.src.js.mainGlob, { base: '.' });
+    if (isApp) {
+      ret = gulp.src(dirs.src.js.appGlob, { base: '.' });
     }
     else {
       var files = mainBowerFiles();
@@ -228,7 +229,7 @@ var tasks = {
 
     //concat files
     ret = ret
-      .pipe(concat(isMain ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
+      .pipe(concat(isApp ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
 
     if (configJs.sourcemaps) {
       //write sourcemaps
@@ -242,7 +243,7 @@ var tasks = {
        .pipe(uglify());
     }
 
-    if (isMain && configJs.concatAppVendor) {
+    if (isApp && configJs.concatAppVendor) {
       //when main app, prepend vendor.js
       ret = ret
         .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));

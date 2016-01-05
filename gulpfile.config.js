@@ -54,7 +54,7 @@ dirs.src.fonts = dirs.src.main + 'fonts/';
 
 dirs.src.js.main = dirs.src.main + 'js/';
 dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
-dirs.src.js.mainGlob = [dirs.src.js.main + '**/*.js', '!{' + dirs.src.js.vendor + ',' + dirs.src.js.vendor + '**}'];
+dirs.src.js.appGlob = [dirs.src.js.main + '**/*.js', '!' + dirs.src.js.vendor, '!' + dirs.src.js.vendor + '**/*'];
 
 dirs.src.img = dirs.src.main + 'img/';
 
