@@ -1,2 +1,6 @@
-# frontend-starter
-Another frontend start framework
+Frontend-starter
+================
+Frontend start/boilerplate framework.
+
+Basic concepts
+--------------

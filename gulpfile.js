@@ -1,19 +1,25 @@
 /**
-  API
+  Frontend-starter API
 
-  @author Archas, Bartosz Sak
+  @author Bartosz Sak, Archas
 
   gulp
-    default task, equals to gulp dev
+    default task, equals to gulp dev:watch
 
   gulp clean
     cleans dist dir
 
   gulp dev
-    run dev app with browsersync
+    runs dev:build and dev:watch
+
+  gulp dev:build
+    cleans and compiles/builds dev version
+
+  gulp dev:watch
+    runs dev watch with browsersync
 
   gulp prod
-    prepare clean project and compile optimized production app without browsersync
+    prepare clean project and compile/build optimized production app without browsersync
 
   gulp prod:preview
     same as prod, additionally launches browsersync
@@ -72,11 +78,16 @@ config.sprites.items.forEach(function(itemInfo) {
 
 
 /* MAIN TASKS */
-gulp.task('default', ['dev']);
+gulp.task('default', ['dev:watch']);
+
 
 gulp.task('dev', function(cb) {
+  runSequence('dev:build', 'dev:watch', cb);
+});
 
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev'], 'browser-sync', cb);
+gulp.task('dev:watch', function(cb) {
+
+  runSequence('browser-sync', cb);
 
   //styles
   watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
@@ -120,8 +131,12 @@ gulp.task('dev', function(cb) {
 
 });
 
+gulp.task('dev:build', function(cb) {
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev'], cb);
+});
+
 gulp.task('prod', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod'], cb/*, 'browser-sync', function() { setTimeout(function() { browserSync.exit(); process.exit(); }, 4000); }*/);
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod'], cb);
 });
 
 gulp.task('prod:preview', ['prod'], function(cb) {
@@ -161,7 +176,6 @@ var tasks = {
     }
 
     ret = ret
-      .pipe(concat('style.css'))
       .pipe(gulp.dest(dirs.dist.styles));
 
     return ret;
