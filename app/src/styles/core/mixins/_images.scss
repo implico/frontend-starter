@@ -1,9 +1,15 @@
+// =============================================================================
+// Responsive sprites
+// =============================================================================
+
+//used for sprite wrapper
 @mixin sprite-wrap-rwd($sprite) {
   $image-width: nth($sprite, 5);
   width: $image-width;
   max-width: 100%;
 }
 
+//used for sprite container
 @mixin sprite-rwd($sprite) {
   @include sprite-image($sprite);
 

@@ -48,7 +48,7 @@ dirs.src.main = dirs.app + 'src/';
 
 
 dirs.src.styles.main = dirs.src.main + 'styles/';
-dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
+dirs.src.styles.sprites = dirs.src.styles.main + '_partials/sprites/';
 
 dirs.src.fonts = dirs.src.main + 'fonts/';
 

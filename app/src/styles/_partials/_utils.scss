@@ -10,21 +10,3 @@
 	}
 	
 }
-
-
-//centered divs with unknown width
-.div-center-wrap-outer {
-	width: 100%;
-	overflow: hidden;
-}
-.div-center-wrap {
-	position: relative;
-	float: left;
-	left: 50%;
-}
-.div-center {
-	position: relative;
-	float: left;
-	right: 50%;
-}
-

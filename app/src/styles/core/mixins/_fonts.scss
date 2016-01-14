@@ -1,3 +1,8 @@
+// =============================================================================
+// Unit converters
+// =============================================================================
+
+//convers font size in px to rem using specified breakpoint px width as a base
 @function font-rem($sizePx, $breakpoint: mobile) {
   $baseSize: $font-size-mobile;
 
@@ -11,6 +16,7 @@
   @return $sizePx / $baseSize * 1rem;
 }
 
+//convers font size in px to vw using specified font set info or specified breakpoint px width as a base
 @mixin font-vw($fontSet: null, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $fallbackRatio: 0.9) {
   $breakpointInfo: ();
   @if ($fontSet) {
@@ -34,39 +40,31 @@
   }
 
   @each $breakpoint, $size in $breakpointInfo {
-    @include respond-to($breakpoint) {
-      @if $breakpoint == desktop {
-        font-size: $size;
-      }
-      @else {
-        font-size: round($size * $fallbackRatio); //fallback
-        font-size: unit-vw($size, $breakpoint, true);
+
+    @if $breakpoint == mobile {
+      font-size: round($size * $fallbackRatio); //fallback
+      font-size: unit-vw($size, $breakpoint);
+    }
+    @else {
+      @include respond-to($breakpoint) {
+        @if $breakpoint == desktop {
+          font-size: $size;
+        }
+        @else {
+          font-size: round($size * $fallbackRatio); //fallback
+          font-size: unit-vw($size, $breakpoint);
+        }
       }
     }
   }
 }
 
 
-//Font face (alternative to Compass): https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6#file-_mixins-scss-L30
-
 // =============================================================================
-// String Replace
+// Font face (alternative to Compass): https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6#file-_mixins-scss-L30
 // =============================================================================
 
-@function str-replace($string, $search, $replace: "") {
-  $index: str-index($string, $search);
-
-  @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
-  }
-
-  @return $string;
-}
-
-// =============================================================================
-// Font Face
-// =============================================================================
-
+//Font Face
 @mixin font-face-custom($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
   $src: null;
 
@@ -92,4 +90,15 @@
     font-weight: $weight;
     src: $src;
   }
+}
+
+//Font Face internal: String Replace
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
 }

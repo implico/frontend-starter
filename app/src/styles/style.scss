@@ -9,25 +9,28 @@
 @import '../../../vendor/compass-breakpoint/stylesheets/breakpoint';
 
 
-//common
-@import 'common/config';
-@import 'common/mixins';
-@import 'common/mixins/fonts';
-@import 'common/mixins/images';
-@import 'common/mixins/responsive';
-@import 'common/fonts';
+//core
+@import 'core/config';
+@import 'core/mixins/fonts';
+@import 'core/mixins/images';
+@import 'core/mixins/responsive';
+@import 'core/mixins/misc';
+
+//custom
+@import 'custom/config';
+@import 'custom/mixins';
 
 
 //sprites - uncomment if used
-//@import 'sprites/sprites';
+//@import '_partials/sprites';
 
 
 //layout
-@import 'layout';
+@import '_pages/layout';
 @import '_partials/utils';
 @import '_partials/header';
 @import '_partials/footer';
 
 
 //subpages
-@import 'index';
+@import '_pages/index';

@@ -1,0 +1,108 @@
+// =============================================================================
+// Grid
+// =============================================================================
+
+@mixin grid-row($margin, $clearfix: true) {
+  @if ($clearfix) {
+    @include clearfix;
+  }
+  margin-left: -$margin;
+  margin-right: -$margin;
+}
+
+@mixin grid-col($width, $margin) {
+  float: left;
+  width: $width;
+  padding-left: $margin;
+  padding-right: $margin;
+}
+
+
+
+// =============================================================================
+// Unit converters
+// =============================================================================
+
+//converts px value(s) to vw using specified breakpoint px width as a base
+@function unit-vw($values, $breakpoint: mobile, $useDesignBreakpoints: true) {
+
+  $breakpointWidth: $breakpoint;
+  @if type-of($breakpoint) == string {
+    $breakpointWidth: breakpoint-px($breakpoint, $useDesignBreakpoints);
+  }
+  $breakpointWidth: strip-units($breakpointWidth);
+
+  $length: length($values);
+  $newValues: ();
+
+  @if $length > 0 {
+    @each $value in $values {
+      $newValue: (strip-units($value) * 100 / $breakpointWidth) * 1vw;
+      $newValues: append($newValues, $newValue, space);
+    }
+  }
+  @else {
+    $newValues: 0vw;
+  }
+
+  @return $newValues;
+}
+
+//converts px value(s) to percent
+@function unit-percent($values, $breakpoint: mobile, $useDesignBreakpoints: true) {
+  $breakpointWidth: $breakpoint;
+  @if type-of($breakpoint) == string {
+    $breakpointWidth: breakpoint-px($breakpoint, $useDesignBreakpoints);
+  }
+  $breakpointWidth: strip-units($breakpointWidth);
+
+  $length: length($values);
+  $newValues: ();
+
+  @each $value in $values {
+    $newValue: percentage((strip-units($value) / $breakpointWidth));
+    $newValues: append($newValues, $newValue, space);
+  }
+
+  @return $newValues;
+}
+
+
+
+// =============================================================================
+// Internal
+// =============================================================================
+
+//returns breakpoint width in px
+@function breakpoint-px($breakpoint: mobile, $useDesignBreakpoints: true) {
+
+  @if $useDesignBreakpoints and map-has-key($design-breakpoints, $breakpoint) {
+    $breakpointWidth: map-get($design-breakpoints, $breakpoint);
+  }
+  @else {
+
+    @if ($breakpoint == mobile) {
+      @return $fs-mobile-max;
+    }
+    @elseif ($breakpoint == mobile-sm) {
+      @return $fs-mobile-sm-max;
+    }
+    @else if ($breakpoint == tablet) {
+      @return $fs-tablet-max;
+    }
+    @else if ($breakpoint == tablet-sm) {
+      @return $fs-tablet-sm-max;
+    }
+    @else if ($breakpoint == desktop) {
+      @return $fs-desktop-min;
+    }
+  }
+}
+
+//strips units from value
+@function strip-units($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
