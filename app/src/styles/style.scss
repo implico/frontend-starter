@@ -1,6 +1,5 @@
 //Compass
 @import "compass/reset";
-//@import "compass/utilities/general/clearfix";
 //@import "compass/css3";
 @import "compass/css3/font-face";
 
@@ -12,8 +11,6 @@
 //core
 @import 'core/config';
 @import 'core/mixins/fonts';
-@import 'core/mixins/images';
-@import 'core/mixins/responsive';
 @import 'core/mixins/misc';
 
 //custom
@@ -27,7 +24,6 @@
 
 //layout
 @import '_pages/layout';
-@import '_partials/utils';
 @import '_partials/header';
 @import '_partials/footer';
 

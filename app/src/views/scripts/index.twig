@@ -1,13 +1,8 @@
 {% extends "default.twig" %}
 
-
-{# layout data: page id passed to the layout, title #}
-{%
-  set ld = {
-    pageId: 'index',
-    title: 'Homepage'
-  } 
-%}
+{# layout blocks - edit/add your own #}
+{% block headTitle %}Index{% endblock headTitle %}
+{% block bodyAttr %} id="page-index"{% endblock bodyAttr %}
 
 
 {% block content %}

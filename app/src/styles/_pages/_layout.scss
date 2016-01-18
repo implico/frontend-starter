@@ -20,7 +20,6 @@ body {
 	box-sizing: border-box;
 }
 
-
 strong {
 	font-weight: bold;
 }
@@ -49,10 +48,24 @@ button {
 }
 
 
+.clear {
+	*zoom: 1;
+	&:before, &:after {
+	    content: " ";
+	    display: table;
+	}
+	
+	&:after {
+	    clear: both;
+	}
+	
+}
+
+
 
 //layout
 
-#main-wrap {
+#layout-main-wrap {
 	width: 1200px;
 	max-width: 100%;
 	margin: 0 auto;

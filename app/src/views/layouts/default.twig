@@ -2,7 +2,7 @@
 <html>
   <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
     <meta charset="utf-8" />
-    <title>{% if ld.title is defined %}{{ ld.title }}{% endif %}</title>
+    <title>{% block headTitle %}Website{% endblock headTitle %}</title>
     <link rel="shortcut icon" href="img/favicon.ico" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -21,9 +21,9 @@
 		
   </head>
     
-  <body{% if ld.pageId is defined and ld.pageId %} id="page-{{ ld.pageId }}"{% endif %}>
+  <body{% block bodyAttr %}{% endblock bodyAttr %}>
 
-  	<div id="main-wrap">
+  	<div id="layout-main-wrap">
 
       {% include "partials/header.twig" %}
 

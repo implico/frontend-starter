@@ -13,8 +13,33 @@ var APP = APP || {};
   */
   APP.pages = {
 
+    //layout - common for all
+    layout: {
+      
+      init: function() {
+
+      }
+    },
+
+    //index - homepage
+    index: {
+      
+      init: function() {
+        if (!modules.page('index'))
+          return;
+      }
+    }
+  }
+
+  
+
+  /*
+      Functional modules
+  */
+  APP.modules = {
+
     //returns true if the current page has an id (or one of passed ids if array): #page-[id], to enable individual page code
-    _check: function(id) {
+    page: function(id) {
 
       var isCurrent = false;
       if (!(id instanceof Array))
@@ -32,41 +57,6 @@ var APP = APP || {};
     },
 
     
-    //layout - common for all
-    layout: {
-      
-      init: function() {
-
-      }
-    },
-
-    //index - homepage
-    index: {
-      
-      init: function() {
-        if (!APP.pages._check('index'))
-          return;
-      }
-    }
-  }
-
-  //helper vars
-  var layout = APP.pages.layout
-      index = APP.pages.index;
-
-  
-  //on resize window standard handler
-  APP.resize = function() {
-    
-  }
-
-
-
-  /*
-      Functional modules
-  */
-  APP.modules = {
-
     //checks for current media query range, defined by CSS z-index applied to body element
     isRes: function(mode, exact) {
 
@@ -95,14 +85,17 @@ var APP = APP || {};
   }
 
 
+  //helper vars
+  var modules = APP.modules,
+      layout = APP.pages.layout,
+      index = APP.pages.index;
+
   /*
       Init
   */
   $(function() {
     APP.init();
   });
-
-  $(window).on('resize', APP.resize);
 
   
 })(jQuery, APP);

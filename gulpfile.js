@@ -76,6 +76,15 @@ config.sprites.items.forEach(function(itemInfo) {
 });
 
 
+//adds config glob
+function addConfigGlob(glob) {
+  if (!(glob instanceof Array)) {
+    glob = [glob];
+  }
+  return glob.concat(config.global.globAdd);
+}
+
+
 
 /* MAIN TASKS */
 gulp.task('default', ['dev:watch']);
@@ -87,10 +96,10 @@ gulp.task('dev', function(cb) {
 
 gulp.task('dev:watch', function(cb) {
 
-  runSequence('browser-sync', cb);
+  runSequence('browser-sync:dev', cb);
 
   //styles
-  watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
+  watch(addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
     gulp.start('styles:dev', done);
   }));
 
@@ -101,24 +110,24 @@ gulp.task('dev:watch', function(cb) {
 
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
-    watch([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp'], batch(function (events, done) {
+    watch(addConfigGlob([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp']), batch(function (events, done) {
       tasks.sprites(itemInfo, done);
     }));
   });
 
 
   //js - app
-  watch(dirs.src.js.appGlob, batch(function (events, done) {
+  watch(addConfigGlob(dirs.src.js.appGlob), batch(function (events, done) {
     gulp.start('js:dev:main', done);
   }));
 
   //js - vendor
-  watch([dirs.vendor + '**/*.js', dirs.src.js.vendor + '**/*.js'], batch(function (events, done) {
+  watch(addConfigGlob([dirs.vendor + '**/*.js', dirs.src.js.vendor + '**/*.js']), batch(function (events, done) {
     gulp.start('js:dev', done);
   }));
   
   //images
-  watch(imagesDirs, batch(function (events, done) {
+  watch(addConfigGlob(imagesDirs), batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -129,18 +138,27 @@ gulp.task('dev:watch', function(cb) {
     gulp.start('views:dev', done);
   }));
 
+  //custom dirs
+  dirs.custom.forEach(function(dirInfo) {
+    if (dirInfo.dev) {
+      watch(dirInfo.from, batch(function (events, done) {
+        tasks.customDirs([dirInfo], true, done);
+      }));
+    }
+  });
+
 });
 
 gulp.task('dev:build', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev'], cb);
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev', 'custom-dirs:dev'], cb);
 });
 
 gulp.task('prod', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod'], cb);
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod', 'custom-dirs:prod'], cb);
 });
 
 gulp.task('prod:preview', ['prod'], function(cb) {
-  runSequence('browser-sync', cb);
+  runSequence('browser-sync:prod');
 });
 
 
@@ -153,7 +171,7 @@ var tasks = {
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
     configStyles.sass.sourcemap = configStyles.sourcemaps;
 
-    var ret = gulp.src(dirs.src.styles.main + '*.scss')
+    var ret = gulp.src(addConfigGlob(dirs.src.styles.main + '*.scss'))
       .pipe(plumber({
         errorHandler: function (error) {
           console.log(error.message);
@@ -186,7 +204,7 @@ var tasks = {
     if (done)
       console.log('Starting \'sprites\'...');
 
-    var spriteData = gulp.src([itemInfo.imgSource + '**/*', '!' + itemInfo.imgSource + '**/*.tmp']).pipe(spritesmith(itemInfo.options));
+    var spriteData = gulp.src(addConfigGlob(itemInfo.imgSource + '**/*')).pipe(spritesmith(itemInfo.options));
 
     var imgStream = spriteData.img
       .pipe(buffer())
@@ -212,12 +230,12 @@ var tasks = {
 
     //get files
     if (isApp) {
-      ret = gulp.src(dirs.src.js.appGlob, { base: '.' });
+      ret = gulp.src(addConfigGlob(dirs.src.js.appGlob), { base: '.' });
     }
     else {
       var files = mainBowerFiles();
       files.push(dirs.src.js.vendor + '**/*.js');
-      ret = gulp.src(files, { base: '.' });
+      ret = gulp.src(addConfigGlob(files), { base: '.' });
     }
 
     //plumber
@@ -290,9 +308,65 @@ var tasks = {
     return gulp.src(dirs.src.views.scripts + '**/*')
       .pipe(twig(configViews.twig))
       .pipe(gulp.dest(dirs.dist.views));
+  },
 
+  customDirs: function(dirInfos, isDev, done) {
+
+    var streams = [];
+
+    if (done)
+      console.log('Starting \'custom dirs\'...');
+
+    dirInfos.forEach(function(dirInfo) {
+      if (!isDev || dirInfo.dev) {
+        console.log('jest');
+        var stream = gulp.src(dirInfo.from)
+          .pipe(changed(dirInfo.from))
+          .pipe(gulp.dest(dirInfo.to));
+
+        streams.push(stream);
+      }
+    });
+
+    if (streams.length) {
+      return merge.apply(null, streams).on('finish', function() {
+        if (done) {
+          done();
+          console.log('Finished \'custom dirs\'');
+        }
+      });
+    }
+    else {
+      return Promise.resolve();
+    }
+  },
+
+  browserSync: function(isDev) {
+
+    var configBS = extend(true, config.browserSync.common, config.browserSync[isDev ? 'dev': 'prod']);
+
+    if (configBS.enable) {
+
+      var cb;
+
+      if (configBS.exitTimeout) {
+        cb = function() {
+          setTimeout(function() {
+            process.exit();
+          }, configBS.exitTimeout);
+        }
+      }
+
+      var pars = [configBS.options];
+      if (cb) {
+        pars.push(cb);
+      }
+
+      browserSync.apply(null, pars);
+    }
   }
 }
+
 
 
 /* STYLES */
@@ -321,6 +395,7 @@ gulp.task('sprites', function() {
 
   return ret;
 });
+
 
 
 /* JS SCRIPTS */
@@ -353,6 +428,7 @@ gulp.task('js:prod', function() {
 });
 
 
+
 /* IMAGES */
 gulp.task('images', function() {
 
@@ -365,6 +441,7 @@ gulp.task('images', function() {
 
 
 
+/* VIEWS */
 gulp.task('views:dev', function() {
   return tasks.views(true)
     .pipe(browserSync.reload({ stream: true }));
@@ -376,23 +453,45 @@ gulp.task('views:prod', function() {
 
 
 
+/* CUSTOM DIRS */
+gulp.task('custom-dirs:dev', function() {
+  return tasks.customDirs(dirs.custom, true);
+});
 
-/* --------------- UTILS --------------- */
+gulp.task('custom-dirs:prod', function() {
+  return tasks.customDirs(dirs.custom, false);
+});
+
+
 
 /* CLEAN PUBLIC FOLDERS */
 gulp.task('clean', function(cb) {
 
-  var delFiles = del.sync([dirs.dist.styles + '**/*', dirs.src.styles.sprites + '**/*', dirs.dist.js + '**/*', dirs.dist.img + '**/*', dirs.dist.views + '*.*'], { force: true });
+  
+  /*var dblStar = '**';
+  var delDirs = [dirs.dist.styles + dblStar + '/*', dirs.src.styles.sprites + dblStar + '/*', dirs.dist.js + dblStar + '/*', dirs.dist.img + dblStar + '/*', dirs.dist.views + '*.*'];
+  dirs.custom.forEach(function(dirInfo) {
+    delDirs.push(dirInfo.to + dblStar + '/*');
+  });
+
+  var delFiles = del.sync(delDirs, { force: true });*/
+  del.sync(dirs.dist.main);
+
   del.sync(dirs.sassCache);
 
-  console.log('Deleted files/folders:\n', delFiles.join('\n'));
+  //console.log('Deleted files/folders:\n', delFiles.join('\n'));
 
   return Promise.resolve();
 
 });
 
 
+
 /* BROWSER SYNC */
-gulp.task('browser-sync', function() {
-  browserSync(config.browserSync.options);
+gulp.task('browser-sync:dev', function() {
+  tasks.browserSync(true);
+});
+
+gulp.task('browser-sync:prod', function() {
+  tasks.browserSync(false);
 });

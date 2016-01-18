@@ -14,9 +14,11 @@ $fs-mobile-sm-max: 479px;
 $fs-tablet-sm-max: 850px;
 
 
+
 @include add-breakpoint('mobile', min-width 0);
 @include add-breakpoint('mobile-ex', max-width $fs-mobile-max);
 @include add-breakpoint('mobile-sm', max-width $fs-mobile-sm-max);
+@include add-breakpoint('mobile-lg', (min-width ($fs-mobile-sm-max + 1), max-width $fs-mobile-max));
 
 @include add-breakpoint('tablet', min-width $fs-tablet-min);
 @include add-breakpoint('tablet-ex', (min-width $fs-tablet-min, max-width $fs-tablet-max));
@@ -30,7 +32,7 @@ $fs-tablet-sm-max: 850px;
 
 //base breakpoints for vw/percentage converting (mainly fonts); specify only ones that are different than main breakpoints
 $design-breakpoints: ();
-//example: $design-breakpoints: (mobile: 600px, tablet: 800px);
+//example: $design-breakpoints: (mobile: 600px, tablet: 900px);
 
 
 

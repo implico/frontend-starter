@@ -5,9 +5,10 @@
 		"jquery": "1.*.*",
 		"compass-breakpoint": "2.*.*"
 	},
-    "overrides": {
-        "compass-breakpoint": {
-            "ignore": true
-        }
-    }
+  
+  "overrides": {
+      "compass-breakpoint": {
+          "ignore": true
+      }
+  }
 }

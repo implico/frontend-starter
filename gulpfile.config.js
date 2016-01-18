@@ -48,7 +48,7 @@ dirs.src.main = dirs.app + 'src/';
 
 
 dirs.src.styles.main = dirs.src.main + 'styles/';
-dirs.src.styles.sprites = dirs.src.styles.main + '_partials/sprites/';
+dirs.src.styles.sprites = dirs.src.styles.main + '_partials/';
 
 dirs.src.fonts = dirs.src.main + 'fonts/';
 
@@ -73,11 +73,24 @@ dirs.dist.img = dirs.dist.main + 'img/';
 dirs.dist.views = dirs.dist.main;
 
 
+//additional custom dirs to watch and copy
+dirs.custom = [];
+/*dirs.custom = [
+  {
+    dev: false,    //set true if use also for dev tasks
+    from: dirs.src.main + 'assets/*',
+    to: dirs.dist.main + 'assets/'
+  }
+];*/
 
 
 /* CONFIG */
 
 var config = {
+
+  global: {
+    globAdd: ['!./**/(*.tmp|*.crdownload)']  //applied to src globs: js, img, sprites
+  },
 
   styles: {
 
@@ -101,7 +114,8 @@ var config = {
     dev: {
 
       sass: {
-        style: 'expanded'
+        style: 'expanded',
+        logging: false
       }
     },
 
@@ -116,7 +130,9 @@ var config = {
   },
 
   sprites: {
+
     items: [
+      //you can add more items (dirs), simply add an element
       {
         imgSource: dirs.src.img + 'sprites/',
         imgDest: dirs.dist.img,
@@ -134,7 +150,7 @@ var config = {
     common: {
       sourcemaps: true,
       minify: false,
-      concatAppVendor: true   //if true, app.js and vendor.js are concatenated into app.js
+      concatAppVendor: true   //if true, app.js and vendor.js are merged into app.js
     },
 
     dev: {
@@ -150,7 +166,8 @@ var config = {
 
     common: {
       twig: {
-        base: dirs.src.views.layouts
+        base: dirs.src.views.layouts,
+        data: {}
       }
     },
 
@@ -176,13 +193,26 @@ var config = {
   },
 
   browserSync: {
-    options: {
-      host: 'localhost',
-      port: 80,
-      reloadOnRestart: true,
-      server: {
-        baseDir: dirs.dist.main
+    common: {
+      enable: true,
+      exitTimeout: 0,
+
+      options: {
+        host: 'localhost',
+        port: 80,
+        reloadOnRestart: true,
+        server: {
+          baseDir: dirs.dist.main
+        }
       }
+    },
+
+    dev: {
+
+    },
+
+    prod: {
+      exitTimeout: 1000
     }
   }
 }

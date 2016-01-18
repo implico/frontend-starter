@@ -1,25 +1,4 @@
 // =============================================================================
-// Grid
-// =============================================================================
-
-@mixin grid-row($margin, $clearfix: true) {
-  @if ($clearfix) {
-    @include clearfix;
-  }
-  margin-left: -$margin;
-  margin-right: -$margin;
-}
-
-@mixin grid-col($width, $margin) {
-  float: left;
-  width: $width;
-  padding-left: $margin;
-  padding-right: $margin;
-}
-
-
-
-// =============================================================================
 // Unit converters
 // =============================================================================
 
@@ -65,6 +44,78 @@
   }
 
   @return $newValues;
+}
+
+
+
+// =============================================================================
+// Grid
+// =============================================================================
+
+@mixin grid-row($margin, $clearfix: true) {
+  $fs-grid-last-margin: $margin !global;
+
+  @if ($clearfix) {
+    @include clearfix;
+  }
+  margin-left: -$margin;
+  margin-right: -$margin;
+}
+
+@mixin grid-col($width, $margin: null) {
+  @if ($margin == null) {
+    $margin: $fs-grid-last-margin;
+  }
+
+  float: left;
+  width: $width;
+  padding-left: $margin;
+  padding-right: $margin;
+}
+
+
+
+// =============================================================================
+// Responsive sprites
+// =============================================================================
+
+//used for sprite wrapper
+@mixin sprite-wrap-rwd($sprite) {
+  $image-width: nth($sprite, 5);
+  width: $image-width;
+  max-width: 100%;
+}
+
+//used for sprite container
+@mixin sprite-rwd($sprite) {
+  @include sprite-image($sprite);
+
+  $sprite-width: strip-units($spritesheet-width);
+  $sprite-height: strip-units($spritesheet-height);
+  $image-width: strip-units(nth($sprite, 5));
+  $image-height: strip-units(nth($sprite, 6));
+  $image-pos-x: strip-units(nth($sprite, 1));
+  $image-pos-y: strip-units(nth($sprite, 2));
+  $sprite-size-x: ($sprite-width / $image-width) * 100%;
+  $sprite-size-y: ($sprite-height / $image-height) * 100%;
+  $sprite-pos-x: 0;
+  $sprite-pos-y: 0;
+  @if(($sprite-width - $image-width) > 0) {
+     $sprite-pos-x: ($image-pos-x / ($sprite-width - $image-width)) * 100%;
+  }
+  @if(($sprite-height - $image-height) > 0) {
+     $sprite-pos-y: ($image-pos-y / ($sprite-height - $image-height)) * 100%;
+  }
+
+
+  background-position: $sprite-pos-x $sprite-pos-y;
+  background-size: $sprite-size-x $sprite-size-y;
+  background-repeat: no-repeat;
+
+  display: inline-block;
+  width: 100%;
+  height: 0;
+  padding-bottom: ($image-height/$image-width) * 100%;
 }
 
 
