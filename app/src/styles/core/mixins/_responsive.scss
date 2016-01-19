@@ -52,25 +52,29 @@
 // Grid
 // =============================================================================
 
-@mixin grid-row($margin, $clearfix: true) {
-  $fs-grid-last-margin: $margin !global;
+@mixin grid-row($gutter, $clearfix: true) {
+  $fs-grid-last-gutter: $gutter !global;
+
+  $gutter: $gutter/2;
 
   @if ($clearfix) {
     @include clearfix;
   }
-  margin-left: -$margin;
-  margin-right: -$margin;
+  margin-left: -$gutter;
+  margin-right: -$gutter;
 }
 
-@mixin grid-col($width, $margin: null) {
-  @if ($margin == null) {
-    $margin: $fs-grid-last-margin;
+@mixin grid-col($width, $gutter: null) {
+  @if ($gutter == null) {
+    $gutter: $fs-grid-last-gutter;
   }
+
+  $gutter: $gutter/2;
 
   float: left;
   width: $width;
-  padding-left: $margin;
-  padding-right: $margin;
+  padding-left: $gutter;
+  padding-right: $gutter;
 }
 
 

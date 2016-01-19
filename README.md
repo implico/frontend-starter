@@ -4,7 +4,6 @@ Frontend start/boilerplate framework. This is (just?) a prepared and configurabl
 
 ## Features
 The framework provides the following functionality via [gulp][gulp] plugins:
-
 * separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
@@ -15,15 +14,14 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 
 ## Installing
 You need the following tools to start using the framework:
-
 * [nodejs]
 * [gulp]
 * [Compass][compass]
 * [Bower][bower]
 * Git, e.g. [Github desktop](https://desktop.github.com/)
 
+<br>
 After installing, run:
-
 ```
 npm install
 bower install
@@ -40,7 +38,7 @@ Use the following tasks from the command line:
 ### Dev build & watch together
 `gulp dev`
 
-For your first run, or when you want to rebuild a clean dist version, run the `dev` task. This will run both `dev:build` and `dev:watch` tasks.
+For your first run, or when you want to rebuild a clean dist version. This will run both `dev:build` and `dev:watch` tasks.
 
 
 
@@ -49,7 +47,7 @@ For your first run, or when you want to rebuild a clean dist version, run the `d
 or
 `gulp dev:watch`
 
-The default task - gulp watches for any changes in your src directory and runs the appropiate task.
+Gulp watches for any changes in your src directory and runs the appropiate task.
 
 
 
@@ -81,19 +79,17 @@ Cleans the dist directory.
 
 
 
-
+<br>
 ## Functionality
 
 ### Views
 Thanks to [Twig plugin][gulp-twig], you can use features brought by this templating system: extending layouts, including partials, variables/if and for blocks/macros and so on. See the [docs][twig].
 
 The proposed structure is:
-
-* views/layouts: contains layout templates (i.e. common markup for all views, like &lt;head&gt; tag, header and footer). Usually there is only one layout.
+* views/layouts: contains layout templates (i.e. common markup for all views, like header and footer). Usually there is only one layout.
 * views/scripts: contains script (particular pages) templates. Scripts [extend](http://twig.sensiolabs.org/doc/tags/extends.html) layouts.
 
 You can inject custom code using blocks - by default there are 3 of them:
-
 * content - page content
 * headTitle - page title in the &lt;head&gt; section
 * bodyAttr - attributes appended to the &lt;body&gt; tag
@@ -102,10 +98,9 @@ You can inject custom code using blocks - by default there are 3 of them:
 
 ### Styles
 Proposed structure:
-
 * `styles/style.scss`: contains only imports of included files
-* `styles/_pages`: layout and page-specific styles (for each views/scripts, like index, contact, news...)
-* `styles/_partials`: parts of code, that you want to put in separate files, like layout partials (header & footer)
+* `styles/_pages`: layout and page-specific styles (for each `views/scripts` templates, like index, contact, news...)
+* `styles/_partials`: parts of code that you want to put in separate files, like layout partials (header & footer)
 * `core`: framework base config (e.g. breakpoints, font sizes) and mixins/functions (more later)
 * `custom`: project-specific config (fonts, colors) and mixins
 * `vendor`: external libraries to include, for which you can't or dont't want to use Bower manager
@@ -145,20 +140,20 @@ Build your stylesheet like so:
 #### Fonts
 
 ##### Enabling font-face
-Put the [webfont generated](http://www.fontsquirrel.com/tools/webfont-generator) files in the fonts folder (by default `fonts`) and use the line commented out in the `core/config`:
+Put the [webfont generated](http://www.fontsquirrel.com/tools/webfont-generator) files in the fonts folder (by default `fonts`) and use the commented out line in the `core/config`:
 
 ```sass
 @include font-face('font-name', font-files('font.woff', 'font.ttf'), 'font.eot', normal);
 ```
 
-Or when you don't want to use the Compass mixin (e.g. because of imposed font dir), you can use more flexible mixin `font-face-custom`.
+Or when you don't want to use the Compass mixin (e.g. because of imposed font dir), you can use more flexible mixin `font-face-custom` (located in `core/mixins/fonts`).
 
 ##### Px to rem converter
 Use the following function, passing as a second parameter one of mobile, tablet or desktop breakpoint:
 ```sass
 font-size: font-rem(13px, mobile);
 ```
-New unit is calculated using $font-size-* variables defined in core/config.
+New unit is calculated using `$font-size-*` variables defined in core/config.
 
 
 ##### Responsive size (vw)
@@ -237,7 +232,7 @@ width: unit-percent(50px, mobile);
 }
 ```
 
-By default the base width used to calculate vw/percentage width is the width of a breakpoint passed as the second argument. However, usually layout widths on the design do not meet the "system" (media query) breakpoints. For example, you can get a PSD design for mobile at 600px width, and would like to calculate units according to this size. To deal with it, add a design breakpoint:
+By default the base width used to calculate vw/percentage width is the width of a breakpoint passed as the second argument. However, usually layout widths on the design do not meet the "system" (media query) breakpoints. For example, you can get a PSD design for mobile at 600px width (rather than 767px), and would like to calculate units according to this size. To deal with it, add a design breakpoint:
 ```sass
 $design-breakpoints: (mobile: 600px);
 ```
@@ -250,7 +245,7 @@ Quickly create a grid with the following mixins:
 ```sass
 .row {
   @include respond-to(tablet) {
-    @include grid-row(10px);
+    @include grid-row(20px);
   }
   .col {
     @include respond-to(tablet) {
@@ -287,6 +282,8 @@ To create a responsive sprite icon:
 
 Sprite position and dimensions will adapt to the `.sprite-wrap` container width.
 
+You can generate multiple, separate sprite files - see the [Configuration](#configuration) section.
+
 
 #### Misc
 As for now, the framework comes with 2 helper mixins: `clearfix` and `input-placeholder` (for placeholder styling).
@@ -299,11 +296,11 @@ You can install third party scripts via Bower (editing bower.json) or by placing
 
 Default file for custom code is `js/app.js`.
 
-Libs installed with Bower are fetched using [main-bower-files] plugin. If you don't want to include a particular package, set this in the `bower.json` (see `overrides` property and [main-bower-files] docs).
+Libs installed with Bower are fetched using [main-bower-files] plugin. If you don't want to include a particular package, use `overrides` option in the `bower.json` (see also [main-bower-files] docs).
 
 
 ### Views, styles, JavaScript: convention
-What is proposed here can be illustrated in these three steps:
+What is proposed here can be illustrated in the following three sections. Naturally, you can use your own convention.
 
 #### 1. Views
 Add an individual body id for each page type, e.g. index, contact, news... prepended with "page" keyword:
@@ -334,7 +331,7 @@ Code snippets that are used across the pages (for example news list same on home
 }
 ```
 
-For key layout tags you can provide only the keyword:
+For the key layout tags you can provide only the keyword:
 ```sass
 header.layout {
   ...
@@ -420,8 +417,8 @@ When adding a new page, initialize it in APP.init function:
 ```
 
 `APP.modules` contains functional, utility methods, by default:
-* `page`: allows to check if passed id meets the body id indicator (see APP.pages.index.init function above). Tou can pass optionally an array of ids.
-* `isRes` (is resolution): in your styles, add a z-index to the body element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
+* `page`: allows to check if passed id meets the `body` id indicator (see APP.pages.news.init function above). Alternatively, you can pass an array of ids.
+* `isRes` (is resolution): in your styles, add a `z-index` to the `body` element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
 
 
 ### Images
@@ -435,20 +432,21 @@ Browsersync provides a simple HTTP server with auto-refreshing on each change.
 
 
 
-
+<br>
+<a name="configuration"></a>
 ## Configuration
 To change default configuration, edit the `gulpfile.config.js` file.
 
 ### Directories
 You can change each directory in the first section of the file.
 
-You can also add your custom directories by adjusting `dirs.custom`. See the commented out example below the dir definitions.
+You can also add your custom directories by editing `dirs.custom`. See the commented out example below the dir definitions.
 
 ### Config object
-`config` object contains configuration parameters divided into key sections. Most of them have subsets with options applied according to the environment mode: `common` (all), `dev` and `prod`.
+`config` object contains configuration parameters divided into key sections. Most of them have subsets covering options applied according to the environment mode: `common` (all), `dev` and `prod`.
 
 * global:
-  * `global.globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
+  * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
 * styles: sourcemap generation, autoprefixer and [gulp-compass][gulp-compass] options
 * sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
 * js: sourcemap generation, minification, merging vendor and app into one file (true by default)
@@ -461,9 +459,11 @@ You can also add your custom directories by adjusting `dirs.custom`. See the com
 
 
 ## Source maps
+Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Follow these instructions to configure mapping:
+
 1. Open Chrome Dev Tools.
 2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).
-3. In the dir structure, right on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose Map to file system resource and choose src/[path to file].
+3. In the dir structure, right click on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose "Map to file system resource" and then src/[path to file] in the select box that appeared.
 
 SASS and JS files are now mapped.
 
