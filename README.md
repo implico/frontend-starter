@@ -240,7 +240,7 @@ $design-breakpoints: (mobile: 600px);
 In this case, all units for mobile, including font-vw, will be calculated according to this size.
 
 
-### Grids
+#### Grids
 Quickly create a grid with the following mixins:
 ```sass
 .row {
@@ -261,7 +261,7 @@ Quickly create a grid with the following mixins:
 This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter.
 
 
-### Sprites
+#### Sprites
 Sprites are generated automatically by [gulp-spritesmith][gulp-spritesmith] for all images placed in the `img/sprites` directory. To use a sprite, simply uncomment the line in style.scss with sprites sheet import and use the mixin:
 ```sass
 .sprite-icon {
@@ -457,7 +457,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 
 
 
-
+<br>
 ## Source maps
 Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Follow these instructions to configure mapping:
 
