@@ -96,6 +96,7 @@ var config = {
 
     common: {
       sourcemaps: true,
+      sourcemapsRoot: '/src/',
 
       autoprefixer: {
         browsers: ['> 1%', 'last 3 versions', 'IE 8']
@@ -149,6 +150,7 @@ var config = {
   js: {
     common: {
       sourcemaps: true,
+      sourcemapsRoot: '/src/',
       minify: false,
       concatAppVendor: true   //if true, app.js and vendor.js are merged into app.js
     },
@@ -195,10 +197,12 @@ var config = {
   browserSync: {
     common: {
       enable: true,
-      exitTimeout: 0,
+      exitTimeout: 0, //time to pass to exit app after initializing Browsersync (optionally for prod preview)
 
       options: {
+        //tip: set to [project-name].localhost and uncomment the "open: external" option
         host: 'localhost',
+        //open: 'external',
         port: 80,
         reloadOnRestart: true,
         server: {
@@ -212,7 +216,7 @@ var config = {
     },
 
     prod: {
-      exitTimeout: 1000
+      exitTimeout: 0
     }
   }
 }

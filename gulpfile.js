@@ -190,7 +190,7 @@ var tasks = {
 
     if (configStyles.sourcemaps) {
       ret = ret
-        .pipe(sourcemaps.write({ includeContent: false }));
+        .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configStyles.sourcemapsRoot }));
     }
 
     ret = ret
@@ -230,12 +230,12 @@ var tasks = {
 
     //get files
     if (isApp) {
-      ret = gulp.src(addConfigGlob(dirs.src.js.appGlob), { base: '.' });
+      ret = gulp.src(addConfigGlob(dirs.src.js.appGlob), { base: dirs.src.main });
     }
     else {
       var files = mainBowerFiles();
       files.push(dirs.src.js.vendor + '**/*.js');
-      ret = gulp.src(addConfigGlob(files), { base: '.' });
+      ret = gulp.src(addConfigGlob(files), { base: dirs.src.main });
     }
 
     //plumber
@@ -266,7 +266,7 @@ var tasks = {
     if (configJs.sourcemaps) {
       //write sourcemaps
       ret = ret
-       .pipe(sourcemaps.write({ includeContent: true }))
+       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourcemapsRoot }))
     }
 
     if (configJs.minify) {

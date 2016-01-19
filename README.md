@@ -445,7 +445,7 @@ You can change each directory in the first section of the file.
 You can also add your custom directories by adjusting `dirs.custom`. See the commented out example below the dir definitions.
 
 ### Config object
-`config` object contains configuration parameters divided into key sections. Most of them have subsets regarding the environment: common (all), dev and prod.
+`config` object contains configuration parameters divided into key sections. Most of them have subsets with options applied according to the environment mode: `common` (all), `dev` and `prod`.
 
 * global:
   * `global.globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
@@ -461,8 +461,13 @@ You can also add your custom directories by adjusting `dirs.custom`. See the com
 
 
 ## Source maps
-To be continued...
+1. Open Chrome Dev Tools.
+2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).
+3. In the dir structure, right on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose Map to file system resource and choose src/[path to file].
 
+SASS and JS files are now mapped.
+
+To map a JS Bower vendor dir, follow the same steps for the `vendor` dir.
 
 
 
