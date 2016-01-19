@@ -1,6 +1,6 @@
 # Frontend-starter
 
-Frontend start/boilerplate framework. This is (just?) a prepared and configurable [gulp][gulp] environment with [Bower][bower] support.
+Frontend boilerplate framework. This is (just?) a prepared and configurable [gulp][gulp] environment with [Bower][bower] support.
 
 ## Features
 The framework provides the following functionality via [gulp][gulp] plugins:
@@ -30,7 +30,7 @@ bower install
 On Windows, remember to run Bower from Git Shell.
 
 
-
+<br>
 ## CLI (tasks)
 Use the following tasks from the command line:
 
@@ -418,7 +418,7 @@ When adding a new page, initialize it in APP.init function:
 
 `APP.modules` contains functional, utility methods, by default:
 * `page`: allows to check if passed id meets the `body` id indicator (see APP.pages.news.init function above). Alternatively, you can pass an array of ids.
-* `isRes` (is resolution): in your styles, add a `z-index` to the `body` element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
+* `isBreakpoint`: in your styles, add a `z-index` to the `body` element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
 
 
 ### Images
@@ -447,10 +447,10 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 
 * global:
   * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
-* styles: sourcemap generation, autoprefixer and [gulp-compass][gulp-compass] options
+* styles: sourcemap generation, [autoprefixer] and [gulp-compass] options
 * sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
 * js: sourcemap generation, minification, merging vendor and app into one file (true by default)
-* views - Twig configuration
+* views: [gulp-twig] options
 * images: [imagemin][gulp-imagemin] options
 * browserSync: [Browsersync][browsersync] options
 
@@ -459,7 +459,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 
 <br>
 ## Source maps
-Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Follow these instructions to configure mapping:
+Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
 
 1. Open Chrome Dev Tools.
 2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).

@@ -58,7 +58,7 @@ var APP = APP || {};
 
     
     //checks for current media query range, defined by CSS z-index applied to body element
-    isRes: function(mode, exact) {
+    isBreakpoint: function(mode, exact) {
 
       var ret,
         width = $(window).width(),
