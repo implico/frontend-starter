@@ -83,7 +83,7 @@ Cleans the dist directory.
 ## Functionality
 
 ### Views
-Thanks to [Twig plugin][gulp-twig], you can use features brought by this templating system: extending layouts, including partials, variables/if and for blocks/macros and so on. See the [docs][twig].
+Thanks to the [Twig plugin][gulp-twig], you can use features brought by this templating system: extending layouts, including partials, variables/if and for blocks/macros and so on. See the [docs][twig].
 
 The proposed structure is:
 * views/layouts: contains layout templates (i.e. common markup for all views, like header and footer). Usually there is only one layout.
@@ -338,7 +338,7 @@ header.layout {
 }
 ```
 
-#### 3. Javascript
+#### 3. JavaScript
 The code is namespaced with APP global object. To change its name, for example into APPB:
 ```javascript
 var APPB = APPB || {};
@@ -443,7 +443,7 @@ You can change each directory in the first section of the file.
 You can also add your custom directories by editing `dirs.custom`. See the commented out example below the dir definitions.
 
 ### Config object
-`config` object contains configuration parameters divided into key sections. Most of them have subsets covering options applied according to the environment mode: `common` (all), `dev` and `prod`.
+`config` object contains configuration parameters divided into key sections. Most of them have subsets, with options applied according to the environment mode: `common` (all), `dev` and `prod`.
 
 * global:
   * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
@@ -463,7 +463,7 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 
 1. Open Chrome Dev Tools.
 2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).
-3. In the dir structure, right click on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose "Map to file system resource" and then src/[path to file] in the select box that appeared.
+3. In the dir structure, right click on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose "Map to file system resource" and then `src/[path to file]` in the select box that appeared.
 
 SASS and JS files are now mapped.
 
