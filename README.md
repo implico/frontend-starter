@@ -292,7 +292,7 @@ As for now, the framework comes with 2 helper mixins: `clearfix` and `input-plac
 
 
 ### JavaScript
-You can install third party scripts via Bower (editing bower.json) or by placing files directly into `js/vendor` dir. All vendor files are concatenated and (by default) merged with your app (custom) files.
+You can install third party scripts via Bower (editing `bower.json`) or by placing files directly into `js/vendor` dir. All vendor files are concatenated and (by default) merged with your app (custom) files.
 
 Default file for custom code is `js/app.js`.
 
@@ -300,7 +300,7 @@ Libs installed with Bower are fetched using [main-bower-files] plugin. If you do
 
 
 ### Views, styles, JavaScript: convention
-What is proposed here can be illustrated in the following three sections. Naturally, you can use your own convention.
+What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way. Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
 Add an individual body id for each page type, e.g. index, contact, news... prepended with "page" keyword:
