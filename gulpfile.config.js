@@ -189,7 +189,7 @@ var config = {
   images: {
     imagemin: {
       optimizationLevel: 0,
-      progessive: true,
+      progressive: true,
       interlaced: true
     }
   },

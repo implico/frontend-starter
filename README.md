@@ -86,13 +86,13 @@ Cleans the dist directory.
 Thanks to the [Twig plugin][gulp-twig], you can use features brought by this templating system: extending layouts, including partials, variables/if and for blocks/macros and so on. See the [docs][twig].
 
 The proposed structure is:
-* views/layouts: contains layout templates (i.e. common markup for all views, like header and footer). Usually there is only one layout.
-* views/scripts: contains script (particular pages) templates. Scripts [extend](http://twig.sensiolabs.org/doc/tags/extends.html) layouts.
+* `views/layouts`: contains layout templates (i.e. common markup for all views, like header and footer). Usually there is only one layout.
+* `views/scripts`: contains script (particular pages) templates. Scripts [extend](http://twig.sensiolabs.org/doc/tags/extends.html) layouts.
 
 You can inject custom code using blocks - by default there are 3 of them:
-* content - page content
-* headTitle - page title in the &lt;head&gt; section
-* bodyAttr - attributes appended to the &lt;body&gt; tag
+* `content` - page content
+* `headTitle` - page title in the &lt;head&gt; section
+* `bodyAttr` - attributes appended to the &lt;body&gt; tag
 
 
 
@@ -111,7 +111,7 @@ By default, Frontend Starter uses the [SASS Breakpoint][sass-breakpoint] and [mo
 * main, defined as exact ranges: `mobile-ex`, `tablet-ex`, `desktop-ex` (when you want to target only the specified range)
 * auxiliary (small and large variations), defined as exact ranges: `mobile-sm`, `mobile-lg`, `tablet-sm`, `tablet-lg`, `desktop-sm`, `desktop-lg`
 
-Build your stylesheet like so:
+Build your stylesheet like this:
 
 ```sass
 .col {
@@ -130,10 +130,15 @@ Build your stylesheet like so:
     width: 25%;
   }
 
-  //non-standard breakpoint
-  @include breakpoint(min-width 400px, max-width 600px) {
+  //non-standard breakpoints
+  @include breakpoint(400px 600px) {
     ...
   }
+
+  @include breakpoint(max-width 500px) {
+    ...
+  }
+
 }
 ```
 
@@ -352,81 +357,84 @@ var APPB = APPB || {};
 
 Target code for each page type by using a simple id checker (a kind of controller) - if an element with id="page-[page-id]" is found, the code is dispatched:
 ```javascript
-APP.pages = {
+//this allows you to add page handlers in separate files (loaded before app.js) and creates a helper/shortcut variable 'pages'
+var pages = APP.pages = APP.pages || {};
+
+//layout - common for all, no id checking + helper variable 'layout' to refer to
+var layout = pages.layout = {
     
-  //layout - common for all, no id checking
-  layout: {
-    init: function() {
-      layout.menuMobile();
-      layout.footerSlider.init();
-    },
-    //subfunctionality - short version
-    menuMobile: function() {
-      $('#menu-toggle').click(function() {
-        //...
-      });
-    },
-    //subfunctionality - expanded version
-    footerSlider: {
-      init: function() {
-        layout.footerSlider.create();
-        $(window).resize(layout.footerSlider.resize);
-      },
-      create: function() {
-        //...
-      },
-      resize: function() {
-        //...
-      }
-    }
+  init: function() {
+    layout.menuMobile();
+    layout.footerSlider.init();
   },
+  //subfunctionality - short version
+  menuMobile: function() {
+    $('#menu-toggle').click(function() {
+      //...
+    });
+  },
+  //subfunctionality - expanded version
+  footerSlider: {
+    init: function() {
+      layout.footerSlider.create();
+      $(window).resize(layout.footerSlider.resize);
+    },
+    create: function() {
+      //...
+    },
+    resize: function() {
+      //...
+    }
+  }
+}
 
   //other pages
   ...
 
-  //news
-  news: {
-    init: function() {
-      //here goes the id checking
-      if (!modules.page('news'))
-        return;
+//news
+var news = pages.news = {
+ init: function() {
+    //here goes the id checking
+    if (!modules.isPage('news'))
+      return;
 
-      //code for news
-      //...
-      }
+    //code for news
+    //...
     }
-
-}
+  }
 ```
 
 `APP.pages.layout` contains code common for all pages.
 
-You can add handy helpers for each page:
-```javascript
-var layout = APP.pages.layout,
-    //...
-    news = APP.pages.news;
-```
-
-When adding a new page, initialize it in APP.init function:
-```javascript
-  APP.init = function() {
-    //...
-    news.init();
-  }
-```
-
-`APP.modules` contains functional, utility methods, by default:
-* `page`: allows to check if passed id meets the `body` id indicator (see APP.pages.news.init function above). Alternatively, you can pass an array of ids.
+`APP.modules` contains utility methods, by default:
+* `isPage`: allows to check if element with id = `page-[passed_id]` exists (e.g. `page-news`, see APP.pages.news.init function above). Alternatively, you can pass an array of ids.
 * `isBreakpoint`: in your styles, add a `z-index` to the `body` element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
+
+For larger projects, you can split your code into separate files, e.g.
+```javascript
+//_news.js
+var APP = APP || {};
+
+(function($, APP) {
+  APP.pages.news = {
+    init: function() {
+      if (!APP.modules.isPage('news'))
+        return;
+
+      //code for news
+      //...
+    }
+  }
+})(jQuery, APP);
+```
 
 
 ### Images
-Images are optimized and copied into the dist directory.
+Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 
 
 ### Server
-Browsersync provides a simple HTTP server with auto-refreshing on each change.
+[Browsersync][browsersync] provides a simple HTTP server with auto-refreshing on each change.
 
 
 
@@ -447,7 +455,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 
 * global:
   * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
-* styles: sourcemap generation, [autoprefixer] and [gulp-compass] options
+* styles: sourcemap generation, [gulp-autoprefixer] and [gulp-compass] options
 * sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
 * js: sourcemap generation, minification, merging vendor and app into one file (true by default)
 * views: [gulp-twig] options
@@ -467,7 +475,7 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 
 SASS and JS files are now mapped.
 
-To map a JS Bower vendor dir, follow the same steps for the `vendor` dir.
+To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 
 
 
@@ -482,7 +490,7 @@ To map a JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [gulp-uglify]: https://github.com/terinjokes/gulp-uglify
 [gulp-jshint]: https://github.com/spalger/gulp-jshint
 [compass]: http://compass-style.org/
-[gulp-compass]: [https://github.com/appleboy/gulp-compass]
+[gulp-compass]: https://github.com/appleboy/gulp-compass
 [sass-breakpoint]: http://breakpoint-sass.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
