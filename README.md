@@ -360,7 +360,7 @@ Target code for each page type by using a simple id checker (a kind of controlle
 //this allows you to add page handlers in separate files (loaded before app.js) and creates a helper/shortcut variable 'pages'
 var pages = APP.pages = APP.pages || {};
 
-//layout - common for all, no id checking + helper variable 'layout' to refer to
+//layout - common for all, no id checking + setting helper variable 'layout' to refer to
 var layout = pages.layout = {
     
   init: function() {
