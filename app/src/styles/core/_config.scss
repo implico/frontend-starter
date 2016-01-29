@@ -15,19 +15,18 @@ $fs-tablet-sm-max: 850px;
 
 
 
-@include add-breakpoint('mobile', min-width 0);
+@include add-breakpoint('mobile', 0);
 @include add-breakpoint('mobile-ex', max-width $fs-mobile-max);
 @include add-breakpoint('mobile-sm', max-width $fs-mobile-sm-max);
-@include add-breakpoint('mobile-lg', (min-width ($fs-mobile-sm-max + 1), max-width $fs-mobile-max));
 
-@include add-breakpoint('tablet', min-width $fs-tablet-min);
-@include add-breakpoint('tablet-ex', (min-width $fs-tablet-min, max-width $fs-tablet-max));
-@include add-breakpoint('tablet-sm', (min-width $fs-tablet-min, max-width $fs-tablet-sm-max));
-@include add-breakpoint('tablet-lg', (min-width ($fs-tablet-sm-max + 1), max-width $fs-tablet-max));
+@include add-breakpoint('tablet', $fs-tablet-min);
+@include add-breakpoint('tablet-ex', $fs-tablet-min $fs-tablet-max);
+@include add-breakpoint('tablet-sm', $fs-tablet-min $fs-tablet-sm-max);
+@include add-breakpoint('tablet-lg', $fs-tablet-sm-max + 1 $fs-tablet-max);
 
-@include add-breakpoint('desktop', (min-width $fs-desktop-min));
-@include add-breakpoint('desktop-sm', (min-width $fs-desktop-min, max-width ($fs-desktop-lg-min - 1)));
-@include add-breakpoint('desktop-lg', min-width $fs-desktop-lg-min);
+@include add-breakpoint('desktop', $fs-desktop-min);
+@include add-breakpoint('desktop-sm', $fs-desktop-min $fs-desktop-lg-min - 1);
+@include add-breakpoint('desktop-lg', $fs-desktop-lg-min);
 
 
 //base breakpoints for vw/percentage converting (mainly fonts); specify only ones that are different than main breakpoints

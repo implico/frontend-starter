@@ -27,7 +27,7 @@ npm install
 bower install
 ```
 
-On Windows, remember to run Bower from Git Shell.
+On Windows, remember not to have Visual Studio open at this time and to run Bower from Git Shell.
 
 
 <br>
