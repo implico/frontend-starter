@@ -74,14 +74,14 @@ dirs.dist.views = dirs.dist.main;
 
 
 //additional custom dirs to watch and copy
-dirs.custom = [];
-/*dirs.custom = [
+dirs.custom = [
   {
-    dev: false,    //set true if use also for dev tasks
-    from: dirs.src.main + 'assets/*',
-    to: dirs.dist.main + 'assets/'
+    //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
+    dev: true,    //set true if use also for dev tasks
+    from: dirs.vendor + 'html5shiv/dist/html5shiv.min.js',
+    to: dirs.dist.js
   }
-];*/
+];
 
 
 /* CONFIG */

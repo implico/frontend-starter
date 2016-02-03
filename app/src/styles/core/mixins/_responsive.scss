@@ -52,6 +52,10 @@
 // Grid
 // =============================================================================
 
+@mixin grid-container() {
+  overflow-x: hidden;
+}
+
 @mixin grid-row($gutter, $clearfix: true) {
   $fs-grid-last-gutter: $gutter !global;
 

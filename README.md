@@ -190,7 +190,7 @@ If you don't want to create media queries, you can use the following function di
 font-size: unit-vw(15px, mobile);
 ```
 
-Available breakpoints: `mobile`, `tablet`, `desktop`, `mobile-sm`, `tablet-sm`. You can override media query breakpoints with [design breakpoints](#styles-fonts-units).
+Available breakpoints: `mobile`, `tablet`, `desktop`, `mobile-sm`, `tablet-sm`. You can override media query breakpoints with [design breakpoints](#styles-design-breakpoints).
 
 
 ##### Responsive size with font sets
@@ -222,7 +222,6 @@ This will produce same code as:
 ```
 
 
-<a name="styles-fonts-units"></a>
 #### Units
 Convert px units easily to vw or percentage. Just get the px dimensions of an element from the design (e.g. PSD), and use:
 ```sass
@@ -237,6 +236,9 @@ width: unit-percent(50px, mobile);
 }
 ```
 
+
+<a name="styles-design-breakpoints"></a>
+#### Design breakpoints
 By default the base width used to calculate vw/percentage width is the width of a breakpoint passed as the second argument. However, usually layout widths on the design do not meet the "system" (media query) breakpoints. For example, you can get a PSD design for mobile at 600px width (rather than 767px), and would like to calculate units according to this size. To deal with it, add a design breakpoint:
 ```sass
 $design-breakpoints: (mobile: 600px);
@@ -264,6 +266,8 @@ Quickly create a grid with the following mixins:
 ```
 
 This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter.
+
+If you don't have an `overflow-x: hidden` style for the main layout wrapper, wrap the above with `.container` using `grid-container` mixin.
 
 
 #### Sprites
@@ -308,7 +312,7 @@ Libs installed with Bower are fetched using [main-bower-files] plugin. If you do
 What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way. Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
-Add an individual body id for each page type, e.g. index, contact, news... prepended with "page" keyword:
+Add an individual id to e.g. `body` element for each page type, like index, contact, news... prepended with "page" keyword:
 ```html
 <body id="page-index">
   <div class="heading">
@@ -320,7 +324,6 @@ Refer to particular page styles using the page id selector as a scope, i.e.:
 ```sass
 //_pages/index
 #page-index {
-
   //only for homepage
   .heading {
     color: green;
@@ -328,7 +331,7 @@ Refer to particular page styles using the page id selector as a scope, i.e.:
 }
 ```
 
-Code snippets that are used across the pages (for example news list same on homepage as on the news page) place in styles/_partials directory and start the class name with "layout" keyword:
+Code snippets that are used across the pages (for example header/footer, or news list same on homepage as on the news page) place in styles/_partials directory and start the class name with "layout" keyword:
 ```sass
 //_partials/news-list
 .layout-news-list {
@@ -344,7 +347,14 @@ header.layout {
 ```
 
 #### 3. JavaScript
-The code is namespaced with APP global object. To change its name, for example into APPB:
+The main goal is to encapsulate functional code into separate controllers, generally bound to particular views, to maintain order, clarity and modularity.
+
+By default, there are two JS files: `core.js` and `app.js`. Of course, if you use a framework like AngularJS, your can remove `core.js` and place your own code into `app.js`.
+
+
+##### Namespace
+
+The code is namespaced with `APP` global object. To change its name, for example into `APPB`:
 ```javascript
 var APPB = APPB || {};
 
@@ -355,72 +365,138 @@ var APPB = APPB || {};
 
 ```
 
-Target code for each page type by using a simple id checker (a kind of controller) - if an element with id="page-[page-id]" is found, the code is dispatched:
+
+##### Application
+
+`app.js` contains custom code common for all views (layout) and page-specific code. Take a look at the default content with some example added:
+
 ```javascript
-//this allows you to add page handlers in separate files (loaded before app.js) and creates a helper/shortcut variable 'pages'
-var pages = APP.pages = APP.pages || {};
+var APP = APP || {};
 
-//layout - common for all, no id checking + setting helper variable 'layout' to refer to
-var layout = pages.layout = {
-    
-  init: function() {
-    layout.menuMobile();
-    layout.footerSlider.init();
-  },
-  //subfunctionality - short version
-  menuMobile: function() {
-    $('#menu-toggle').click(function() {
-      //...
-    });
-  },
-  //subfunctionality - expanded version
-  footerSlider: {
+(function($, APP) {
+  
+  //prevent overriding of APP.pages if defined before
+  var pages = APP.pages = APP.pages || {};
+
+  //the layout (common) controller - always initialized
+  var layout = pages.layout = {
+    _check: function() {
+      return true;
+    },
     init: function() {
-      layout.footerSlider.create();
-      $(window).resize(layout.footerSlider.resize);
-    },
-    create: function() {
-      //...
-    },
-    resize: function() {
+      //code for layout
       //...
     }
   }
-}
 
-  //other pages
-  ...
-
-//news
-var news = pages.news = {
- init: function() {
-    //here goes the id checking
-    if (!modules.isPage('news'))
-      return;
-
-    //code for news
-    //...
+  //index (homepage) controller - initialized only if an element with id="page-index" is found
+  var index = pages.index = {
+    init: function() {
+      //code for index
+      //...
     }
   }
+
+  //news controller - initialized only if an element with id="page-news" or id="page-news-list" is found
+  var news = pages.news = {
+    _check: function() {
+      return APP.core.isPage(['news', 'news-list']);
+    },
+    init: function() {
+      //code for news
+      //...
+    }
+  }
+  
+})(jQuery, APP);
 ```
 
-`APP.pages.layout` contains code common for all pages.
+The dispatcher, defined in `core.js` as `APP.core.init`, performs the following operations when iterating APP.pages:
+* checks if controller has the `_check` function; if so and it returns a truthy value, initializes this controller (invokes `init` method)
+* otherwise it runs the `APP.core.isPage` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the controller
 
-`APP.modules` contains utility methods, by default:
-* `isPage`: allows to check if element with id = `page-[passed_id]` exists (e.g. `page-news`, see APP.pages.news.init function above). Alternatively, you can pass an array of ids.
-* `isBreakpoint`: in your styles, add a `z-index` to the `body` element depending on media query breakpoint (1, 2, 3 for mobile, tablet and desktop respectively) and use this function to check the current breakpoint
+`APP.core.isPage` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array). So the controller dispatching is based on existence of the same element used for CSS styling.
 
-For larger projects, you can split your code into separate files, e.g.
+Summarizing the example, respectively:
+* layout controller is always initialized (`_check` function always returns `true`)
+* index controller does not have a `_check` function, so it is initialized when an element with id="page-index" is found
+* news controller is initialized when an element with id="news" or id="news-list" is found
+
+Of course, you can place any conditions in the `_check` function.
+
+
+
+##### Application: submodules
+
+To define functional modules within controllers, the following structure is proposed (example for layout controller):
+
+```javascript
+
+  var layout = pages.layout = {
+
+    _check: function() {
+      return true;
+    },
+    
+    init: function() {
+      layout.menuMobile();
+      layout.footerSlider.init();
+    },
+
+    //submodule - short version
+    menuMobile: function() {
+      $('#menu-toggle').click(function() {
+        //...
+      });
+    },
+
+    //submodule - expanded version
+    footerSlider: {
+      init: function() {
+        layout.footerSlider.create();
+        $(window).resize(layout.footerSlider.resize);
+      },
+      create: function() {
+        //...
+      },
+      resize: function() {
+        //...
+      }
+    }
+  }
+  
+})(jQuery, APP);
+```
+
+Concept:
+* if a submodule is simple and has only one function, just name it (`menuMobile`)
+* in other case (`footerSlider`), define it as an object with `init` function and other, necessary functions
+* init all submodules in the controller `init` function
+
+
+
+##### Core
+
+The `core.js` file contains:
+* mentioned controller dispatcher `APP.core.init`
+* mentioned function `APP.core.isPage`
+* function `APP.core.isBreakpoint`: set `z-index` to the `body` element according to the breakpoint (like 1 for mobile, 2 for tablet...), and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
+
+
+
+##### Splitting into separate files
+
+For larger projects, you can easily split your code into separate files, e.g.
 ```javascript
 //_news.js
 var APP = APP || {};
 
 (function($, APP) {
-  APP.pages.news = {
-    init: function() {
-      if (!APP.modules.isPage('news'))
-        return;
 
+  var pages = APP.pages = APP.pages || {};
+
+  var news = pages.news = {
+    init: function() {
       //code for news
       //...
     }
@@ -428,7 +504,7 @@ var APP = APP || {};
 })(jQuery, APP);
 ```
 
-
+<br>
 ### Images
 Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 
@@ -495,7 +571,7 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
 [gulp-twig]: https://github.com/zimmen/gulp-twig
-[twig]: http://twig.sensiolabs.org/documentation
+[twig]: http://twig.sensiolabs.org/doc/templates.html
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
 [main-bower-files]: https://github.com/ck86/main-bower-files

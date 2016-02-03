@@ -319,7 +319,6 @@ var tasks = {
 
     dirInfos.forEach(function(dirInfo) {
       if (!isDev || dirInfo.dev) {
-        console.log('jest');
         var stream = gulp.src(dirInfo.from)
           .pipe(changed(dirInfo.from))
           .pipe(gulp.dest(dirInfo.to));

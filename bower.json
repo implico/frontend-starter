@@ -3,11 +3,15 @@
 	"version": "1.0.0",
 	"dependencies": {
 		"jquery": "1.*.*",
-		"compass-breakpoint": "2.*.*"
+		"compass-breakpoint": "2.*.*",
+    "html5shiv": "*"
 	},
   
   "overrides": {
       "compass-breakpoint": {
+          "ignore": true
+      },
+      "html5shiv": {
           "ignore": true
       }
   }
