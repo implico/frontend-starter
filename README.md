@@ -1,6 +1,6 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared and configurable [gulp][gulp] environment with [Bower][bower] support. Automatically produces a clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
+Frontend boilerplate framework. This is (just?) a prepared, configurable directory structure and [gulp][gulp] environment with [Bower][bower] support. Plus useful [sass][SASS] mixins and a CSS/JavaScript convention proposal (optional). Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
 
 
 ## Features
@@ -568,6 +568,7 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [gulp-jshint]: https://github.com/spalger/gulp-jshint
 [compass]: http://compass-style.org/
 [gulp-compass]: https://github.com/appleboy/gulp-compass
+[sass]: http://sass-lang.com/
 [sass-breakpoint]: http://breakpoint-sass.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
