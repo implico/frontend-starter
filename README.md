@@ -1,6 +1,7 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared and configurable [gulp][gulp] environment with [Bower][bower] support.
+Frontend boilerplate framework. This is (just?) a prepared and configurable [gulp][gulp] environment with [Bower][bower] support. Automatically produces a clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
+
 
 ## Features
 The framework provides the following functionality via [gulp][gulp] plugins:
@@ -8,7 +9,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
 * Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer], framework mixins and functions: responsive sprites, responsive fonts (vw), rem/vw/percentage unit converters
-* Views: [Twig template engine][gulp-twig]
+* Views: [Twig template engine][twig] with [gulp-twig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
 
 
@@ -415,7 +416,7 @@ The dispatcher, defined in `core.js` as `APP.core.init`, performs the following 
 * checks if controller has the `_check` function; if so and it returns a truthy value, initializes this controller (invokes `init` method)
 * otherwise it runs the `APP.core.isPage` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the controller
 
-`APP.core.isPage` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array). So the controller dispatching is based on existence of the same element used for CSS styling.
+`APP.core.isPage` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array). As you can see, the controller dispatching is based on existence of the same element used for CSS styling.
 
 Summarizing the example, respectively:
 * layout controller is always initialized (`_check` function always returns `true`)
