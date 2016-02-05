@@ -52,8 +52,15 @@
 // Grid
 // =============================================================================
 
-@mixin grid-container() {
-  overflow-x: hidden;
+@mixin grid-container($gutter: null) {
+  @if $gutter == null {
+    overflow-x: hidden;
+  }
+  else {
+    $gutter: $gutter/2;
+    padding-left: $gutter;
+    padding-right: $gutter;
+  }
 }
 
 @mixin grid-row($gutter, $clearfix: true) {

@@ -251,24 +251,32 @@ In this case, all units for mobile, including font-vw, will be calculated accord
 #### Grids
 Quickly create a grid with the following mixins:
 ```sass
-.row {
+.container {
+
   @include respond-to(tablet) {
-    @include grid-row(20px);
+    @include grid-container(20px);  //or don't pass the gutter, then overflow-x: hidden will be applied
   }
-  .col {
+
+  .row {
     @include respond-to(tablet) {
-      @include grid-col(50%);
+      @include grid-row(20px);
     }
-    @include respond-to(desktop) {
-      width: 25%;
+    .col {
+      @include respond-to(tablet) {
+        @include grid-col(50%);
+      }
+      @include respond-to(desktop) {
+        width: 25%;
+      }
     }
   }
 }
 ```
 
-This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter.
+This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter. You can define custom grid classes at the top-level, to make them reusable.
 
-If you don't have an `overflow-x: hidden` style for the main layout wrapper, wrap the above with `.container` using `grid-container` mixin.
+This allows you to create fully customized column sizes (no Bootsrap 12 cols scheme, like 13%/47%/40%) and gutters.
+
 
 
 #### Sprites
