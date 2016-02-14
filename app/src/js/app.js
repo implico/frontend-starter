@@ -1,11 +1,7 @@
-var APP = APP || {};
-
 (function($, APP) {
   
-  var pages = APP.pages = APP.pages || {};
-
   //layout - common for all
-  var layout = pages.layout = {
+  APP.module.layout = {
 
     //always initialized
     _check: function() {
@@ -18,18 +14,19 @@ var APP = APP || {};
   }
 
   //index - homepage
-  var index = pages.index = {
+  APP.module.index = {
 
-    //if function "_check" is found, its return value indicates wheter to initialize this controller
-    //in this example, if uncommented, controller will be initialized if an element with id="page-index" or id="page-news" is found
+    //if function "_check" is found, its return value indicates wheter to initialize this module
+    //in this example, if uncommented, module will be initialized if an element with id="page-index" or id="page-news" is found
 
     /*_check: function() {
-      return APP.core.isPage(['index', 'news']);
+      return APP.core.isModule(['index', 'news']);
     },*/
     
     init: function() {
-      //by default, only initialized if element with id="page-index" is found
+      //by default, with no _check function, only initialized if element with id="page-index" is found
 
+      //e.g. this.slider();
     }
   }
 

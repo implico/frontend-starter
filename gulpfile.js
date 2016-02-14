@@ -1,7 +1,15 @@
 /**
-  Frontend-starter API
+  Frontend-starter
 
   @author Bartosz Sak, Archas
+  
+  https://github.com/implico/frontend-starter
+  
+  The MIT License (MIT)
+  
+  
+  *******************
+  API
 
   gulp
     default task, equals to gulp dev:watch
@@ -67,22 +75,51 @@ var configMod    = require('./gulpfile.config'),
 var dirs = configMod.dirs,
     config = configMod.config;
 
-//image dirs    
-var imagesDirs = [dirs.src.img + '**/*', '!' + dirs.src.img + '**/*.tmp'];
-//exclude sprite dirs
-config.sprites.items.forEach(function(itemInfo) {
-  imagesDirs.push('!' + itemInfo.imgSource);
-  imagesDirs.push('!' + itemInfo.imgSource + '**');
-});
 
-
-//adds config glob
-function addConfigGlob(glob) {
-  if (!(glob instanceof Array)) {
-    glob = [glob];
+var APP = {
+    
+  init: function() {
+    this.dirs.init();
+  },
+  
+  dirs: {
+    init: function() {
+      this.img();
+    },
+    
+    img: function() {
+      dirs.src.img = APP.dirs.addConfigGlob(dirs.src.img);
+      //exclude sprite dirs
+      config.sprites.items.forEach(function(itemInfo) {
+        dirs.src.img.push('!' + itemInfo.imgSource + '{,/**}');
+      });
+    },
+    
+    js: {
+      
+      //prepends appropiate dir to globs defined in config JS priority
+      priorityPrependDir: function(glob, dir) {
+        var ret = [];
+        if (glob && (glob instanceof Array)) {
+          glob.forEach(function(d) {
+            ret.push(dir + d);
+          });
+        }
+        return ret;
+      }
+    },
+    
+    //adds config global glob (exclude temp files ect.)
+    addConfigGlob: function (glob) {
+      if (!(glob instanceof Array)) {
+        glob = [glob];
+      }
+      return glob.concat(config.global.globAdd);
+    }
   }
-  return glob.concat(config.global.globAdd);
 }
+
+
 
 
 
@@ -99,7 +136,7 @@ gulp.task('dev:watch', function(cb) {
   runSequence('browser-sync:dev', cb);
 
   //styles
-  watch(addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
     gulp.start('styles:dev', done);
   }));
 
@@ -110,24 +147,24 @@ gulp.task('dev:watch', function(cb) {
 
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
-    watch(addConfigGlob([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp']), batch(function (events, done) {
+    watch(APP.dirs.addConfigGlob([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp']), batch(function (events, done) {
       tasks.sprites(itemInfo, done);
     }));
   });
 
 
   //js - app
-  watch(addConfigGlob(dirs.src.js.appGlob), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob(dirs.src.js.app), batch(function (events, done) {
     gulp.start('js:dev:main', done);
   }));
 
   //js - vendor
-  watch(addConfigGlob([dirs.vendor + '**/*.js', dirs.src.js.vendor + '**/*.js']), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.js'].concat(dirs.src.js.vendor)), batch(function (events, done) {
     gulp.start('js:dev', done);
   }));
   
   //images
-  watch(addConfigGlob(imagesDirs), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob(dirs.src.img), batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -171,7 +208,7 @@ var tasks = {
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
     configStyles.sass.sourcemap = configStyles.sourcemaps;
 
-    var ret = gulp.src(addConfigGlob(dirs.src.styles.main + '*.scss'))
+    var ret = gulp.src(APP.dirs.addConfigGlob(dirs.src.styles.main + '*.scss'))
       .pipe(plumber({
         errorHandler: function (error) {
           console.log(error.message);
@@ -204,7 +241,7 @@ var tasks = {
     if (done)
       console.log('Starting \'sprites\'...');
 
-    var spriteData = gulp.src(addConfigGlob(itemInfo.imgSource + '**/*')).pipe(spritesmith(itemInfo.options));
+    var spriteData = gulp.src(APP.dirs.addConfigGlob(itemInfo.imgSource + '**/*')).pipe(spritesmith(itemInfo.options));
 
     var imgStream = spriteData.img
       .pipe(buffer())
@@ -229,14 +266,18 @@ var tasks = {
         configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
 
     //get files
+    var src;
     if (isApp) {
-      ret = gulp.src(addConfigGlob(dirs.src.js.appGlob), { base: dirs.src.main });
+      src = APP.dirs.js.priorityPrependDir(configJs.priority.app, dirs.src.js.appDir)
+                  .concat(dirs.src.js.app);
     }
     else {
-      var files = mainBowerFiles();
-      files.push(dirs.src.js.vendor + '**/*.js');
-      ret = gulp.src(addConfigGlob(files), { base: dirs.src.main });
+      src = APP.dirs.js.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
+                  .concat(mainBowerFiles())
+                  .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
+                  .concat(dirs.src.js.vendor);
     }
+    ret = gulp.src(APP.dirs.addConfigGlob(src), { base: dirs.src.main });
 
     //plumber
     ret = ret
@@ -318,7 +359,7 @@ var tasks = {
       console.log('Starting \'custom dirs\'...');
 
     dirInfos.forEach(function(dirInfo) {
-      if (!isDev || dirInfo.dev) {
+      if ((!isDev || dirInfo.dev) && (dirInfo.to !== null)) {
         var stream = gulp.src(dirInfo.from)
           .pipe(changed(dirInfo.from))
           .pipe(gulp.dest(dirInfo.to));
@@ -336,6 +377,10 @@ var tasks = {
       });
     }
     else {
+      if (done) {
+        done();
+        console.log('Finished \'custom dirs\'');
+      }
       return Promise.resolve();
     }
   },
@@ -431,7 +476,7 @@ gulp.task('js:prod', function() {
 /* IMAGES */
 gulp.task('images', function() {
 
-  return gulp.src(imagesDirs)
+  return gulp.src(dirs.src.img)
     .pipe(changed(dirs.dist.img))
     //.pipe(debug())
     .pipe(imagemin(config.images.imagemin))

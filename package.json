@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
-  "description": "A simple frontend boilerplate",
-  "version": "1.0.0",
+  "description": "A simple frontend boilerplate and framework",
+  "version": "1.1.0",
   "author": "Bartosz Sak <bartosz.sak@gmail.com>",
   "license": "MIT",
   "devDependencies": {

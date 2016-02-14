@@ -1,3 +1,19 @@
+/**
+  Frontend-starter
+
+  @author Bartosz Sak, Archas
+  
+  https://github.com/implico/frontend-starter
+  
+  The MIT License (MIT)
+  
+  
+  *******************
+  Configuration file
+
+*/
+
+
 var path = require('path');
 
 /* DIRS */
@@ -53,8 +69,11 @@ dirs.src.styles.sprites = dirs.src.styles.main + '_partials/';
 dirs.src.fonts = dirs.src.main + 'fonts/';
 
 dirs.src.js.main = dirs.src.main + 'js/';
-dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
-dirs.src.js.appGlob = [dirs.src.js.main + '**/*.js', '!' + dirs.src.js.vendor, '!' + dirs.src.js.vendor + '**/*'];
+dirs.src.js.vendorDir = dirs.src.js.main + 'vendor/';
+dirs.src.js.appDir = dirs.src.js.main;
+//for JS, globs are used
+dirs.src.js.vendor = [dirs.src.js.vendorDir + '**/*.js'];
+dirs.src.js.app = [dirs.src.js.appDir + '**/*.js', '!' + dirs.src.js.vendorDir + '{,/**}'];
 
 dirs.src.img = dirs.src.main + 'img/';
 
@@ -73,15 +92,24 @@ dirs.dist.img = dirs.dist.main + 'img/';
 dirs.dist.views = dirs.dist.main;
 
 
-//additional custom dirs to watch and copy
+//additional custom dirs to watch and (optionally) copy
 dirs.custom = [
   {
     //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
-    dev: true,    //set true if use also for dev tasks
+    dev: true,
     from: dirs.vendor + 'html5shiv/dist/html5shiv.min.js',
     to: dirs.dist.js
   }
+  
+  //Example:
+//  {
+//    dev: true,    //set true if use also for dev tasks
+//    from: dirs.src.main + 'custom/**/*',
+//    to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
+//  }
+  
 ];
+
 
 
 /* CONFIG */
@@ -115,8 +143,7 @@ var config = {
     dev: {
 
       sass: {
-        style: 'expanded',
-        logging: false
+        style: 'expanded'
       }
     },
 
@@ -152,7 +179,16 @@ var config = {
       sourcemaps: true,
       sourcemapsRoot: '/src/',
       minify: false,
-      concatAppVendor: true   //if true, app.js and vendor.js are merged into app.js
+      concatAppVendor: true,   //if true, app.js and vendor.js are merged into app.js
+      
+      //add script filenames/globs (relative to the appropriate dirs) to be loaded first
+      priority: {
+        vendor: {
+          beforeBower: [],  //before bower components load
+          afterBower: [],   //before dirs.src.js.vendor load (you usually need this one)
+        },
+        app: ['core.js']
+      }
     },
 
     dev: {

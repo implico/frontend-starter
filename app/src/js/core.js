@@ -3,41 +3,44 @@ var APP = APP || {};
 (function($, APP) {
   
   /*
-      Pages code
-      for particular pages (defined in app.js and/or other files)
+      Modules code
+      for particular pages/modules (defined in app.js and/or other files)
   */
-  var pages = APP.pages = APP.pages || {};
+  APP.module = APP.module || {};
 
   /*
-      System modules
+      System components
   */
   var core = APP.core = APP.core || {};
 
-  core.init = function() {
-    $.each(APP.pages, function(pageId) {
+  core.init = function(isDynamic) {
+    $.each(APP.module, function(moduleId) {
       var init = true;
       if (this._check) {
-        init = this._check();
+        init = this._check(isDynamic);
       }
       else {
-        init = core.isPage(pageId);
+        init = core.isModule(moduleId);
       }
 
       if (init)
-        this.init();
+        this.init(isDynamic);
     });
   }
 
 
-  //returns true if the current page has an id (or one of passed ids if array): #page-[id], to enable individual page code
-  core.isPage = function(id) {
+  //returns true if the current page has an id (or one of passed ids if array): #page-[id], to enable individual page/module code
+  core.isModule = function(id, prepend) {
+    
+    if (typeof prepend == 'undefined')
+      prepend = '#page-';
 
     var isCurrent = false;
     if (!(id instanceof Array))
       id = [id];
 
     $.each(id, function() {
-      if ($('#page-' + this).length) {
+      if ($(prepend + this).length) {
         isCurrent = true;
         id = this;
         return false;
@@ -52,20 +55,20 @@ var APP = APP || {};
   core.isBreakpoint = function(mode, exact) {
 
     var ret,
-        indicatorVal = parseInt($('body').css('z-index'));
+        markerVal = parseInt($('[data-bp-marker]').css('z-index'));
 
     switch (mode) {
 
       case 'mobile':
-        ret = indicatorVal == 1;
+        ret = markerVal == 1;
         break;
 
       case 'tablet':
-        ret = exact ? (indicatorVal == 2) : (indicatorVal <= 2);
+        ret = exact ? (markerVal == 2) : (markerVal <= 2);
         break;
 
       case 'desktop':
-        ret = exact ? (indicatorVal == 3) : (indicatorVal <= 3);
+        ret = exact ? (markerVal == 3) : (markerVal <= 3);
         break;
     }
 

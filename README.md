@@ -1,6 +1,6 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared, configurable directory structure and [gulp][gulp] environment with [Bower][bower] support. Plus useful [sass][SASS] mixins and a CSS/JavaScript convention proposal (optional). Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
+Frontend boilerplate framework. This is (just?) a prepared, configurable directory structure and [gulp][gulp] environment with [Bower][bower] support. Plus useful [sass][SASS] mixins and a CSS/JavaScript framework proposal (optional). Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
 
 
 ## Features
@@ -195,7 +195,7 @@ Available breakpoints: `mobile`, `tablet`, `desktop`, `mobile-sm`, `tablet-sm`. 
 
 
 ##### Responsive size with font sets
-It often occurs that you have some number of standard font sizes on the website. To use the `font-vw` mixin more conveniently, you can predefine these font sizes in the `core/config` file:
+It often happens that you have some number of standard font sizes on the website. To use the `font-vw` mixin more conveniently, you can predefine these font sizes in the `core/config` file:
 ```sass
 $font-sets: (
 
@@ -228,12 +228,12 @@ Convert px units easily to vw or percentage. Just get the px dimensions of an el
 ```sass
 width: unit-vw(50px, mobile);
 //or
-width: unit-percent(50px, mobile);
+width: unit-pc(50px, mobile);
 
 @include respond-to(tablet) {
   width: unit-vw(100px, tablet);
   //or
-  width: unit-percent(100px, tablet);
+  width: unit-pc(100px, tablet);
 }
 ```
 
@@ -254,12 +254,12 @@ Quickly create a grid with the following mixins:
 .container {
 
   @include respond-to(tablet) {
-    @include grid-container(20px);  //or don't pass the gutter, then overflow-x: hidden will be applied
+    @include grid-cont(20px);
   }
 
   .row {
     @include respond-to(tablet) {
-      @include grid-row(20px);
+      @include grid-row();
     }
     .col {
       @include respond-to(tablet) {
@@ -317,7 +317,7 @@ Default file for custom code is `js/app.js`.
 Libs installed with Bower are fetched using [main-bower-files] plugin. If you don't want to include a particular package, use `overrides` option in the `bower.json` (see also [main-bower-files] docs).
 
 
-### Views, styles, JavaScript: convention
+### Views, styles, JavaScript: framework
 What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way. Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
@@ -356,9 +356,9 @@ header.layout {
 ```
 
 #### 3. JavaScript
-The main goal is to encapsulate functional code into separate controllers, generally bound to particular views, to maintain order, clarity and modularity.
+The main goal is to encapsulate functional code into separate modules (controllers), generally bound to particular views, to maintain order, clarity and modularity.
 
-By default, there are two JS files: `core.js` and `app.js`. Of course, if you use a framework like AngularJS, your can remove `core.js` and place your own code into `app.js`.
+By default, there are two JS files: `core.js` and `app.js`. Of course, if you don't like it or you use a framework like AngularJS, your can remove `core.js` and place your own code into `app.js`.
 
 
 ##### Namespace
@@ -377,18 +377,13 @@ var APPB = APPB || {};
 
 ##### Application
 
-`app.js` contains custom code common for all views (layout) and page-specific code. Take a look at the default content with some example added:
+`app.js` contains custom code common for all views (layout) and page-specific code - that could be called controllers. Take a look at the default content with some example added:
 
 ```javascript
-var APP = APP || {};
-
 (function($, APP) {
   
-  //prevent overriding of APP.pages if defined before
-  var pages = APP.pages = APP.pages || {};
-
-  //the layout (common) controller - always initialized
-  var layout = pages.layout = {
+  //the layout (common) module - always initialized
+  APP.module.layout = {
     _check: function() {
       return true;
     },
@@ -398,18 +393,18 @@ var APP = APP || {};
     }
   }
 
-  //index (homepage) controller - initialized only if an element with id="page-index" is found
-  var index = pages.index = {
+  //index (homepage) module - initialized only if an element with id="page-index" is found
+  APP.module.index = {
     init: function() {
       //code for index
       //...
     }
   }
 
-  //news controller - initialized only if an element with id="page-news" or id="page-news-list" is found
-  var news = pages.news = {
+  //news module - initialized only if an element with id="page-news" or id="page-news-list" is found
+  APP.module.news = {
     _check: function() {
-      return APP.core.isPage(['news', 'news-list']);
+      return APP.core.isModule(['news', 'news-list']);
     },
     init: function() {
       //code for news
@@ -420,16 +415,16 @@ var APP = APP || {};
 })(jQuery, APP);
 ```
 
-The dispatcher, defined in `core.js` as `APP.core.init`, performs the following operations when iterating APP.pages:
-* checks if controller has the `_check` function; if so and it returns a truthy value, initializes this controller (invokes `init` method)
-* otherwise it runs the `APP.core.isPage` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the controller
+The dispatcher, defined in `core.js` as `APP.core.init`, performs the following operations when iterating APP.module:
+* checks if module has the `_check` function; if so and it returns a truthy value, initializes it (invokes `init` method)
+* otherwise it runs the `APP.core.isModule` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the module
 
-`APP.core.isPage` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array). As you can see, the controller dispatching is based on existence of the same element used for CSS styling.
+`APP.core.isModule` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array; you can also pass a prepend-string selector as the second parameter, it is by default &quot;#page-&quot;). As you can see, the module (controller) dispatching is based on existence of the same element used for CSS styling.
 
 Summarizing the example, respectively:
-* layout controller is always initialized (`_check` function always returns `true`)
-* index controller does not have a `_check` function, so it is initialized when an element with id="page-index" is found
-* news controller is initialized when an element with id="news" or id="news-list" is found
+* layout module is always initialized (`_check` function always returns `true`)
+* index module does not have a `_check` function, so it is initialized when an element with id="page-index" is found
+* news module is initialized when an element with id="news" or id="news-list" is found
 
 Of course, you can place any conditions in the `_check` function.
 
@@ -437,19 +432,19 @@ Of course, you can place any conditions in the `_check` function.
 
 ##### Application: submodules
 
-To define functional modules within controllers, the following structure is proposed (example for layout controller):
+To split functional code within modules, the following structure is proposed (example for layout module):
 
 ```javascript
 
-  var layout = pages.layout = {
+  APP.module.layout = {
 
     _check: function() {
       return true;
     },
     
     init: function() {
-      layout.menuMobile();
-      layout.footerSlider.init();
+      this.menuMobile();
+      this.footerSlider.init();
     },
 
     //submodule - short version
@@ -462,8 +457,8 @@ To define functional modules within controllers, the following structure is prop
     //submodule - expanded version
     footerSlider: {
       init: function() {
-        layout.footerSlider.create();
-        $(window).resize(layout.footerSlider.resize);
+        this.create();
+        $(window).resize(this.resize);
       },
       create: function() {
         //...
@@ -487,9 +482,9 @@ Concept:
 ##### Core
 
 The `core.js` file contains:
-* mentioned controller dispatcher `APP.core.init`
-* mentioned function `APP.core.isPage`
-* function `APP.core.isBreakpoint`: set `z-index` to the `body` element according to the breakpoint (like 1 for mobile, 2 for tablet...), and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
+* mentioned module dispatcher `APP.core.init`
+* mentioned function `APP.core.isModule`
+* function `APP.core.isBreakpoint`: set `z-index` according to the breakpoint (like 1 for mobile, 2 for tablet...) to any element with `data-bp-marker` attribute, and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
 
 
 
@@ -498,13 +493,9 @@ The `core.js` file contains:
 For larger projects, you can easily split your code into separate files, e.g.
 ```javascript
 //_news.js
-var APP = APP || {};
-
 (function($, APP) {
 
-  var pages = APP.pages = APP.pages || {};
-
-  var news = pages.news = {
+  APP.module.news = {
     init: function() {
       //code for news
       //...
@@ -542,7 +533,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
   * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
 * styles: sourcemap generation, [gulp-autoprefixer] and [gulp-compass] options
 * sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
-* js: sourcemap generation, minification, merging vendor and app into one file (true by default)
+* js: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
 * views: [gulp-twig] options
 * images: [imagemin][gulp-imagemin] options
 * browserSync: [Browsersync][browsersync] options
@@ -565,23 +556,34 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 
 
 
+<br>
+## Known issues
+Nothing's perfect, these are main unexpected behaviors:
+* under Windows, the watcher sometimes blocks and does not see any changes - the script must then be restarted ([gulp-watch]/[Chokidar][chokidar])
+* when deleting a file within a watched dir, the script fails ([gulp-watch]/[Chokidar][chokidar])
+* I/O errors are not handled well
 
-[nodejs]: https://nodejs.org/
-[gulp]: http://gulpjs.com/
-[gulp-watch]: https://github.com/floatdrop/gulp-watch
-[gulp-imagemin]: https://github.com/sindresorhus/gulp-imagemin
-[gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps
-[gulp-concat]: https://github.com/contra/gulp-concat
-[gulp-uglify]: https://github.com/terinjokes/gulp-uglify
-[gulp-jshint]: https://github.com/spalger/gulp-jshint
-[compass]: http://compass-style.org/
-[gulp-compass]: https://github.com/appleboy/gulp-compass
-[sass]: http://sass-lang.com/
-[sass-breakpoint]: http://breakpoint-sass.com/
-[gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
-[gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
-[gulp-twig]: https://github.com/zimmen/gulp-twig
-[twig]: http://twig.sensiolabs.org/doc/templates.html
+
+
+
+
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
+[chokidar]: https://github.com/paulmillr/chokidar
+[compass]: http://compass-style.org/
+[gulp]: http://gulpjs.com/
+[gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
+[gulp-compass]: https://github.com/appleboy/gulp-compass
+[gulp-concat]: https://github.com/contra/gulp-concat
+[gulp-imagemin]: https://github.com/sindresorhus/gulp-imagemin
+[gulp-jshint]: https://github.com/spalger/gulp-jshint
+[gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps
+[gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
+[gulp-twig]: https://github.com/zimmen/gulp-twig
+[gulp-uglify]: https://github.com/terinjokes/gulp-uglify
+[gulp-watch]: https://github.com/floatdrop/gulp-watch
 [main-bower-files]: https://github.com/ck86/main-bower-files
+[nodejs]: https://nodejs.org/
+[sass]: http://sass-lang.com/
+[sass-breakpoint]: http://breakpoint-sass.com/
+[twig]: http://twig.sensiolabs.org/doc/templates.html

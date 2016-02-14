@@ -28,7 +28,7 @@
 }
 
 //converts px value(s) to percent
-@function unit-percent($values, $breakpoint: mobile, $useDesignBreakpoints: true) {
+@function unit-pc($values, $breakpoint: mobile, $useDesignBreakpoints: true) {
   $breakpointWidth: $breakpoint;
   @if type-of($breakpoint) == string {
     $breakpointWidth: breakpoint-px($breakpoint, $useDesignBreakpoints);
@@ -52,20 +52,20 @@
 // Grid
 // =============================================================================
 
-@mixin grid-container($gutter: null) {
-  @if $gutter == null {
-    overflow-x: hidden;
-  }
-  else {
-    $gutter: $gutter/2;
-    padding-left: $gutter;
-    padding-right: $gutter;
-  }
+@mixin grid-cont($gutter) {
+  $fs-grid-last-gutter: $gutter !global;
+  
+  $gutter: $gutter/2;
+  padding-left: $gutter;
+  padding-right: $gutter;
 }
 
-@mixin grid-row($gutter, $clearfix: true) {
-  $fs-grid-last-gutter: $gutter !global;
-
+@mixin grid-row($gutter: null, $clearfix: true) {
+  
+  @if ($gutter == null) {
+    $gutter: $fs-grid-last-gutter;
+  }
+  
   $gutter: $gutter/2;
 
   @if ($clearfix) {
