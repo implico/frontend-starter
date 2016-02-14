@@ -146,7 +146,7 @@ Build your stylesheet like this:
 #### Fonts
 
 ##### Enabling font-face
-Put the [webfont generated](http://www.fontsquirrel.com/tools/webfont-generator) files in the fonts folder (by default `fonts`) and use the commented out line in the `core/config`:
+Put the [webfont generated](http://www.fontsquirrel.com/tools/webfont-generator) files in the fonts folder (by default `fonts`) and use the commented out line in the `custom/config`:
 
 ```sass
 @include font-face('font-name', font-files('font.woff', 'font.ttf'), 'font.eot', normal);
@@ -273,9 +273,11 @@ Quickly create a grid with the following mixins:
 }
 ```
 
-This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter. You can define custom grid classes at the top-level, to make them reusable.
+This creates a 2-col grid for tablet and 4-col grid for desktop with a 20px gutter. Remember, that if you nest the grids, specify the gutter also for `grid-row` and `grid-col`, because these mixins take the last used width from a global variable set in `grid-cont`.
 
-This allows you to create fully customized column sizes (no Bootsrap 12 cols scheme, like 13%/47%/40%) and gutters.
+You can define custom grid classes at the top-level, to make them reusable.
+
+This allows you to create fully customized column sizes (non-Bootsrap 12 cols scheme, rather like 13%/47%/40%) and gutters.
 
 
 
@@ -356,7 +358,7 @@ header.layout {
 ```
 
 #### 3. JavaScript
-The main goal is to encapsulate functional code into separate modules (controllers), generally bound to particular views, to maintain order, clarity and modularity.
+The main goal is to encapsulate functional code into separate modules (controllers), generally bound to particular views, to maintain scoping, clarity and modularity.
 
 By default, there are two JS files: `core.js` and `app.js`. Of course, if you don't like it or you use a framework like AngularJS, your can remove `core.js` and place your own code into `app.js`.
 
@@ -377,7 +379,7 @@ var APPB = APPB || {};
 
 ##### Application
 
-`app.js` contains custom code common for all views (layout) and page-specific code - that could be called controllers. Take a look at the default content with some example added:
+`app.js` contains custom code common for all views (layout) and page-specific code - that might be called controllers. Take a look at the default content with some example added:
 
 ```javascript
 (function($, APP) {
@@ -419,7 +421,7 @@ The dispatcher, defined in `core.js` as `APP.core.init`, performs the following 
 * checks if module has the `_check` function; if so and it returns a truthy value, initializes it (invokes `init` method)
 * otherwise it runs the `APP.core.isModule` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the module
 
-`APP.core.isModule` just checks if an element with id="page-[page-id]" is found (or with one of ids, if you pass an array; you can also pass a prepend-string selector as the second parameter, it is by default &quot;#page-&quot;). As you can see, the module (controller) dispatching is based on existence of the same element used for CSS styling.
+`APP.core.isModule` just checks if an element with `id="page-[page-id]"` is found (or with one of ids, if you pass an array; you can also pass a prepend-string selector as the second parameter, it is by default `&quot;#page-&quot;`). As you can see, the module (controller) dispatching is based on existence of the same element used for CSS styling.
 
 Summarizing the example, respectively:
 * layout module is always initialized (`_check` function always returns `true`)
@@ -432,7 +434,7 @@ Of course, you can place any conditions in the `_check` function.
 
 ##### Application: submodules
 
-To split functional code within modules, the following structure is proposed (example for layout module):
+To split functional code inside modules, the following structure is proposed (example for layout module):
 
 ```javascript
 
@@ -475,7 +477,8 @@ To split functional code within modules, the following structure is proposed (ex
 Concept:
 * if a submodule is simple and has only one function, just name it (`menuMobile`)
 * in other case (`footerSlider`), define it as an object with `init` function and other, necessary functions
-* init all submodules in the controller `init` function
+* init all submodules in the module `init` function
+* you can nest deeper sub-submodules
 
 
 
@@ -484,7 +487,10 @@ Concept:
 The `core.js` file contains:
 * mentioned module dispatcher `APP.core.init`
 * mentioned function `APP.core.isModule`
-* function `APP.core.isBreakpoint`: set `z-index` according to the breakpoint (like 1 for mobile, 2 for tablet...) to any element with `data-bp-marker` attribute, and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
+* function `APP.core.isBreakpoint`: set `z-index` according to the breakpoint (like 1 for mobile, 2 for tablet...) to any element with `data-bp-marker` attribute (like `&lt;body data-bp-marker&gt;`, and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
+
+The `core.js` file has a high load priority, i.e. is loaded before any other app scripts, to ensure the `APP` object is initialized properly (configured priority in `gulpfile.config.js`).
+
 
 
 
@@ -559,8 +565,8 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 <br>
 ## Known issues
 Nothing's perfect, these are main unexpected behaviors:
-* under Windows, the watcher sometimes blocks and does not see any changes - the script must then be restarted ([gulp-watch]/[Chokidar][chokidar])
-* when deleting a file within a watched dir, the script fails ([gulp-watch]/[Chokidar][chokidar])
+* under Windows, the watcher sometimes blocks and does not see any changes - the script must be then restarted (depends on [gulp-watch]/[Chokidar][chokidar])
+* when deleting a file within a watched dir, the script fails (depends on [minimatch])
 * I/O errors are not handled well
 
 
@@ -583,6 +589,7 @@ Nothing's perfect, these are main unexpected behaviors:
 [gulp-uglify]: https://github.com/terinjokes/gulp-uglify
 [gulp-watch]: https://github.com/floatdrop/gulp-watch
 [main-bower-files]: https://github.com/ck86/main-bower-files
+[minimatch]: https://github.com/isaacs/minimatch
 [nodejs]: https://nodejs.org/
 [sass]: http://sass-lang.com/
 [sass-breakpoint]: http://breakpoint-sass.com/

@@ -43,10 +43,7 @@ $font-size-tablet: 16px;
 $font-size-desktop: 16px;
 
 $font-sets: (
-	sm: (mobile: 14px, tablet: 14px, desktop: 14px),
-	md: (mobile: $font-size-mobile, tablet: $font-size-tablet, desktop: $font-size-desktop),
-	lg: (mobile: 22px, tablet: 22px, desktop: 22px)
+  sm: (mobile: 14px, tablet: 14px, desktop: 14px),
+  md: (mobile: $font-size-mobile, tablet: $font-size-tablet, desktop: $font-size-desktop),
+  lg: (mobile: 22px, tablet: 22px, desktop: 22px)
 );
-
-//font face
-//@include font-face('font-name', font-files('font.woff', 'font.ttf'), 'font.eot', normal);

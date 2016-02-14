@@ -109,7 +109,7 @@ var APP = {
       }
     },
     
-    //adds config global glob (exclude temp files ect.)
+    //adds config global glob (exclude temp files etc.)
     addConfigGlob: function (glob) {
       if (!(glob instanceof Array)) {
         glob = [glob];
@@ -151,7 +151,6 @@ gulp.task('dev:watch', function(cb) {
       tasks.sprites(itemInfo, done);
     }));
   });
-
 
   //js - app
   watch(APP.dirs.addConfigGlob(dirs.src.js.app), batch(function (events, done) {
@@ -201,8 +200,8 @@ gulp.task('prod:preview', ['prod'], function(cb) {
 
 
 
-
 var tasks = {
+
   styles: function(isDev) {
 
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
