@@ -345,9 +345,18 @@ var tasks = {
   views: function(isDev) {
     var configViews = extend(true, config.views.common, config.views[isDev ? 'dev': 'prod']);
 
-    return gulp.src(dirs.src.views.scripts + '**/*')
-      .pipe(twig(configViews.twig))
-      .pipe(gulp.dest(dirs.dist.views));
+    var src = dirs.src.views.scripts + '**/*';
+    var ret = gulp.src(src);
+
+    if (configViews.useTwig) {
+      ret = ret.pipe(twig(configViews.twig));
+    }
+    else {
+      ret = ret.pipe(changed(src));
+    }
+    ret = ret.pipe(gulp.dest(dirs.dist.views));
+
+    return ret;
   },
 
   customDirs: function(dirInfos, isDev, done) {

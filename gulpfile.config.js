@@ -203,6 +203,7 @@ var config = {
   views: {
 
     common: {
+      useTwig: false,
       twig: {
         base: dirs.src.views.layouts,
         data: {}
