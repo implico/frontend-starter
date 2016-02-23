@@ -321,7 +321,7 @@ Libs installed with Bower are fetched using [main-bower-files] plugin. If you do
 
 
 ### Views, styles, JavaScript: static framework
-What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way (e.g. see [AngularJS integration](#angularjs-integration)). Also, any comments and suggestions will be appreciated.
+What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way (e.g. for JavaScript see [AngularJS integration](#angularjs-integration)). Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
 Add an individual id to e.g. `body` element for each page type, like index, contact, news... prepended with "page" keyword:
@@ -526,7 +526,7 @@ To use the framework with [AngularJS][angularjs], follow these instructions:
 }
 ```
 
-* config: set Twig use to false in the views config:
+* config: set [Twig][twig] use to `false` in the views config:
 
 ```
   views: {
@@ -552,7 +552,7 @@ dirs.src.views.scripts = dirs.src.views.main;
     app: ['app.js']
 ```
 
-See the [angularjs](https://github.com/implico/frontend-starter/tree/angularjs) branch for an example (although it is not guaranteed to be updated regularly).
+See the [angularjs branch](https://github.com/implico/frontend-starter/tree/angularjs) for an example (although it is not guaranteed to be updated regularly).
 
 
 <br>
