@@ -11,6 +11,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer], framework mixins and functions: responsive sprites, responsive fonts (vw), rem/vw/percentage unit converters
 * Views: [Twig template engine][twig] with [gulp-twig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
+* easy to integrate with MV* frameworks (see the [AngularJS example](#angularjs-integration))
 
 
 ## Installing
@@ -319,8 +320,8 @@ Default file for custom code is `js/app.js`.
 Libs installed with Bower are fetched using [main-bower-files] plugin. If you don't want to include a particular package, use `overrides` option in the `bower.json` (see also [main-bower-files] docs).
 
 
-### Views, styles, JavaScript: framework
-What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way. Also, any comments and suggestions will be appreciated.
+### Views, styles, JavaScript: static framework
+What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way (e.g. see [AngularJS integration](#angularjs-integration)). Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
 Add an individual id to e.g. `body` element for each page type, like index, contact, news... prepended with "page" keyword:
@@ -510,6 +511,50 @@ For larger projects, you can easily split your code into separate files, e.g.
 })(jQuery, APP);
 ```
 
+<br />
+<a name="angularjs-integration"></a>
+### AngularJS integration
+To use the framework with [AngularJS][angularjs], follow these instructions:
+
+* add Angular to your Bower dependencies (`bower.json` file):
+
+```json
+"dependencies": {
+  ...
+  "angular": "1.4.x",
+  "angular-route": "1.4.x"
+}
+```
+
+* config: set Twig use to false in the views config:
+
+```json
+  views: {
+    common: {
+      useTwig: false,
+      ...
+```
+
+* remove subdirectories from the `app/src/views` dir and place your main `index.html` there
+* create a directory for your templates in the `app/src/views` dir, like `partials`
+* config: set the views scrips dir to:
+
+```json
+dirs.src.views.scripts = dirs.src.views.main;
+```
+
+* delete `app/src/js/core.js`, replace `app.js` content with your own bootstrap [AngularJS][angularjs] code
+
+* config: change `core.js` into `app.js` priority in the JS config:
+```json
+  priority: {
+    ...
+    app: ['app.js']
+```
+
+See the [angularjs](https://github.com/implico/frontend-starter/tree/angularjs) branch for an example (although it is not guaranteed to be updated regularly).
+
+
 <br>
 ### Images
 Images are optimized ([gulp-imagemin]) and copied into the dist directory.
@@ -573,6 +618,7 @@ Nothing's perfect, these are main unexpected behaviors:
 
 
 
+[angularjs]: https://angularjs.org/
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
 [chokidar]: https://github.com/paulmillr/chokidar
