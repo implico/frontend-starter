@@ -4,7 +4,9 @@
   "dependencies": {
     "jquery": "1.*.*",
     "compass-breakpoint": "2.*.*",
-    "html5shiv": "*"
+    "html5shiv": "*",
+    "angular": "1.4.x",
+    "angular-route": "1.4.x"
   },
 
   "overrides": {

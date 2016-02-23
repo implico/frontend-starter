@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html ng-app="app">
   <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
     <meta charset="utf-8" />
-    <title>{% block headTitle %}{% endblock headTitle %}</title>
+    <title ng-bind="title"></title>
     <link rel="shortcut icon" href="img/favicon.ico" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -14,6 +14,8 @@
     <meta property=og:image content="">
     
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- <base href="/"> -->
       
     <!--[if lt IE 9]>
       <script src="js/html5shiv.min.js"></script>
@@ -21,22 +23,10 @@
 		
   </head>
     
-  <body{% block bodyAttr %}{% endblock bodyAttr %}>
+  <body>
 
-  	<div id="layout-main-wrap">
+  	<div ng-view></div>
 
-      {% include "partials/header.twig" %}
-
-      {% block content %}{% endblock %}
-
-      {% include "partials/footer.twig" %}
-
-  	</div>
-
-    {# 
-        Use when config.js.common.concatAppVendor is false
-        <script src="js/vendor.js"></script>
-    #}
     <script src="js/app.js"></script>
   </body>
 </html>

@@ -1,34 +1,17 @@
-(function($, APP) {
-  
-  //layout - common for all
-  APP.module.layout = {
+var app = angular.module('app', [
+  'ngRoute',
+  'appControllers'
+]);
 
-    //always initialized
-    _check: function() {
-      return true;
-    },
-    
-    init: function() {
-
-    }
-  }
-
-  //index - homepage
-  APP.module.index = {
-
-    //if function "_check" is found, its return value indicates wheter to initialize this module
-    //in this example, if uncommented, module will be initialized if an element with id="page-index" or id="page-news" is found
-
-    /*_check: function() {
-      return APP.core.isModule(['index', 'news']);
-    },*/
-    
-    init: function() {
-      //by default, with no _check function, only initialized if element with id="page-index" is found
-
-      //e.g. this.slider();
-    }
-  }
-
-  
-})(jQuery, APP);
+app.config(['$routeProvider', '$locationProvider',
+  function($routeProvider, $locationProvider) {
+    //$locationProvider.html5Mode(true);
+    $routeProvider.
+      when('/', {
+        templateUrl: 'partials/index.html',
+        controller: 'indexCtrl'
+      })
+      .otherwise({
+        redirectTo: '/'
+      });
+}]);
