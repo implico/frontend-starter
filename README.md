@@ -518,7 +518,7 @@ To use the framework with [AngularJS][angularjs], follow these instructions:
 
 * add Angular to your Bower dependencies (`bower.json` file):
 
-```json
+```
 "dependencies": {
   ...
   "angular": "1.4.x",
@@ -528,7 +528,7 @@ To use the framework with [AngularJS][angularjs], follow these instructions:
 
 * config: set Twig use to false in the views config:
 
-```json
+```
   views: {
     common: {
       useTwig: false,
@@ -539,14 +539,14 @@ To use the framework with [AngularJS][angularjs], follow these instructions:
 * create a directory for your templates in the `app/src/views` dir, like `partials`
 * config: set the views scrips dir to:
 
-```json
+```
 dirs.src.views.scripts = dirs.src.views.main;
 ```
 
 * delete `app/src/js/core.js`, replace `app.js` content with your own bootstrap [AngularJS][angularjs] code
 
 * config: change `core.js` into `app.js` priority in the JS config:
-```json
+```
   priority: {
     ...
     app: ['app.js']
