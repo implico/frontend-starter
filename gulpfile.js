@@ -170,9 +170,11 @@ gulp.task('dev:watch', function(cb) {
   });
 
   //views
-  watch([dirs.src.views.main + '**/*'], batch(function (events, done) {
-    gulp.start('views:dev', done);
-  }));
+  if (dirs.src.views.main) {
+    watch([dirs.src.views.main + '**/*'], batch(function (events, done) {
+      gulp.start('views:dev', done);
+    }));
+  }
 
   //custom dirs
   dirs.custom.forEach(function(dirInfo) {
@@ -343,6 +345,7 @@ var tasks = {
   },
 
   views: function(isDev) {
+
     var configViews = extend(true, config.views.common, config.views[isDev ? 'dev': 'prod']);
 
     var src = dirs.src.views.scripts + '**/*';
@@ -495,12 +498,22 @@ gulp.task('images', function() {
 
 /* VIEWS */
 gulp.task('views:dev', function() {
-  return tasks.views(true)
-    .pipe(browserSync.reload({ stream: true }));
+  if (dirs.src.views.main) {
+    return tasks.views(true)
+      .pipe(browserSync.reload({ stream: true }));
+  }
+  else {
+    return Promise.resolve();
+  }
 });
 
 gulp.task('views:prod', function() {
-  return tasks.views(false);
+  if (dirs.src.views.main) {
+    return tasks.views(false);
+  }
+  else {
+    return Promise.resolve();
+  }
 });
 
 

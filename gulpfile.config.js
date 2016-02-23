@@ -77,7 +77,7 @@ dirs.src.js.app = [dirs.src.js.appDir + '**/*.js', '!' + dirs.src.js.vendorDir +
 
 dirs.src.img = dirs.src.main + 'img/';
 
-dirs.src.views.main = dirs.src.main + 'views/';
+dirs.src.views.main = dirs.src.main + 'views/'; //set to a falsy value to drop views support
 dirs.src.views.layouts = dirs.src.views.main + 'layouts/';
 dirs.src.views.scripts = dirs.src.views.main + 'scripts/';
 
@@ -203,7 +203,7 @@ var config = {
   views: {
 
     common: {
-      useTwig: false,
+      useTwig: true,
       twig: {
         base: dirs.src.views.layouts,
         data: {}
