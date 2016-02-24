@@ -588,6 +588,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 * views: [gulp-twig] options
 * images: [imagemin][gulp-imagemin] options
 * browserSync: [Browsersync][browsersync] options
+* clean task: modify deletion options
 
 
 
