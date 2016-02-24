@@ -165,7 +165,7 @@ gulp.task('dev:watch', function(cb) {
   }));
   
   //images
-  watch(APP.dirs.addConfigGlob(dirs.src.img), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob(dirs.src.img + '**/*'), batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -426,7 +426,7 @@ var tasks = {
   clean: {
     init: function() {
       var delDirs = [];
-      delDirs['dist'] = this.getConfigDirGlob(dirs.dist.main, config.clean.dist, '**/*');
+      delDirs['dist'] = [];
       delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
       delDirs['sprites'] = [];
       delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
@@ -434,6 +434,11 @@ var tasks = {
       delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
       delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
       delDirs['custom'] = [];
+
+      //add dist dir
+      if (config.clean.dist) {
+        delDirs['dist'] = [dirs.dist.main];
+      }
 
       //add sprites src styles
       if (config.clean.sprites) {
@@ -570,7 +575,7 @@ gulp.task('js:prod', function() {
 /* IMAGES */
 gulp.task('images', function() {
 
-  return gulp.src(dirs.src.img)
+  return gulp.src(dirs.src.img + '**/*')
     .pipe(changed(dirs.dist.img))
     //.pipe(debug())
     .pipe(imagemin(config.images.imagemin))
