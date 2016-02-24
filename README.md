@@ -610,10 +610,10 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 
 <br>
 ## Known issues
-Nothing's perfect, these are main unexpected behaviors:
+These are main unexpected behaviors:
 * under Windows, the watcher sometimes blocks and does not see any changes - the script must be then restarted (depends on [gulp-watch]/[Chokidar][chokidar])
-* when deleting a file within a watched dir, the script fails (depends on [minimatch])
-* I/O errors are not handled well
+* when deleting a file within a watched dir, the script sometimes fails (depends on [minimatch])
+* I/O errors are not handled perfectly
 
 
 
