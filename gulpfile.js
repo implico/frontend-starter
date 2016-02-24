@@ -44,8 +44,10 @@ var configMod    = require('./gulpfile.config'),
     buffer       = require('vinyl-buffer'),
     del          = require('del'),
     extend       = require('extend'),
+    fs           = require('fs');
     mainBowerFiles = require('main-bower-files'),
     merge        = require('merge-stream'),
+    path         = require('path');
     runSequence  = require('run-sequence'),
 
     gulp         = require('gulp'),
@@ -163,7 +165,7 @@ gulp.task('dev:watch', function(cb) {
   }));
   
   //images
-  watch(APP.dirs.addConfigGlob(dirs.src.img), batch(function (events, done) {
+  watch(APP.dirs.addConfigGlob(dirs.src.img + '**/*'), batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -419,6 +421,97 @@ var tasks = {
 
       browserSync.apply(null, pars);
     }
+  },
+
+  clean: {
+    init: function() {
+      var delDirs = [];
+      delDirs['dist'] = [];
+      delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
+      delDirs['sprites'] = [];
+      delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
+      delDirs['js'] = this.getConfigDirGlob(dirs.dist.js, config.clean.js);
+      delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
+      delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
+      delDirs['custom'] = [];
+
+      //add dist dir
+      if (config.clean.dist) {
+        delDirs['dist'] = [dirs.dist.main];
+      }
+
+      //add sprites src styles
+      if (config.clean.sprites) {
+        config.sprites.items.forEach(function(spriteInfo){
+          var filename = spriteInfo.options.cssName;
+          if (filename) {
+            delDirs['sprites'].push(dirs.src.styles.sprites + filename);
+          }
+        });
+      }
+
+      //add views subdirs
+      if (delDirs['views'].length && fs.existsSync(dirs.dist.views)) {
+        delDirs['views'] = delDirs['views'].concat(fs.readdirSync(dirs.src.views.scripts).filter(function(file) {
+          return fs.statSync(path.join(dirs.src.views.scripts, file)).isDirectory();
+        }).map(function(dir) {
+          return path.join(dirs.dist.views, dir);// + '/' + '**/*';
+        }));
+      }
+
+      //add custom dirs
+      if (config.clean.custom) {
+        dirs.custom.forEach(function(dirInfo) {
+          if (dirInfo.clean) {
+            delDirs['custom'].push(dirInfo.to);
+          }
+        });
+      }
+
+      //add dist dir
+      if (config.clean.dist) {
+        delDirs
+      }
+
+      var delDirsGlob = [];
+      
+      for (dirKey in delDirs) {
+        if (delDirs.hasOwnProperty(dirKey)) {
+          delDirsGlob = delDirsGlob.concat(delDirs[dirKey]);
+        }
+      };
+
+      var delFiles = del.sync(delDirsGlob, { force: true });
+      //del.sync(dirs.dist.main);
+
+      del.sync(dirs.sassCache);
+
+      if (delFiles.length) {
+        console.log('Deleted files/folders:\n', delFiles.join('\n'));
+      }
+      else {
+        console.log('No files deleted.');
+      }
+
+      return Promise.resolve();
+    },
+
+    getConfigDirGlob: function(baseDir, configDir, suffix) {
+      ret = [];
+      if (configDir) {
+        if (configDir === true)
+          configDir = [baseDir + (suffix ? suffix : '')];
+
+        if (configDir instanceof Array) {
+          ret = configDir;
+        }
+        else {
+          console.warn('Error: config.clean dir value expected to be an array.', baseDir, configDir);
+        }
+      }
+      
+      return ret;
+    }
   }
 }
 
@@ -487,9 +580,9 @@ gulp.task('js:prod', function() {
 /* IMAGES */
 gulp.task('images', function() {
 
-  return gulp.src(dirs.src.img)
+  return gulp.src(dirs.src.img + '**/*')
     .pipe(changed(dirs.dist.img))
-    //.pipe(debug())
+    .pipe(debug())
     .pipe(imagemin(config.images.imagemin))
     .pipe(gulp.dest(dirs.dist.img));
 });
@@ -531,23 +624,7 @@ gulp.task('custom-dirs:prod', function() {
 
 /* CLEAN PUBLIC FOLDERS */
 gulp.task('clean', function(cb) {
-
-  
-  /*var dblStar = '**';
-  var delDirs = [dirs.dist.styles + dblStar + '/*', dirs.src.styles.sprites + dblStar + '/*', dirs.dist.js + dblStar + '/*', dirs.dist.img + dblStar + '/*', dirs.dist.views + '*.*'];
-  dirs.custom.forEach(function(dirInfo) {
-    delDirs.push(dirInfo.to + dblStar + '/*');
-  });
-
-  var delFiles = del.sync(delDirs, { force: true });*/
-  del.sync(dirs.dist.main);
-
-  del.sync(dirs.sassCache);
-
-  //console.log('Deleted files/folders:\n', delFiles.join('\n'));
-
-  return Promise.resolve();
-
+  return tasks.clean.init();
 });
 
 
