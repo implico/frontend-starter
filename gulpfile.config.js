@@ -109,7 +109,6 @@ dirs.custom = [
 //    from: dirs.src.main + 'custom/**/*',
 //    to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
 //  }
-  
 ];
 
 

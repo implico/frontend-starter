@@ -14,7 +14,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * easy to integrate with MV* frameworks (see the [AngularJS example](#angularjs-integration))
 
 
-## Installing
+## Installation
 You need the following tools to start using the framework:
 * [nodejs]
 * [gulp]
@@ -23,13 +23,13 @@ You need the following tools to start using the framework:
 * Git, e.g. [Github desktop](https://desktop.github.com/)
 
 <br>
-After installing, run:
+After cloning the repo (remember **not to use a directory containing an exclamation mark (!)** - it breaks glob patterns), run:
 ```
 npm install
 bower install
 ```
 
-On Windows, remember not to have Visual Studio open at this time and to run Bower from Git Shell.
+On Windows, remember to run Bower from Git Shell. If you use Visual Studio, close it while npm installs the modules.
 
 
 <br>
