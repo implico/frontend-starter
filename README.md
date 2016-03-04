@@ -488,7 +488,7 @@ Concept:
 The `core.js` file contains:
 * mentioned module dispatcher `APP.core.init`
 * mentioned function `APP.core.isModule`
-* function `APP.core.isBreakpoint`: set `z-index` according to the breakpoint (like 1 for mobile, 2 for tablet...) to any element with `data-bp-marker` attribute (like `&lt;body data-bp-marker&gt;`, and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
+* function `APP.core.isBreakpoint`: set `z-index` according to the breakpoint (like 1 for mobile, 2 for tablet...) to any element with `data-bp-marker` attribute (like `<body data-bp-marker>`), and this function will return true if the current breakpoint is equal or less (example: `APP.core.isBreakpoint('tablet')` will return true if `z-index` is 1 or 2 - mobile or tablet); if you pass the second, `exact` parameter, it will return true only if the current breakpoint is equal (example: `APP.core.isBreakpoint('tablet', true)` will return true if `z-index` is 2)
 
 The `core.js` file has a high load priority, i.e. is loaded before any other app scripts, to ensure the `APP` object is initialized properly (configured priority in `gulpfile.config.js`).
 
