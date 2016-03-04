@@ -4,6 +4,11 @@
   "version": "1.1.0",
   "author": "Bartosz Sak <bartosz.sak@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/implico/frontend-starter.git"
+  },
+
   "devDependencies": {
     "browser-sync": "^2.9.11",
     "gulp-debug": "*"
@@ -13,7 +18,7 @@
     "del": "^1.2.0",
     "extend": "*",
     "main-bower-files": "*",
-    "merge-stream": "*",
+    "merge2": "*",
     "path": "^0.11.14",
     "run-sequence": "*",
     "vinyl-buffer": "*",

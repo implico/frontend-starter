@@ -357,7 +357,7 @@ var tasks = {
       ret = ret.pipe(twig(configViews.twig));
     }
     else {
-      ret = ret.pipe(changed(src));
+      ret = ret.pipe(changed(dirs.dist.views));
     }
     ret = ret.pipe(gulp.dest(dirs.dist.views));
 
@@ -374,7 +374,7 @@ var tasks = {
     dirInfos.forEach(function(dirInfo) {
       if ((!isDev || dirInfo.dev) && (dirInfo.to !== null)) {
         var stream = gulp.src(dirInfo.from)
-          .pipe(changed(dirInfo.from))
+          .pipe(changed(dirInfo.to))
           .pipe(gulp.dest(dirInfo.to));
 
         streams.push(stream);
