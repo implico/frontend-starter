@@ -17,7 +17,12 @@
   @if $length > 0 {
     @each $value in $values {
       $newValue: (strip-units($value) * 100 / $breakpointWidth) * 1vw;
-      $newValues: append($newValues, $newValue, space);
+      @if ($length == 1) {
+        $newValues: $newValue;
+      }
+      @else {
+        $newValues: append($newValues, $newValue, space);
+      }
     }
   }
   @else {
@@ -40,7 +45,12 @@
 
   @each $value in $values {
     $newValue: percentage((strip-units($value) / $breakpointWidth));
-    $newValues: append($newValues, $newValue, space);
+    @if ($length == 1) {
+      $newValues: $newValue;
+    }
+    @else {
+      $newValues: append($newValues, $newValue, space);
+    }
   }
 
   @return $newValues;
@@ -55,9 +65,10 @@
 @mixin grid-cont($gutter) {
   $fs-grid-last-gutter: $gutter !global;
   
-  $gutter: $gutter/2;
+  /*$gutter: $gutter/2;
   padding-left: $gutter;
-  padding-right: $gutter;
+  padding-right: $gutter;*/
+  overflow-x: hidden;
 }
 
 @mixin grid-row($gutter: null, $clearfix: true) {
