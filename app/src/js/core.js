@@ -29,11 +29,11 @@ var APP = APP || {};
   }
 
 
-  //returns true if the current page has an id (or one of passed ids if array): #page-[id], to enable individual page/module code
+  //returns true if the current page has an id (or one of passed ids if array): #module-[id], to enable individual page/module code
   core.isModule = function(id, prepend) {
     
     if (typeof prepend == 'undefined')
-      prepend = '#page-';
+      prepend = '#module-';
 
     var isCurrent = false;
     if (!(id instanceof Array))

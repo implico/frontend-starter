@@ -17,14 +17,14 @@
   APP.module.index = {
 
     //if function "_check" is found, its return value indicates wheter to initialize this module
-    //in this example, if uncommented, module will be initialized if an element with id="page-index" or id="page-news" is found
+    //in this example, if uncommented, module will be initialized if an element with id="module-index" or id="module-news" is found
 
     /*_check: function() {
       return APP.core.isModule(['index', 'news']);
     },*/
     
     init: function() {
-      //by default, with no _check function, only initialized if element with id="page-index" is found
+      //by default, with no _check function, only initialized if element with id="modle-index" is found
 
       //e.g. this.slider();
     }

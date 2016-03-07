@@ -140,42 +140,56 @@ gulp.task('dev:watch', function(cb) {
   //styles
   watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
     gulp.start('styles:dev', done);
-  }));
+  })).on('error', function(err) {
+    //console.error(err);
+  });
 
   //fonts
   watch([dirs.src.fonts + '**/*'], batch(function (events, done) {
     gulp.start('fonts', done);
-  }));
+  })).on('error', function(err) {
+    //console.error(err);
+  });
 
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
     watch(APP.dirs.addConfigGlob([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp']), batch(function (events, done) {
       tasks.sprites(itemInfo, done);
-    }));
+    })).on('error', function(err) {
+      //console.error(err);
+    });
   });
 
   //js - app
   watch(APP.dirs.addConfigGlob(dirs.src.js.app), batch(function (events, done) {
     gulp.start('js:dev:main', done);
-  }));
+  })).on('error', function(err) {
+    //console.error(err);
+  });
 
   //js - vendor
   watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.js'].concat(dirs.src.js.vendor)), batch(function (events, done) {
     gulp.start('js:dev', done);
-  }));
+  })).on('error', function(err) {
+    //console.error(err);
+  });
   
   //images
   watch(APP.dirs.addConfigGlob(dirs.src.img + '**/*'), batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
+  }).on('error', function(err) {
+    //console.error(err);
   });
 
   //views
   if (dirs.src.views.main) {
     watch([dirs.src.views.main + '**/*'], batch(function (events, done) {
       gulp.start('views:dev', done);
-    }));
+    })).on('error', function(err) {
+      //console.error(err);
+    });
   }
 
   //custom dirs
@@ -183,7 +197,9 @@ gulp.task('dev:watch', function(cb) {
     if (dirInfo.dev) {
       watch(dirInfo.from, batch(function (events, done) {
         tasks.customDirs([dirInfo], true, done);
-      }));
+      })).on('error', function(err) {
+        //console.error(err);
+      });
     }
   });
 
@@ -576,6 +592,7 @@ gulp.task('js:prod', function() {
 gulp.task('images', function() {
 
   return gulp.src(dirs.src.img + '**/*')
+    .pipe(plumber())
     .pipe(changed(dirs.dist.img))
     //.pipe(debug())
     .pipe(imagemin(config.images.imagemin))

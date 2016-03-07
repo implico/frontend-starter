@@ -118,7 +118,7 @@ dirs.custom = [
 var config = {
 
   global: {
-    globAdd: ['!./**/(*.tmp|*.crdownload)']  //applied to src globs: js, img, sprites
+    globAdd: []  //applied to src globs: js, img, sprites - you can exclude e.g. temp files
   },
 
   styles: {

@@ -324,18 +324,18 @@ Libs installed with Bower are fetched using [main-bower-files] plugin. If you do
 What is proposed here can be illustrated in the following three sections. Naturally, you can use your own way (e.g. for JavaScript see [AngularJS integration](#angularjs-integration)). Also, any comments and suggestions will be appreciated.
 
 #### 1. Views
-Add an individual id to e.g. `body` element for each page type, like index, contact, news... prepended with "page" keyword:
+Add an individual id to e.g. `body` element for each page (or generally: module) type, like index, contact, news... prepended with "module" keyword:
 ```html
-<body id="page-index">
+<body id="module-index">
   <div class="heading">
     ...
 ```
 
 #### 2. Styles
-Refer to particular page styles using the page id selector as a scope, i.e.:
+Refer to particular page/module styles using the page id selector as a scope, i.e.:
 ```sass
 //_pages/index
-#page-index {
+#module-index {
   //only for homepage
   .heading {
     color: green;
@@ -361,7 +361,7 @@ header.layout {
 #### 3. JavaScript
 The main goal is to encapsulate functional code into separate modules (controllers), generally bound to particular views, to maintain scoping, clarity and modularity.
 
-By default, there are two JS files: `core.js` and `app.js`. Of course, if you don't like it or you use a framework like AngularJS, your can remove `core.js` and place your own code into `app.js`.
+By default, there are two JS files: `core.js` and `app.js`. Of course, if you don't like it or you use a framework like AngularJS ([see more](#angularjs-integration)), your can remove `core.js` and place your own code into `app.js`.
 
 
 ##### Namespace
@@ -396,7 +396,7 @@ var APPB = APPB || {};
     }
   }
 
-  //index (homepage) module - initialized only if an element with id="page-index" is found
+  //index (homepage) module - initialized only if an element with id="module-index" is found
   APP.module.index = {
     init: function() {
       //code for index
@@ -404,7 +404,7 @@ var APPB = APPB || {};
     }
   }
 
-  //news module - initialized only if an element with id="page-news" or id="page-news-list" is found
+  //news module - initialized only if an element with id="module-news" or id="module-news-list" is found
   APP.module.news = {
     _check: function() {
       return APP.core.isModule(['news', 'news-list']);
@@ -420,13 +420,13 @@ var APPB = APPB || {};
 
 The dispatcher, defined in `core.js` as `APP.core.init`, performs the following operations when iterating APP.module:
 * checks if module has the `_check` function; if so and it returns a truthy value, initializes it (invokes `init` method)
-* otherwise it runs the `APP.core.isModule` with the page id (the current iteration key, like `index`); if it returns a truthy value, initializes the module
+* otherwise it runs the `APP.core.isModule` with the page id as a parameter (the current iteration key, like `index`); if it returns a truthy value, initializes the module
 
-`APP.core.isModule` just checks if an element with `id="page-[page-id]"` is found (or with one of ids, if you pass an array; you can also pass a prepend-string selector as the second parameter, it is by default `&quot;#page-&quot;`). As you can see, the module (controller) dispatching is based on existence of the same element used for CSS styling.
+`APP.core.isModule` just checks if an element with `id="module-[page-id]"` is found (or with one of ids, if you pass an array; you can also pass a prepend-string selector as the second parameter, it is by default `"#module-"`). As you can see, the module (controller) dispatching is based on existence of the same element used for CSS styling.
 
 Summarizing the example, respectively:
 * layout module is always initialized (`_check` function always returns `true`)
-* index module does not have a `_check` function, so it is initialized when an element with id="page-index" is found
+* index module does not have a `_check` function, so it is initialized when an element with id="module-index" is found
 * news module is initialized when an element with id="news" or id="news-list" is found
 
 Of course, you can place any conditions in the `_check` function.
@@ -612,8 +612,8 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 ## Known issues
 These are main unexpected behaviors:
 * under Windows, the watcher sometimes blocks and does not see any changes - the script must be then restarted (depends on [gulp-watch]/[Chokidar][chokidar])
-* when deleting a file within a watched dir, the script sometimes fails (depends on [minimatch])
 * I/O errors are not handled perfectly
+* custom code separation from the core: injecting config values, code and plugins
 
 
 

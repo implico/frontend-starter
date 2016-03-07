@@ -18,7 +18,7 @@
     "del": "^1.2.0",
     "extend": "*",
     "main-bower-files": "*",
-    "merge2": "*",
+    "merge-stream": "*",
     "path": "^0.11.14",
     "run-sequence": "*",
     "vinyl-buffer": "*",
