@@ -2,5 +2,4 @@
 .project
 /node_modules
 /vendor
-/app/*
-!/app/src
+/app/dist
