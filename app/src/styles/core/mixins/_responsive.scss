@@ -65,10 +65,11 @@
 @mixin grid-cont($gutter) {
   $fs-grid-last-gutter: $gutter !global;
   
-  /*$gutter: $gutter/2;
+  $gutter: $gutter/2;
   padding-left: $gutter;
-  padding-right: $gutter;*/
-  overflow-x: hidden;
+  padding-right: $gutter;
+  margin-left: auto;  
+  margin-right: auto;
 }
 
 @mixin grid-row($gutter: null, $clearfix: true) {
