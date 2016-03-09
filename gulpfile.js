@@ -193,7 +193,12 @@ gulp.task('dev:watch', function(cb) {
   }
 
   //custom dirs
-  dirs.custom.forEach(function(dirInfo) {
+  for (var dirName in dirs.custom) {
+    if (!dirs.custom.hasOwnProperty(dirName))
+      continue;
+
+    var dirInfo = dirs.custom[dirName];
+
     if (dirInfo.dev) {
       watch(dirInfo.from, batch(function (events, done) {
         tasks.customDirs([dirInfo], true, done);
@@ -201,8 +206,7 @@ gulp.task('dev:watch', function(cb) {
         //console.error(err);
       });
     }
-  });
-
+  }
 });
 
 gulp.task('dev:build', function(cb) {
@@ -387,15 +391,20 @@ var tasks = {
     if (done)
       console.log('Starting \'custom dirs\'...');
 
-    dirInfos.forEach(function(dirInfo) {
-      if ((!isDev || dirInfo.dev) && (dirInfo.to !== null)) {
+    for (var dirName in dirInfos) {
+      if (!dirInfos.hasOwnProperty(dirName))
+        continue;
+
+      var dirInfo = dirInfos[dirName];
+
+      if ((!isDev || dirInfo.dev) && (isDev || dirInfo.prod) && (dirInfo.to !== null)) {
         var stream = gulp.src(dirInfo.from)
           .pipe(changed(dirInfo.to))
           .pipe(gulp.dest(dirInfo.to));
 
         streams.push(stream);
       }
-    });
+    };
 
     if (streams.length) {
       return merge.apply(null, streams).on('finish', function() {
@@ -477,11 +486,15 @@ var tasks = {
 
       //add custom dirs
       if (config.clean.custom) {
-        dirs.custom.forEach(function(dirInfo) {
+        for (var dirName in dirs.custom) {
+          if (!dirs.custom.hasOwnProperty(dirName))
+            continue;
+          var dirInfo = dirs.custom[dirName];
+
           if (dirInfo.clean) {
             delDirs['custom'].push(dirInfo.to);
           }
-        });
+        }
       }
 
       var delDirsGlob = [];

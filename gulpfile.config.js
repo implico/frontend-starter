@@ -60,7 +60,20 @@ dirs.sassCache = './.sass-cache/';
 
 dirs.app = './app/';
 
+//custom app dir (optional)
+try {
+  require('./gulpfile.config.app.js')(dirs);
+}
+catch (ex) {}
+
+
 dirs.src.main = dirs.app + 'src/';
+
+//custom src dir
+try {
+  require(dirs.app + 'gulpfile.config.dirs.js')(dirs, 'src');
+}
+catch (ex) {}
 
 
 dirs.src.styles.main = dirs.src.main + 'styles/';
@@ -85,6 +98,13 @@ dirs.src.views.scripts = dirs.src.views.main + 'scripts/';
 //dist dirs
 dirs.dist.main = dirs.app + 'dist/';
 
+//custom dist dir
+try {
+  require(dirs.app + 'gulpfile.config.dirs.js')(dirs, 'dist');
+}
+catch (ex) {}
+
+
 dirs.dist.styles = dirs.dist.main + 'css/';
 dirs.dist.fonts = dirs.dist.styles + 'fonts/';
 dirs.dist.js = dirs.dist.main + 'js/';
@@ -93,24 +113,31 @@ dirs.dist.views = dirs.dist.main;
 
 
 //additional custom dirs to watch and (optionally) copy
-dirs.custom = [
-  {
-    //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
+dirs.custom = {
+  //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
+  html5shiv: {
     dev: true,
+    prod: true,
     clean: false,
     from: [dirs.vendor + 'html5shiv/dist/html5shiv.min.js'],
     to: dirs.dist.js
   }
   
 //Example:
-//  {
+//  your_dir_name: {
 //    dev: true,    //set true if use also for dev tasks
 //    clean: true,  //deletes the directory on clean task
 //    from: dirs.src.main + 'custom/**/*',
 //    to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
 //  }
-];
+};
 
+
+//custom dir modifications/definitions - optional
+try {
+  require(dirs.app + 'gulpfile.config.dirs.js')(dirs, 'all');
+}
+catch (ex) {}
 
 
 /* CONFIG */
@@ -271,6 +298,12 @@ var config = {
     custom: true      //only true/false; set to false to block deletion of any custom dir
   }
 }
+
+//custom config file - optional
+try {
+  require(dirs.app + 'gulpfile.config.custom.js')(config, dirs);
+}
+catch (ex) {}
 
 
 
