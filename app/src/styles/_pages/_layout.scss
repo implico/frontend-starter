@@ -1,15 +1,8 @@
 html {
 	font-family: Arial, sans-serif, Tahoma;
-	font-size: $font-size-mobile;
 
-	@include respond-to(tablet) {
-		font-size: $font-size-tablet;
-	}
-
-	@include respond-to(desktop) {
-		font-size: $font-size-desktop;
-	}
-
+	//UNCOMMENT IF USING SASS-CORE FRAMEWORK
+	//@include font-px(md);
 }
 
 body {

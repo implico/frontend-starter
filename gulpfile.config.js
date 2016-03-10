@@ -208,6 +208,15 @@ var config = {
       sourcemapsRoot: '/src/',
       minify: false,
       concatAppVendor: true,   //if true, app.js and vendor.js are merged into app.js
+
+      mainBowerFiles: {
+        paths: {
+          bowerDirectory: dirs.vendor,
+          bowerrc: dirs.app + '.bowerrc',
+          bowerJson: dirs.app + 'bower.json'
+        },
+        overrides: {}        
+      },
       
       //add script filenames/globs (relative to the appropriate dirs) to be loaded first
       priority: {

@@ -2,16 +2,16 @@
 // Breakpoints
 // =============================================================================
 
-$fs-tablet-min: 768px;
-$fs-desktop-min: 992px;
-$fs-desktop-lg-min: 1200px;
+$fs-tablet-min: 768px !default;
+$fs-desktop-min: 992px !default;
+$fs-desktop-lg-min: 1400px !default;
 
-$fs-mobile-max: $fs-tablet-min - 1;
-$fs-tablet-max: $fs-desktop-min - 1;
-$fs-desktop-max: $fs-desktop-lg-min - 1;
+$fs-mobile-max: $fs-tablet-min - 1 !default;
+$fs-tablet-max: $fs-desktop-min - 1 !default;
+$fs-desktop-max: $fs-desktop-lg-min - 1 !default;
 
-$fs-mobile-sm-max: 479px;
-$fs-tablet-sm-max: 850px;
+$fs-mobile-sm-max: 479px !default;
+$fs-tablet-sm-max: 850px !default;
 
 
 
@@ -30,7 +30,7 @@ $fs-tablet-sm-max: 850px;
 
 
 //base breakpoints for vw/percentage converting (mainly fonts); specify only ones that are different than main breakpoints
-$design-breakpoints: ();
+$design-breakpoints: () !default;
 //example: $design-breakpoints: (mobile: 600px, tablet: 900px);
 
 
@@ -38,12 +38,11 @@ $design-breakpoints: ();
 // =============================================================================
 // Fonts
 // =============================================================================
-$font-size-mobile: 16px;
-$font-size-tablet: 16px;
-$font-size-desktop: 16px;
-
 $font-sets: (
   sm: (mobile: 14px, tablet: 14px, desktop: 14px),
-  md: (mobile: $font-size-mobile, tablet: $font-size-tablet, desktop: $font-size-desktop),
+  md: (mobile: 16px, tablet: 18px, desktop: 16px),
   lg: (mobile: 22px, tablet: 22px, desktop: 22px)
-);
+) !default;
+
+//default font set for font-* mixins
+$font-set-default: md !default;

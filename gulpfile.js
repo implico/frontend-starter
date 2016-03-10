@@ -296,7 +296,7 @@ var tasks = {
     }
     else {
       src = APP.dirs.js.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
-                  .concat(mainBowerFiles())
+                  .concat(mainBowerFiles(configJs.mainBowerFiles))
                   .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
                   .concat(dirs.src.js.vendor);
     }

@@ -8,15 +8,16 @@
 @import '../../../vendor/compass-breakpoint/stylesheets/breakpoint';
 
 
-//core
-@import 'core/config';
-@import 'core/mixins/responsive';
-@import 'core/mixins/fonts';
-@import 'core/mixins/misc';
+//variables
+@import 'config/variables';
 
-//custom
-@import 'custom/config';
-@import 'custom/mixins';
+//UNCOMMENT IF USING SASS-CORE FRAMEWORK, customize variables in previously imported file (e.g. variables)
+@import 'core/sass-core';
+
+//custom config
+@import 'config/mixins';
+@import 'config/colors';
+@import 'config/fonts';
 
 
 //sprites - uncomment if used

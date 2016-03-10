@@ -2,63 +2,102 @@
 // Unit converters
 // =============================================================================
 
-//convers font size in px to rem using specified breakpoint px width as a base
-@function font-rem($sizePx, $breakpoint: mobile) {
-  $baseSize: $font-size-mobile;
-
-  @if $breakpoint == tablet {
-    $baseSize: $font-size-tablet;
-  }
-  @else if $breakpoint == desktop {
-    $baseSize: $font-size-desktop;
-  }
-
-  @return $sizePx / $baseSize * 1rem;
+@mixin font-px($fontSet: $font-set-default, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $vwFallbackRatio: 0.9) {
+  @include font-conv($fontSet, null, px, $mobile, $tablet, $desktop, $mobile-sm, $tablet-sm, $vwFallbackRatio);
 }
 
-//convers font size in px to vw using specified font set info or specified breakpoint px width as a base
-@mixin font-vw($fontSet: null, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $fallbackRatio: 0.9) {
-  $breakpointInfo: ();
-  @if ($fontSet) {
-    $breakpointInfo: map_get($font-sets, $fontSet);
+@mixin font-rem($fontSet: $font-set-default, $sizesPxRem: null, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $vwFallbackRatio: 0.9) {
+  @include font-conv($fontSet, $sizesPxRem, rem, $mobile, $tablet, $desktop, $mobile-sm, $tablet-sm, $vwFallbackRatio);
+}
+
+@mixin font-vw($fontSet: $font-set-default, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $vwFallbackRatio: 0.9) {
+  @include font-conv($fontSet, null, vw, $mobile, $tablet, $desktop, $mobile-sm, $tablet-sm, $vwFallbackRatio);
+}
+
+
+//universal mixin for rem/percent/px definitions
+//generates breakpoints for font sizes converted to specified units (vw, rem or left as px)
+//uses specified font set info or passed breakpoint px width as a base
+@mixin font-conv($fontSet: $font-set-default, $sizesPxRem: null, $targetUnit: rem, $mobile: null, $tablet: null, $desktop: null, $mobile-sm: null, $tablet-sm: null, $vwFallbackRatio: 0.9) {
+  $isPx: $targetUnit == px;
+  $isRem: $targetUnit == rem;
+  $isVw: $targetUnit == vw;
+
+  //if font set is a map, it is considered as sizes for rem
+  @if $isRem and (type-of($fontSet) == 'map') {
+    $sizesPxRem: $fontSet;
+    $fontSet: $font-set-default;
   }
 
-  @if ($mobile) {
-    $breakpointInfo: map-merge($breakpointInfo, ('mobile': $mobile));
+  @if not $isPx and not $isRem and not $isVw {
+    @warn 'sass-core/font-conv: Wrong target unit!';
   }
-  @if ($mobile-sm) {
-    $breakpointInfo: map-merge($breakpointInfo, ('mobile-sm': $mobile-sm));
+  @else if $isRem and not (type-of($sizesPxRem) == map) {
+    @warn 'sass-core/font-conv: Sizes for rem must be a map of (breakpoint-name: size-px) values!';
   }
-  @if ($tablet) {
-    $breakpointInfo: map-merge($breakpointInfo, ('tablet': $tablet));
-  }
-  @if ($tablet-sm) {
-    $breakpointInfo: map-merge($breakpointInfo, ('tablet-sm': $tablet-sm));
-  }
-  @if ($desktop) {
-    $breakpointInfo: map-merge($breakpointInfo, ('desktop': $desktop));
-  }
+  @else {
 
-  @each $breakpoint, $size in $breakpointInfo {
-
-    @if $breakpoint == mobile {
-      font-size: round($size * $fallbackRatio); //fallback
-      font-size: unit-vw($size, $breakpoint);
+    $breakpointInfo: ();
+    @if ($fontSet) {
+      $breakpointInfo: map_get($font-sets, $fontSet);
     }
-    @else {
-      @include respond-to($breakpoint) {
-        @if $breakpoint == desktop {
-          font-size: $size;
+
+    @if ($mobile) {
+      $breakpointInfo: map-merge($breakpointInfo, ('mobile': $mobile));
+    }
+    @if ($mobile-sm) {
+      $breakpointInfo: map-merge($breakpointInfo, ('mobile-sm': $mobile-sm));
+    }
+    @if ($tablet) {
+      $breakpointInfo: map-merge($breakpointInfo, ('tablet': $tablet));
+    }
+    @if ($tablet-sm) {
+      $breakpointInfo: map-merge($breakpointInfo, ('tablet-sm': $tablet-sm));
+    }
+    @if ($desktop) {
+      $breakpointInfo: map-merge($breakpointInfo, ('desktop': $desktop));
+    }
+
+    @each $breakpoint, $size in $breakpointInfo {
+
+      @if not $isRem or map-has-key($sizesPxRem, $breakpoint) {
+
+        @if $breakpoint == mobile {
+          @if $isPx {
+            font-size: $size;
+          }
+          @else if $isRem {
+            font-size: unit-rem(map-get($sizesPxRem, $breakpoint), $size);
+          }
+          @else if $isVw {
+            font-size: round($size * $vwFallbackRatio); //fallback
+            font-size: unit-vw($size, $breakpoint);
+          }
         }
         @else {
-          font-size: round($size * $fallbackRatio); //fallback
-          font-size: unit-vw($size, $breakpoint);
+          @include respond-to($breakpoint) {
+
+            @if $isPx {
+              font-size: $size;
+            }
+            @else if $isRem {
+              font-size: unit-rem(map-get($sizesPxRem, $breakpoint), $size);
+            }
+            @else if $isVw {
+              @if $breakpoint == desktop {
+                font-size: $size;
+              }
+              @else {
+                font-size: round($size * $vwFallbackRatio); //fallback
+                font-size: unit-vw($size, $breakpoint);
+              }
+            }
+          }
         }
       }
     }
   }
 }
-
 
 // =============================================================================
 // Font face (alternative to Compass): https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6#file-_mixins-scss-L30
