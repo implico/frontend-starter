@@ -4,15 +4,13 @@
 @import "compass/css3/font-face";
 
 
-//vendor
-@import '../../../vendor/compass-breakpoint/stylesheets/breakpoint';
-
-
 //variables
 @import 'config/variables';
 
-//UNCOMMENT IF USING SASS-CORE FRAMEWORK, customize variables in previously imported file (e.g. variables)
-@import 'core/core';
+//vendor
+@import '../../../vendor/compass-breakpoint/stylesheets/breakpoint';
+//UNCOMMENT IF USING SASS-CORE FRAMEWORK (update the path to your actual vendor dir path), customize variables in previously imported file (e.g. variables)
+//@import '../../../vendor/sass-core/dist/sass-core';
 
 //custom config
 @import 'config/mixins';

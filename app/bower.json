@@ -4,7 +4,8 @@
   "dependencies": {
     "jquery": "1.*.*",
     "compass-breakpoint": "2.*.*",
-    "html5shiv": "*"
+    "html5shiv": "*",
+    "sass-core": "*"
   },
 
   "overrides": {

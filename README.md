@@ -8,7 +8,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
-* Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer], framework mixins and functions: responsive sprites, responsive fonts (vw), rem/vw/percentage unit converters
+* Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
 * Views: [Twig template engine][twig] with [gulp-twig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
 * easy to integrate with MV* frameworks (see the [AngularJS example](#angularjs-integration))
