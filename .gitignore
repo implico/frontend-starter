@@ -2,4 +2,4 @@
 .project
 /node_modules
 /vendor
-/app/dist
+/app
