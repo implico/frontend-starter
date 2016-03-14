@@ -144,10 +144,6 @@ catch (ex) {}
 
 var config = {
 
-  global: {
-    globAdd: []  //applied to src globs: js, img, sprites - you can exclude e.g. temp files
-  },
-
   styles: {
 
     common: {

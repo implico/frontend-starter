@@ -92,7 +92,6 @@ var APP = {
     },
     
     img: function() {
-      dirs.src.img = APP.dirs.addConfigGlob(dirs.src.img);
       //exclude sprite dirs
       config.sprites.items.forEach(function(itemInfo) {
         dirs.src.img.push('!' + itemInfo.imgSource + '{,/**}');
@@ -111,14 +110,6 @@ var APP = {
         }
         return ret;
       }
-    },
-    
-    //adds config global glob (exclude temp files etc.)
-    addConfigGlob: function (glob) {
-      if (!(glob instanceof Array)) {
-        glob = [glob];
-      }
-      return glob.concat(config.global.globAdd);
     }
   }
 }
@@ -147,14 +138,14 @@ gulp.task('dev:watch', function(cb) {
   });
 
   //styles
-  watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
+  watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
     gulp.start('styles:dev', done);
   })).on('error', function(err) {
     //console.error(err);
   });
 
   //fonts
-  watch([dirs.src.fonts + '**/*'], batch(function (events, done) {
+  watch(dirs.src.fonts + '**/*', batch(function (events, done) {
     gulp.start('fonts', done);
   })).on('error', function(err) {
     //console.error(err);
@@ -162,7 +153,7 @@ gulp.task('dev:watch', function(cb) {
 
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
-    watch(APP.dirs.addConfigGlob([itemInfo.imgSource + '**/*.*', '!' + itemInfo.imgSource + '**/*.tmp']), batch(function (events, done) {
+    watch(itemInfo.imgSource + '**/*.*', batch(function (events, done) {
       tasks.sprites(itemInfo, done);
     })).on('error', function(err) {
       //console.error(err);
@@ -170,21 +161,21 @@ gulp.task('dev:watch', function(cb) {
   });
 
   //js - app
-  watch(APP.dirs.addConfigGlob(dirs.src.js.app), batch(function (events, done) {
+  watch(dirs.src.js.app, batch(function (events, done) {
     gulp.start('js:dev:main', done);
   })).on('error', function(err) {
     //console.error(err);
   });
 
   //js - vendor
-  watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.js'].concat(dirs.src.js.vendor)), batch(function (events, done) {
+  watch([dirs.vendor + '**/*.js'].concat(dirs.src.js.vendor), batch(function (events, done) {
     gulp.start('js:dev', done);
   })).on('error', function(err) {
     //console.error(err);
   });
   
   //images
-  watch(APP.dirs.addConfigGlob(dirs.src.img + '**/*'), batch(function (events, done) {
+  watch(dirs.src.img + '**/*', batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
     //TODO: handle images removal in dist dir
@@ -235,7 +226,7 @@ gulp.task('prod', function(cb) {
     setTimeout(function() {
       browserSync.reload();
     }, 1000);
-    
+
     cb();
   });
 });
@@ -258,7 +249,7 @@ var tasks = {
     //configStyles.sass.sourceMapRoot = configStyles.sourceMapsRoot;
     //configStyles.sass.sourceMapEmbed = configStyles.sourceMaps;
 
-    var ret = gulp.src(APP.dirs.addConfigGlob(dirs.src.styles.main + '*.scss'))
+    var ret = gulp.src(dirs.src.styles.main + '*.scss')
       .pipe(plumber({
         errorHandler: function (error) {
           console.log(error.message);
@@ -293,7 +284,7 @@ var tasks = {
     if (done)
       console.log('Starting \'sprites\'...');
 
-    var spriteData = gulp.src(APP.dirs.addConfigGlob(itemInfo.imgSource + '**/*')).pipe(spritesmith(itemInfo.options));
+    var spriteData = gulp.src(itemInfo.imgSource + '**/*').pipe(spritesmith(itemInfo.options));
 
     var imgStream = spriteData.img
       .pipe(buffer())
@@ -329,7 +320,7 @@ var tasks = {
               .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
               .concat(dirs.src.js.vendor);
     }
-    ret = gulp.src(APP.dirs.addConfigGlob(src), { base: dirs.src.main });
+    ret = gulp.src(src, { base: dirs.src.main });
 
     //apply vendor filter glob
     if (!isApp) {

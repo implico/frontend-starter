@@ -1,6 +1,6 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [sass][SASS] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
+Frontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [SASS][sass] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
 
 
 ## Features
@@ -8,7 +8,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
-* Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
+* Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
 * Views: [Swig template engine][swig] with [gulp-swig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
 * easy to integrate with MV* frameworks (see the [bundles](#bundles))
@@ -18,7 +18,6 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 You need the following tools to start using the framework:
 * [nodejs]
 * [gulp]
-* [Compass][compass]
 * [Bower][bower]
 * Git, e.g. [Github desktop](https://desktop.github.com/)
 
@@ -86,11 +85,24 @@ Same as `prod`, but additionally launches a Browsersync preview.
 Cleans the dist directory.
 
 
+### Partial tasks
+* common: `images`, `sprites`, `fonts`
+* dev: `styles:dev`, `js:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`
+* prod: `styles:prod`, `js:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
+
+
+### Key shortcuts
+While watching for changes (tasks: `gulp`/`gulp dev:watch` or `gulp dev`), you can use the following shortcuts:
+* Ctrl+P: to build the prod version (init `prod` task) and reload the browser
+* Ctrl+D: to build the dev version (init `dev:build` task) and reload the browser
+* Ctrl+C: to exit
+
+
 
 <br>
 ## Functionality
 
-### Views, Styles (including fonts, spites), JavaScript
+### Views, Styles (including fonts, sprites), JavaScript
 
 See your [bundle](#bundles) docs.
 
@@ -108,26 +120,33 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 
 <br>
 <a name="configuration"></a>
-## Configuration
-To change default configuration (directories, task config), edit the `app/gulpfile.config.custom.js` and `app/gulpfile.config.dirs.js` files in your bundle root directory.
+## Directories and configuration
+All configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents to maintain ability of updates of the core.
+
+Instead, to change default configuration (directories, tasks config), edit the `app/gulpfile.config.custom.js` and `app/gulpfile.config.dirs.js` files in your bundle root directory.
+
+You can also change the `app` directory - simply create a file named `gulpfile.config.app.js` in the framework root directory and change the app dir, e.g.:
+```js
+module.exports = function(dirs) {
+  dirs.app = '../other_dir';
+}
+```
 
 ### Directories
-You see the definiton each directory in the first section of the file.
+You can see the definitons of each directory in the first section of the file.
 
-You can also add your custom directories by editing `dirs.custom`. See the commented out example below the dir definitions.
+You can also add your custom directories (for example - download assets like PDFs) by editing `dirs.custom`. See the commented out example below the dir definitions.
 
 ### Config object
 `config` object contains configuration parameters divided into key sections. Most of them have subsets, with options applied according to the environment mode: `common` (all), `dev` and `prod`.
 
-* global:
-  * `globAdd`: glob pattern added to watch patterns (excludes temp files etc.)
-* styles: sourcemap generation, [gulp-autoprefixer] and [gulp-compass] options
-* sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
-* js: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
-* views: [gulp-swig] options
-* images: [imagemin][gulp-imagemin] options
-* browserSync: [Browsersync][browsersync] options
-* clean task: modify deletion options
+* *styles*: sourcemap generation, [gulp-autoprefixer] and [gulp-sass] options
+* *sprites*: you can generate multiple sprite files by adding subsequent elements to the `items` array
+* *js*: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
+* *views*: [gulp-swig] options
+* *images*: [imagemin][gulp-imagemin] options
+* *browserSync*: [Browsersync][browsersync] options
+* *clean*: modify deletion options
 
 
 
@@ -149,8 +168,7 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 
 <br>
 ## Known issues, TODO
-* under Windows, the watcher sometimes blocks and does not see any changes (usally when you save SASS files a couple of times in a short time) - the script must be then restarted (probably depends on [gulp-watch]/[Chokidar][chokidar])
-* bundles: define custom plugins and code
+* bundles: define custom plugins and tasks
 
 
 
@@ -161,13 +179,12 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [bower]: http://bower.io/
 [bundle-default]: https://github.com/implico/fs-bundle-default
 [chokidar]: https://github.com/paulmillr/chokidar
-[compass]: http://compass-style.org/
 [gulp]: http://gulpjs.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
-[gulp-compass]: https://github.com/appleboy/gulp-compass
 [gulp-concat]: https://github.com/contra/gulp-concat
 [gulp-imagemin]: https://github.com/sindresorhus/gulp-imagemin
 [gulp-jshint]: https://github.com/spalger/gulp-jshint
+[gulp-sass]: https://github.com/dlmanning/gulp-sass
 [gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
 [gulp-swig]: https://github.com/colynb/gulp-swig
@@ -176,6 +193,7 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [main-bower-files]: https://github.com/ck86/main-bower-files
 [minimatch]: https://github.com/isaacs/minimatch
 [nodejs]: https://nodejs.org/
+[node-sass]: https://github.com/sass/node-sass
 [sass]: http://sass-lang.com/
 [sass-breakpoint]: http://breakpoint-sass.com/
 [sass-core]: https://github.com/implico/sass-core
