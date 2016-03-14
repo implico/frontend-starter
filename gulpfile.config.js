@@ -224,7 +224,7 @@ var config = {
           beforeBower: [],  //before bower components load
           afterBower: [],   //before dirs.src.js.vendor load (you usually need this one)
         },
-        app: ['core.js']
+        app: [] //ex: ['core.js']
       }
     },
 
