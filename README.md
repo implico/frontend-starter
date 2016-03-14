@@ -9,7 +9,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
 * Styles: [SASS + Compass (concatenation, compression)][compass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
-* Views: [Twig template engine][twig] with [gulp-twig]
+* Views: [Swig template engine][swig] with [gulp-swig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
 * easy to integrate with MV* frameworks (see the [bundles](#bundles))
 
@@ -124,7 +124,7 @@ You can also add your custom directories by editing `dirs.custom`. See the comme
 * styles: sourcemap generation, [gulp-autoprefixer] and [gulp-compass] options
 * sprites: you can generate multiple sprite files by adding subsequent elements to the `items` array
 * js: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
-* views: [gulp-twig] options
+* views: [gulp-swig] options
 * images: [imagemin][gulp-imagemin] options
 * browserSync: [Browsersync][browsersync] options
 * clean task: modify deletion options
@@ -170,7 +170,7 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [gulp-jshint]: https://github.com/spalger/gulp-jshint
 [gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
-[gulp-twig]: https://github.com/zimmen/gulp-twig
+[gulp-swig]: https://github.com/colynb/gulp-swig
 [gulp-uglify]: https://github.com/terinjokes/gulp-uglify
 [gulp-watch]: https://github.com/floatdrop/gulp-watch
 [main-bower-files]: https://github.com/ck86/main-bower-files
@@ -179,4 +179,4 @@ To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
 [sass]: http://sass-lang.com/
 [sass-breakpoint]: http://breakpoint-sass.com/
 [sass-core]: https://github.com/implico/sass-core
-[twig]: http://twig.sensiolabs.org/doc/templates.html
+[swig]: http://paularmstrong.github.io/swig/
