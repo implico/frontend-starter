@@ -201,7 +201,8 @@ var config = {
       sourceMaps: true,
       sourceMapsRoot: '/src/',
       minify: false,
-      concatAppVendor: true,   //if true, app.js and vendor.js are merged into app.js
+      concatAppVendor: true,    //if true, app.js and vendor.js are merged into app.js
+      vendorFilter: '**/*.js',  //filter applied to vendor files (here: only JS files)
 
       mainBowerFiles: {
         paths: {

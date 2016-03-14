@@ -57,6 +57,7 @@ var configMod    = require('./gulpfile.config'),
     batch        = require('gulp-batch'),
     changed      = require('gulp-changed'),
     concat       = require('gulp-concat'),
+    filter       = require('gulp-filter'),
     imagemin     = require('gulp-imagemin'),
     jshint       = require('gulp-jshint'),
     minifyCss    = require('gulp-minify-css'),
@@ -317,6 +318,12 @@ var tasks = {
               .concat(dirs.src.js.vendor);
     }
     ret = gulp.src(APP.dirs.addConfigGlob(src), { base: dirs.src.main });
+
+    //apply vendor filter glob
+    if (!isApp) {
+      ret = ret
+        .pipe(filter(configJs.vendorFilter));
+    }
 
     //plumber
     ret = ret
@@ -621,7 +628,7 @@ gulp.task('js:prod', function() {
 
   ret.on('end', function() {
     tasks.js(true, false).on('end', function() {
-      del(dirs.dist.js + 'vendor.js');
+      del(dirs.dist.js + 'vendor.js', { force: true });
     });
   });
 
@@ -634,7 +641,13 @@ gulp.task('js:prod', function() {
 /* IMAGES */
 gulp.task('images', function() {
 
-  return gulp.src(dirs.src.img + '**/*')
+  var imgGlob = [dirs.src.img + '**/*'];
+  config.sprites.items.forEach(function(spriteDir) {
+    imgGlob.push('!' + spriteDir.imgSource);
+    imgGlob.push('!' + spriteDir.imgSource + '**/*');
+  });
+
+  return gulp.src(imgGlob)
     .pipe(plumber())
     .pipe(changed(dirs.dist.img))
     //.pipe(debug())
