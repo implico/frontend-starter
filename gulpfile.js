@@ -220,12 +220,24 @@ gulp.task('dev:watch', function(cb) {
 
 gulp.task('dev:build', function(cb) {
   runSequence('clean', 'views:dev', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'custom-dirs:dev'], function() {
+    //just tu ensure all assets are ready
+    setTimeout(function() {
+      browserSync.reload();
+    }, 1000);
+
     cb();
   });
 });
 
 gulp.task('prod', function(cb) {
-  runSequence('clean', 'views:prod', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'custom-dirs:prod'], cb);
+  runSequence('clean', 'views:prod', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'custom-dirs:prod'], function() {
+    //just tu ensure all assets are ready
+    setTimeout(function() {
+      browserSync.reload();
+    }, 1000);
+    
+    cb();
+  });
 });
 
 gulp.task('prod:preview', ['prod'], function(cb) {
@@ -581,7 +593,7 @@ var tasks = {
 /* STYLES */
 gulp.task('styles:dev', function() {
   return tasks.styles(true)
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 });
 
 gulp.task('styles:prod', function() {
@@ -610,12 +622,12 @@ gulp.task('sprites', function() {
 /* JS SCRIPTS */
 gulp.task('js:dev:main', function() {
   return tasks.js(true, true)
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 });
 
 gulp.task('js:dev:vendor', function() {
   return tasks.js(false, true)
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 });
 
 gulp.task('js:dev', function() {
@@ -661,7 +673,7 @@ gulp.task('images', function() {
 gulp.task('views:dev', function() {
   if (dirs.src.views.main) {
     return tasks.views(true)
-      .pipe(browserSync.reload({ stream: true }));
+      .pipe(browserSync.stream());
   }
   else {
     return Promise.resolve();
