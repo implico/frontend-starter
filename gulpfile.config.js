@@ -240,21 +240,28 @@ var config = {
   views: {
 
     common: {
-      useTwig: true,
-      twig: {
-        base: dirs.src.views.layouts,
+      useSwig: true,
+      swig: {
+        defaults: { cache: false },
+        setup: function(swig) {
+          swig.setDefaults({
+            //set base dir
+            loader: swig.loaders.fs(dirs.src.views.layouts)
+          });
+        },
+        //variable context (data) passed to all templates
         data: {}
       }
     },
 
     dev: {
-      twig: {
+      swig: {
 
       }
     },
 
     prod: {
-      twig: {
+      swig: {
 
       }
     }

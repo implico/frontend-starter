@@ -67,7 +67,7 @@ var configMod    = require('./gulpfile.config'),
     sourcemaps   = require('gulp-sourcemaps'),
     spritesmith  = require('gulp.spritesmith'),
     uglify       = require('gulp-uglify'),
-    twig         = require('gulp-twig'),
+    swig         = require('gulp-swig'),
     watch        = require('gulp-watch');
 
 
@@ -141,6 +141,7 @@ gulp.task('dev:watch', function(cb) {
     console.log('Ctrl+P: prod');
     console.log('Ctrl+D: dev:build');
     console.log('Ctrl+C: exit');
+    tasks.registerKeyEvents();
     cb();
   });
 
@@ -217,13 +218,13 @@ gulp.task('dev:watch', function(cb) {
 });
 
 gulp.task('dev:build', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev', 'custom-dirs:dev'], function() {
+  runSequence('clean', 'views:dev', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'custom-dirs:dev'], function() {
     cb();
   });
 });
 
 gulp.task('prod', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'views:prod', 'custom-dirs:prod'], cb);
+  runSequence('clean', 'views:prod', 'fonts', 'sprites', ['images', 'styles:prod', 'js:prod', 'custom-dirs:prod'], cb);
 });
 
 gulp.task('prod:preview', ['prod'], function(cb) {
@@ -383,8 +384,8 @@ var tasks = {
 
     var ret = gulp.src(dirs.src.views.scripts + '**/*');
 
-    if (configViews.useTwig) {
-      ret = ret.pipe(twig(configViews.twig));
+    if (configViews.useSwig) {
+      ret = ret.pipe(swig(configViews.swig));
     }
     else {
       ret = ret.pipe(changed(dirs.dist.views));
@@ -536,6 +537,31 @@ var tasks = {
       
       return ret;
     }
+  },
+
+  registerKeyEvents: function() {
+    keypress(process.stdin);
+
+    process.stdin.on('keypress', function(ch, key) {
+
+      if (key.ctrl) {
+        switch (key.name) {
+          case 'c':
+            process.exit();
+            break;
+          case 'p':
+            gulp.start('prod', function() {
+            });
+            break;
+          case 'd':
+            gulp.start('dev:build', function() {
+            });
+            break;
+        }
+      }
+    });
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
   }
 }
 
@@ -662,32 +688,3 @@ gulp.task('browser-sync:dev', function() {
 gulp.task('browser-sync:prod', function() {
   return tasks.browserSync(false);
 });
-
-
-
-/*
-    KEY EVENTS
-*/
-
-keypress(process.stdin);
-
-process.stdin.on('keypress', function(ch, key) {
-
-  if (key.ctrl) {
-    switch (key.name) {
-      case 'c':
-        process.exit();
-        break;
-      case 'p':
-        gulp.start('prod', function() {
-        });
-        break;
-      case 'd':
-        gulp.start('dev:build', function() {
-        });
-        break;
-    }
-  }
-});
-process.stdin.setRawMode(true);
-process.stdin.resume();
