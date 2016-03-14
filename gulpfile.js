@@ -45,6 +45,7 @@ var configMod    = require('./gulpfile.config'),
     del          = require('del'),
     extend       = require('extend'),
     fs           = require('fs');
+    keypress     = require('keypress'),
     mainBowerFiles = require('main-bower-files'),
     merge        = require('merge-stream'),
     path         = require('path');
@@ -135,7 +136,13 @@ gulp.task('dev', function(cb) {
 
 gulp.task('dev:watch', function(cb) {
 
-  runSequence('browser-sync:dev', cb);
+  runSequence('browser-sync:dev', function() {
+    console.log('Use keys:')
+    console.log('Ctrl+P: prod');
+    console.log('Ctrl+D: dev:build');
+    console.log('Ctrl+C: exit');
+    cb();
+  });
 
   //styles
   watch(APP.dirs.addConfigGlob([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css']), batch(function (events, done) {
@@ -210,7 +217,9 @@ gulp.task('dev:watch', function(cb) {
 });
 
 gulp.task('dev:build', function(cb) {
-  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev', 'custom-dirs:dev'], cb);
+  runSequence('clean', 'fonts', 'sprites', ['images', 'styles:dev', 'js:dev', 'views:dev', 'custom-dirs:dev'], function() {
+    cb();
+  });
 });
 
 gulp.task('prod', function(cb) {
@@ -225,6 +234,8 @@ gulp.task('prod:preview', ['prod'], function(cb) {
 
 
 var tasks = {
+
+  inProgress: false,
 
   styles: function(isDev) {
 
@@ -370,8 +381,7 @@ var tasks = {
 
     var configViews = extend(true, config.views.common, config.views[isDev ? 'dev': 'prod']);
 
-    var src = dirs.src.views.scripts + '**/*';
-    var ret = gulp.src(src);
+    var ret = gulp.src(dirs.src.views.scripts + '**/*');
 
     if (configViews.useTwig) {
       ret = ret.pipe(twig(configViews.twig));
@@ -429,22 +439,12 @@ var tasks = {
 
     if (configBS.enable) {
 
-      var cb;
 
-      if (configBS.exitTimeout) {
-        cb = function() {
-          setTimeout(function() {
-            process.exit();
-          }, configBS.exitTimeout);
-        }
-      }
-
-      var pars = [configBS.options];
-      if (cb) {
-        pars.push(cb);
-      }
-
-      browserSync.apply(null, pars);
+      return new Promise(function(resolve, reject) {
+        browserSync.init(configBS.options, function() {
+          resolve();
+        });
+      });
     }
   },
 
@@ -656,9 +656,38 @@ gulp.task('clean', function(cb) {
 
 /* BROWSER SYNC */
 gulp.task('browser-sync:dev', function() {
-  tasks.browserSync(true);
+  return tasks.browserSync(true);
 });
 
 gulp.task('browser-sync:prod', function() {
-  tasks.browserSync(false);
+  return tasks.browserSync(false);
 });
+
+
+
+/*
+    KEY EVENTS
+*/
+
+keypress(process.stdin);
+
+process.stdin.on('keypress', function(ch, key) {
+
+  if (key.ctrl) {
+    switch (key.name) {
+      case 'c':
+        process.exit();
+        break;
+      case 'p':
+        gulp.start('prod', function() {
+        });
+        break;
+      case 'd':
+        gulp.start('dev:build', function() {
+        });
+        break;
+    }
+  }
+});
+process.stdin.setRawMode(true);
+process.stdin.resume();

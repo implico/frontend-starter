@@ -270,8 +270,7 @@ var config = {
 
   browserSync: {
     common: {
-      enable: true,
-      exitTimeout: 0, //time to pass to exit app after initializing Browsersync (optionally for prod preview)
+      enable: true,  //for prod, applies prod:preview
 
       options: {
         //tip: set to [project-name].localhost and uncomment the "open: external" option
@@ -290,7 +289,6 @@ var config = {
     },
 
     prod: {
-      exitTimeout: 0
     }
   },
 
