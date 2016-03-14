@@ -1,5 +1,4 @@
-/.sass-cache
-.project
-/node_modules
-/vendor
+node_modules
+bower_components
 /app
+/gulpfile.config.app.js

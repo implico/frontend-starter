@@ -55,7 +55,7 @@ var dirs = {
 
 
 //src dirs
-dirs.vendor = './vendor/';  //change also .bowerrc
+dirs.vendor = './bower_components/';  //change also .bowerrc
 dirs.sassCache = './.sass-cache/';
 
 dirs.app = './app/';
