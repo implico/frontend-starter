@@ -12,7 +12,7 @@
   "devDependencies": {
     "browser-sync": "^2.9.11",
     "gulp-debug": "*",
-    "keypress": "0.*",
+    "keypress": "0.*"
   },
   "dependencies": {
     "autoprefixer": "^6.0.3",
@@ -28,7 +28,6 @@
     "gulp-add-src": "0.*",
     "gulp-batch": "1.*",
     "gulp-changed": "1.*",
-    "gulp-compass": "*",
     "gulp-concat": "2.6.0",
     "gulp-imagemin": "^2.4.0",
     "gulp-jshint": "1.11.2",
@@ -36,6 +35,7 @@
     "gulp-plumber": "1.0.1",
     "gulp-postcss": "^6.0.1",
     "gulp-rename": "1.2.2",
+    "gulp-sass": "2.*",
     "gulp-sourcemaps": "^1.5.2",
     "gulp.spritesmith": "6.*",
     "gulp-swig": "*",

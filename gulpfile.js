@@ -56,7 +56,6 @@ var configMod    = require('./gulpfile.config'),
     debug        = require('gulp-debug'),
     batch        = require('gulp-batch'),
     changed      = require('gulp-changed'),
-    compass      = require('gulp-compass'),
     concat       = require('gulp-concat'),
     imagemin     = require('gulp-imagemin'),
     jshint       = require('gulp-jshint'),
@@ -64,6 +63,7 @@ var configMod    = require('./gulpfile.config'),
     plumber      = require('gulp-plumber'),
     postcss      = require('gulp-postcss'),
     rename       = require('gulp-rename'),
+    sass         = require('gulp-sass'),
     sourcemaps   = require('gulp-sourcemaps'),
     spritesmith  = require('gulp.spritesmith'),
     uglify       = require('gulp-uglify'),
@@ -241,7 +241,9 @@ var tasks = {
   styles: function(isDev) {
 
     var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
-    configStyles.sass.sourcemap = configStyles.sourcemaps;
+    //configStyles.sass.sourceMap = configStyles.sourceMaps;
+    //configStyles.sass.sourceMapRoot = configStyles.sourceMapsRoot;
+    //configStyles.sass.sourceMapEmbed = configStyles.sourceMaps;
 
     var ret = gulp.src(APP.dirs.addConfigGlob(dirs.src.styles.main + '*.scss'))
       .pipe(plumber({
@@ -250,19 +252,21 @@ var tasks = {
           this.emit('end');
         }
       }))
-      .pipe(compass(configStyles.sass));
 
-    if (configStyles.sourcemaps) {
+    if (configStyles.sourceMaps) {
       ret = ret
-        .pipe(sourcemaps.init({ loadMaps: true }));
+        .pipe(sourcemaps.init());
     }
+
+    var ret = ret
+          .pipe(sass(configStyles.sass).on('error', sass.logError));
 
     ret = ret
       .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]));
 
-    if (configStyles.sourcemaps) {
+    if (configStyles.sourceMaps) {
       ret = ret
-        .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configStyles.sourcemapsRoot }));
+        .pipe(sourcemaps.write({ sourceRoot: configStyles.sourceMapsRoot }));
     }
 
     ret = ret
@@ -304,13 +308,13 @@ var tasks = {
     var src;
     if (isApp) {
       src = APP.dirs.js.priorityPrependDir(configJs.priority.app, dirs.src.js.appDir)
-                  .concat(dirs.src.js.app);
+              .concat(dirs.src.js.app);
     }
     else {
       src = APP.dirs.js.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
-                  .concat(mainBowerFiles(configJs.mainBowerFiles))
-                  .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
-                  .concat(dirs.src.js.vendor);
+              .concat(mainBowerFiles(configJs.mainBowerFiles))
+              .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
+              .concat(dirs.src.js.vendor);
     }
     ret = gulp.src(APP.dirs.addConfigGlob(src), { base: dirs.src.main });
 
@@ -329,8 +333,8 @@ var tasks = {
         .pipe(jshint())
     }
 
-    if (configJs.sourcemaps) {
-      //init sourcemaps
+    if (configJs.sourceMaps) {
+      //init source maps
       ret = ret
         .pipe(sourcemaps.init({ loadMaps: false }));
     }
@@ -339,10 +343,10 @@ var tasks = {
     ret = ret
       .pipe(concat(isApp ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
 
-    if (configJs.sourcemaps) {
-      //write sourcemaps
+    if (configJs.sourceMaps) {
+      //write source maps
       ret = ret
-       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourcemapsRoot }))
+       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourceMapsRoot }))
     }
 
     if (configJs.minify) {
@@ -356,7 +360,7 @@ var tasks = {
       ret = ret
         .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
 
-      if (configJs.sourcemaps) {
+      if (configJs.sourceMaps) {
         ret = ret
           .pipe(sourcemaps.init({ loadMaps: true }));
       }
@@ -364,7 +368,7 @@ var tasks = {
       ret = ret
         .pipe(concat('app.js', { newLine:'\n;' }));
 
-      if (configJs.sourcemaps) {
+      if (configJs.sourceMaps) {
         ret = ret
           .pipe(sourcemaps.write({ includeContent: false }));
       }

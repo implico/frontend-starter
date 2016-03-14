@@ -151,36 +151,30 @@ var config = {
   styles: {
 
     common: {
-      sourcemaps: true,
-      sourcemapsRoot: '/src/',
+      sourceMaps: true,
+      sourceMapsRoot: '/src/styles/',
 
       autoprefixer: {
         browsers: ['> 1%', 'last 3 versions', 'IE 8']
       },
 
       sass: {
-        //configFile: './config.rb',
-        project: path.join(__dirname, '.'),
-        css: dirs.dist.styles,
-        sass: dirs.src.styles.main,
-        image: dirs.src.img,
-        font: dirs.dist.fonts
       }
     },
 
     dev: {
 
       sass: {
-        style: 'expanded'
+        outputStyle: 'expanded'
       }
     },
 
     prod: {
 
-      sourcemaps: false,
+      sourceMaps: false,
 
       sass: {
-        style: 'compressed'
+        outputStyle: 'compressed'
       }
     }
   },
@@ -204,8 +198,8 @@ var config = {
 
   js: {
     common: {
-      sourcemaps: true,
-      sourcemapsRoot: '/src/',
+      sourceMaps: true,
+      sourceMapsRoot: '/src/',
       minify: false,
       concatAppVendor: true,   //if true, app.js and vendor.js are merged into app.js
 
@@ -232,7 +226,7 @@ var config = {
     },
 
     prod: {
-      sourcemaps: false,
+      sourceMaps: false,
       minify: true
     }
   },
