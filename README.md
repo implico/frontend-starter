@@ -1,6 +1,6 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [SASS][sass] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages.
+Frontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [SASS][sass] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages. Fully customizable directory structure, great to integrate with backend.
 
 
 ## Features
@@ -121,11 +121,11 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents to maintain ability of updates of the core.
+All configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents, in order to maintain ability of updates of the core.
 
-Instead, to change default configuration (directories, tasks config), edit the `app/gulpfile.dirs.custom.js` and `app/gulpfile.config.custom.js` files in your bundle root directory.
+Instead, to change default configuration (directories, tasks config), edit the boundle `gulpfile.dirs.custom.js` and `gulpfile.config.custom.js` files in your bundle root directory.
 
-You can also change the `app` directory - simply create a file named `gulpfile.app.custom.js` in the framework root directory and change the app dir, e.g.:
+You can also change the default bundle `../fs-app` directory - simply create a file named `../gulpfile.app.custom.js` (above the framework root directory) and change the app dir, e.g.:
 ```js
 module.exports = function(dirs) {
   dirs.app = '../other_dir';

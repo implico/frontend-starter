@@ -53,17 +53,17 @@ var dirs = {
 
 
 //src dirs
-dirs.vendor = './bower_components/';  //change also .bowerrc
 dirs.sassCache = './.sass-cache/';
 
-dirs.app = './app/';
+dirs.app = '../fs-app/';
 
 //custom app dir (optional)
 try {
-  require('./gulpfile.app.custom.js')(dirs);
+  require('../gulpfile.app.custom.js')(dirs);
 }
 catch (ex) {}
 
+dirs.vendor = dirs.app + 'bower_components/';  //change also .bowerrc
 
 dirs.src.main = dirs.app + 'src/';
 
