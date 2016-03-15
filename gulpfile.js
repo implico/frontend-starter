@@ -37,7 +37,8 @@
 
 
 /* VARS */
-var configMod    = require('./gulpfile.config'),
+var dirs         = require('./gulpfile.dirs'),
+    config       = require('./gulpfile.config')(dirs),
 
     autoprefixer = require('autoprefixer'),
     browserSync  = require('browser-sync'),
@@ -72,12 +73,6 @@ var configMod    = require('./gulpfile.config'),
     watch        = require('gulp-watch');
 
 
-
-/*
-    Main config, dirs
-*/
-var dirs = configMod.dirs,
-    config = configMod.config;
 
 
 var APP = {
