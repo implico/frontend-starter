@@ -123,9 +123,9 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 ## Directories and configuration
 All configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents, in order to maintain ability of updates of the core.
 
-Instead, to change default configuration (directories, tasks config), edit the boundle `gulpfile.dirs.custom.js` and `gulpfile.config.custom.js` files in your bundle root directory.
+Instead, to change default configuration (directories, tasks config), edit the `gulpfile.dirs.custom.js` and `gulpfile.config.custom.js` files located in your bundle root directory.
 
-You can also change the default bundle `../fs-app` directory - simply create a file named `../gulpfile.app.custom.js` (above the framework root directory) and change the app dir, e.g.:
+You can also change the default bundle directory (`../fs-app`) - simply create a file named `gulpfile.app.custom.js` (one level above the framework root directory) and change the app dir, e.g.:
 ```js
 module.exports = function(dirs) {
   dirs.app = '../other_dir';
