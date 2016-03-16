@@ -38,7 +38,6 @@
     "gulp-changed": "1.*",
     "gulp-concat": "2.6.0",
     "gulp-debug": "*",
-    "gulp-filter": "4.*",
     "gulp-imagemin": "^2.4.0",
     "gulp-jshint": "1.11.2",
     "gulp-minify-css": "1.2.0",

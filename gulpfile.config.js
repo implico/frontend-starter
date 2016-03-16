@@ -71,7 +71,6 @@ module.exports = function(dirs) {
         sourceMapsRoot: '/src/',
         minify: false,
         concatAppVendor: true,    //if true, app.js and vendor.js are merged into app.js
-        vendorFilter: '**/*.js',  //filter applied to vendor files (here: only JS files)
 
         mainBowerFiles: {
           paths: {
@@ -79,7 +78,8 @@ module.exports = function(dirs) {
             bowerrc: dirs.app + '.bowerrc',
             bowerJson: dirs.app + 'bower.json'
           },
-          overrides: {}        
+          overrides: {},
+          filter: ['**/*.js']
         },
         
         //add script filenames/globs (relative to the appropriate dirs) to be loaded first

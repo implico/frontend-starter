@@ -66,7 +66,7 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     batch        = require('gulp-batch'),
     changed      = require('gulp-changed'),
     concat       = require('gulp-concat'),
-    filter       = require('gulp-filter'),
+    //filter       = require('gulp-filter'),
     imagemin     = require('gulp-imagemin'),
     jshint       = require('gulp-jshint'),
     minifyCss    = require('gulp-minify-css'),
@@ -319,12 +319,6 @@ var tasks = {
               .concat(dirs.src.js.vendor);
     }
     ret = gulp.src(src, { base: dirs.src.main });
-
-    //apply vendor filter glob
-    if (!isApp) {
-      ret = ret
-        .pipe(filter(configJs.vendorFilter));
-    }
 
     //plumber
     ret = ret
