@@ -56,7 +56,8 @@ process.stdin.on('keypress', function(ch, key) {
     }
   }
 });
-process.stdin.setRawMode(true);
+if (process.stdin.setRawMode)
+  process.stdin.setRawMode(true);
 process.stdin.resume();
 console.log('Use keys:')
 console.log('Ctrl+P: prod');
