@@ -36,8 +36,16 @@
 
 
 
+//gett app root dir
+if (!process.env.FS_BASE_DIR) {
+  console.error('Error: fs_base env variable not set. This module should not be called directly from the command line.');
+  process.exit();
+}
+var appDir = process.env.FS_BASE_DIR + '/';
+
+
 /* VARS */
-var dirs         = require('./gulpfile.dirs'),
+var dirs         = require('./gulpfile.dirs')(appDir),
     config       = require('./gulpfile.config')(dirs),
 
     autoprefixer = require('autoprefixer'),
@@ -46,7 +54,6 @@ var dirs         = require('./gulpfile.dirs'),
     del          = require('del'),
     extend       = require('extend'),
     fs           = require('fs');
-    keypress     = require('keypress'),
     mainBowerFiles = require('main-bower-files'),
     merge        = require('merge-stream'),
     path         = require('path');
@@ -124,11 +131,6 @@ gulp.task('dev', function(cb) {
 gulp.task('dev:watch', function(cb) {
 
   runSequence('browser-sync:dev', function() {
-    console.log('Use keys:')
-    console.log('Ctrl+P: prod');
-    console.log('Ctrl+D: dev:build');
-    console.log('Ctrl+C: exit');
-    tasks.registerKeyEvents();
     cb();
   });
 
@@ -518,8 +520,6 @@ var tasks = {
       var delFiles = del.sync(delDirsGlob, { force: true });
       //del.sync(dirs.dist.main);
 
-      del.sync(dirs.sassCache);
-
       if (delFiles.length) {
         console.log('Deleted files/folders:\n', delFiles.join('\n'));
       }
@@ -546,31 +546,6 @@ var tasks = {
       
       return ret;
     }
-  },
-
-  registerKeyEvents: function() {
-    keypress(process.stdin);
-
-    process.stdin.on('keypress', function(ch, key) {
-
-      if (key.ctrl) {
-        switch (key.name) {
-          case 'c':
-            process.exit();
-            break;
-          case 'p':
-            gulp.start('prod', function() {
-            });
-            break;
-          case 'd':
-            gulp.start('dev:build', function() {
-            });
-            break;
-        }
-      }
-    });
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
   }
 }
 

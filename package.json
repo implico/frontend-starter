@@ -1,34 +1,44 @@
 {
   "name": "frontend-starter",
-  "description": "A simple frontend boilerplate and framework",
+  "description": "A simple frontend builder.",
   "version": "1.1.0",
-  "author": "Bartosz Sak <bartosz.sak@gmail.com>",
+  "author": {
+    "name": "Bartosz Sak",
+    "email": "bartosz.sak@gmail.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/implico/frontend-starter.git"
   },
-
+  "files": [
+    "gulpfile.js",
+    "gulpfile.dirs.js",
+    "gulpfile.config.js",
+    "bin"
+  ],
+  "bin": {
+    "frs": "./bin/frs.js"
+  },
   "devDependencies": {
-    "browser-sync": "^2.9.11",
-    "gulp-debug": "*",
-    "keypress": "0.*"
   },
   "dependencies": {
     "autoprefixer": "^6.0.3",
+    "browser-sync": "^2.9.11",
     "del": "^1.2.0",
     "extend": "*",
+    "keypress": "0.*",
     "main-bower-files": "2.*",
     "merge-stream": "1.*",
     "path": "^0.11.14",
     "run-sequence": "1.*",
     "vinyl-buffer": "1.*",
-
     "gulp": "3.*.*",
     "gulp-add-src": "0.*",
     "gulp-batch": "1.*",
     "gulp-changed": "1.*",
     "gulp-concat": "2.6.0",
+    "gulp-debug": "*",
     "gulp-filter": "4.*",
     "gulp-imagemin": "^2.4.0",
     "gulp-jshint": "1.11.2",
@@ -42,5 +52,20 @@
     "gulp-swig": "*",
     "gulp-watch": "4.*",
     "gulp-uglify": "^1.4.2"
-  }
+  },
+  "engines": {
+    "node": ">= 0.9"
+  },
+  "readme": "# Frontend-starter\r\n\r\nFrontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [SASS][sass] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages. Fully customizable directory structure, great to integrate with backend.\r\n\r\n\r\n## Features\r\nThe framework provides the following functionality via [gulp][gulp] plugins:\r\n* separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]\r\n* images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]\r\n* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)\r\n* Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)\r\n* Views: [Swig template engine][swig] with [gulp-swig]\r\n* Server: [Browsersync][browsersync] (automatic refreshing on every change)\r\n* easy to integrate with MV* frameworks (see the [bundles](#bundles))\r\n\r\n\r\n## Installation\r\nYou need the following tools to start using the framework:\r\n* [nodejs]\r\n* [gulp]\r\n* [Bower][bower]\r\n* Git, e.g. [Github desktop](https://desktop.github.com/)\r\n\r\n<br>\r\nAfter cloning the repo (remember **not to use a directory containing an exclamation mark (!)** - it breaks glob patterns), run:\r\n```\r\nnpm install\r\n```\r\n\r\nIf you use Visual Studio, close it while npm installs the modules.\r\n\r\n<a name=\"bundles\"></a>\r\n## Bundles\r\nUse on of the available bundles or create your own:\r\n\r\n* [default bundle][bundle-default]\r\n* AngularJS bundle (soon)\r\n\r\n\r\n<br>\r\n## CLI (tasks)\r\nUse the following tasks from the command line:\r\n\r\n\r\n### Dev build & watch together\r\n`gulp dev`\r\n\r\nFor your first run, or when you want to rebuild a clean dist version. This will run both `dev:build` and `dev:watch` tasks.\r\n\r\n\r\n\r\n### Watch - the default task\r\n`gulp`\r\nor\r\n`gulp dev:watch`\r\n\r\nGulp watches for any changes in your src directory and runs the appropiate task.\r\n\r\n\r\n\r\n### Build\r\n`gulp dev:build`\r\n\r\nCleans and builds the dist version.\r\n\r\n\r\n\r\n### Production\r\n`gulp prod`\r\n\r\nPrepares a production build (minified resources).\r\n\r\n\r\n\r\n### Production with preview\r\n`gulp prod:preview`\r\n\r\nSame as `prod`, but additionally launches a Browsersync preview.\r\n\r\n\r\n\r\n### Clean\r\n`gulp clean`\r\n\r\nCleans the dist directory.\r\n\r\n\r\n### Partial tasks\r\n* common: `images`, `sprites`, `fonts`\r\n* dev: `styles:dev`, `js:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`\r\n* prod: `styles:prod`, `js:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`\r\n\r\n\r\n### Key shortcuts\r\nWhile watching for changes (tasks: `gulp`/`gulp dev:watch` or `gulp dev`), you can use the following shortcuts:\r\n* Ctrl+P: to build the prod version (init `prod` task) and reload the browser\r\n* Ctrl+D: to build the dev version (init `dev:build` task) and reload the browser\r\n* Ctrl+C: to exit\r\n\r\n\r\n\r\n<br>\r\n## Functionality\r\n\r\n### Views, Styles (including fonts, sprites), JavaScript\r\n\r\nSee your [bundle](#bundles) docs.\r\n\r\n\r\n### Images\r\nImages are optimized ([gulp-imagemin]) and copied into the dist directory.\r\n\r\n\r\n### Server\r\n[Browsersync][browsersync] provides a simple HTTP server with auto-refreshing on each change.\r\n\r\n\r\n\r\n\r\n\r\n<br>\r\n<a name=\"configuration\"></a>\r\n## Directories and configuration\r\nAll configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents, in order to maintain ability of updates of the core.\r\n\r\nInstead, to change default configuration (directories, tasks config), edit the `gulpfile.dirs.custom.js` and `gulpfile.config.custom.js` files located in your bundle root directory.\r\n\r\nYou can also change the default bundle directory (`../fs-app`) - simply create a file named `gulpfile.app.custom.js` (one level above the framework root directory) and change the app dir, e.g.:\r\n```js\r\nmodule.exports = function(dirs) {\r\n  dirs.app = '../other_dir';\r\n}\r\n```\r\n\r\n### Directories\r\nYou can see the definitons of each directory in the first section of the file.\r\n\r\nYou can also add your custom directories (for example - download assets like PDFs) by editing `dirs.custom`. See the commented out example below the dir definitions.\r\n\r\n### Config object\r\n`config` object contains configuration parameters divided into key sections. Most of them have subsets, with options applied according to the environment mode: `common` (all), `dev` and `prod`.\r\n\r\n* *styles*: sourcemap generation, [gulp-autoprefixer] and [gulp-sass] options\r\n* *sprites*: you can generate multiple sprite files by adding subsequent elements to the `items` array\r\n* *js*: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority\r\n* *views*: [gulp-swig] options\r\n* *images*: [imagemin][gulp-imagemin] options\r\n* *browserSync*: [Browsersync][browsersync] options\r\n* *clean*: modify deletion options\r\n\r\n\r\n\r\n\r\n<br>\r\n## Source maps\r\nSource maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:\r\n\r\n1. Open Chrome Dev Tools.\r\n2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).\r\n3. In the dir structure, right click on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose \"Map to file system resource\" and then `src/[path to file]` in the select box that appeared.\r\n\r\nSASS and JS files are now mapped.\r\n\r\nTo map JS Bower vendor dir, follow the same steps for the `vendor` dir.\r\n\r\n\r\n\r\n\r\n<br>\r\n## Known issues, TODO\r\n* bundles: define custom plugins and tasks\r\n\r\n\r\n\r\n\r\n\r\n[angularjs]: https://angularjs.org/\r\n[browsersync]: https://www.browsersync.io/\r\n[bower]: http://bower.io/\r\n[bundle-default]: https://github.com/implico/fs-bundle-default\r\n[chokidar]: https://github.com/paulmillr/chokidar\r\n[gulp]: http://gulpjs.com/\r\n[gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer\r\n[gulp-concat]: https://github.com/contra/gulp-concat\r\n[gulp-imagemin]: https://github.com/sindresorhus/gulp-imagemin\r\n[gulp-jshint]: https://github.com/spalger/gulp-jshint\r\n[gulp-sass]: https://github.com/dlmanning/gulp-sass\r\n[gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps\r\n[gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith\r\n[gulp-swig]: https://github.com/colynb/gulp-swig\r\n[gulp-uglify]: https://github.com/terinjokes/gulp-uglify\r\n[gulp-watch]: https://github.com/floatdrop/gulp-watch\r\n[main-bower-files]: https://github.com/ck86/main-bower-files\r\n[minimatch]: https://github.com/isaacs/minimatch\r\n[nodejs]: https://nodejs.org/\r\n[node-sass]: https://github.com/sass/node-sass\r\n[sass]: http://sass-lang.com/\r\n[sass-breakpoint]: http://breakpoint-sass.com/\r\n[sass-core]: https://github.com/implico/sass-core\r\n[swig]: http://paularmstrong.github.io/swig/\r\n",
+  "readmeFilename": "README.md",
+  "gitHead": "ea94077e912209d14e07dd36239cdee31d14fb56",
+  "bugs": {
+    "url": "https://github.com/implico/frontend-starter/issues"
+  },
+  "homepage": "https://github.com/implico/frontend-starter#readme",
+  "_id": "frontend-starter@1.1.0",
+  "scripts": {},
+  "_shasum": "97e5fc9b8999da68d0e775336bbb09d866dae98a",
+  "_from": "..\\..\\..\\..\\..\\_pro\\openSource\\frontend-starter\\www\\frontend-starter",
+  "_resolved": "file:..\\..\\..\\..\\..\\_pro\\openSource\\frontend-starter\\www\\frontend-starter"
 }

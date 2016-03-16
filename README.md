@@ -1,6 +1,8 @@
 # Frontend-starter
 
-Frontend boilerplate framework. This is (just?) a prepared, configurable [gulp][gulp] environment with [Bower][bower] support. Plus bundles with directory structure and useful [SASS][sass] mixins. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages. Fully customizable directory structure, great to integrate with backend.
+Frontend gulp builder. This is (just?) a prepared, configurable [gulp][gulp] environment. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages. Very easy to integrate with any backend environment.
+
+Development is based on fully configurable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
 
 
 ## Features
@@ -11,23 +13,24 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 * Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
 * Views: [Swig template engine][swig] with [gulp-swig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
-* easy to integrate with MV* frameworks (see the [bundles](#bundles))
+* easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
 
 
 ## Installation
 You need the following tools to start using the framework:
 * [nodejs]
 * [gulp]
-* [Bower][bower]
-* Git, e.g. [Github desktop](https://desktop.github.com/)
 
 <br>
-After cloning the repo (remember **not to use a directory containing an exclamation mark (!)** - it breaks glob patterns), run:
+Then, install the framework globally:
 ```
-npm install
+npm install frontend-starter -g
 ```
 
 If you use Visual Studio, close it while npm installs the modules.
+
+Installation registers a `frs` command to run the tasks. This is just a kind of pipeline to execute gulp in proper directories.
+
 
 <a name="bundles"></a>
 ## Bundles
@@ -43,44 +46,44 @@ Use the following tasks from the command line:
 
 
 ### Dev build & watch together
-`gulp dev`
+`frs dev`
 
 For your first run, or when you want to rebuild a clean dist version. This will run both `dev:build` and `dev:watch` tasks.
 
 
 
 ### Watch - the default task
-`gulp`
+`frs`
 or
-`gulp dev:watch`
+`frs dev:watch`
 
 Gulp watches for any changes in your src directory and runs the appropiate task.
 
 
 
 ### Build
-`gulp dev:build`
+`frs dev:build`
 
 Cleans and builds the dist version.
 
 
 
 ### Production
-`gulp prod`
+`frs prod`
 
 Prepares a production build (minified resources).
 
 
 
 ### Production with preview
-`gulp prod:preview`
+`frs prod:preview`
 
 Same as `prod`, but additionally launches a Browsersync preview.
 
 
 
 ### Clean
-`gulp clean`
+`frs clean`
 
 Cleans the dist directory.
 
@@ -92,7 +95,7 @@ Cleans the dist directory.
 
 
 ### Key shortcuts
-While watching for changes (tasks: `gulp`/`gulp dev:watch` or `gulp dev`), you can use the following shortcuts:
+While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
 * Ctrl+P: to build the prod version (init `prod` task) and reload the browser
 * Ctrl+D: to build the dev version (init `dev:build` task) and reload the browser
 * Ctrl+C: to exit
@@ -123,14 +126,8 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 ## Directories and configuration
 All configuration definitions are placed in the `gulpfile.config.js` file. **DO NOT** edit its contents, in order to maintain ability of updates of the core.
 
-Instead, to change default configuration (directories, tasks config), edit the `gulpfile.dirs.custom.js` and `gulpfile.config.custom.js` files located in your bundle root directory.
+Instead, to change default configuration (directories, tasks config), edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
-You can also change the default bundle directory (`../fs-app`) - simply create a file named `gulpfile.app.custom.js` (one level above the framework root directory) and change the app dir, e.g.:
-```js
-module.exports = function(dirs) {
-  dirs.app = '../other_dir';
-}
-```
 
 ### Directories
 You can see the definitons of each directory in the first section of the file.

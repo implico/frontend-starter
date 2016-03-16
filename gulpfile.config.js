@@ -179,7 +179,7 @@ module.exports = function(dirs) {
 
   //custom config file - optional
   try {
-    require(dirs.app + 'gulpfile.config.custom.js')(config, dirs);
+    require(dirs.app + 'fs.config.custom.js')(config, dirs);
   }
   catch (ex) {}
 
