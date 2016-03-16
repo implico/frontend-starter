@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
   "description": "A simple frontend builder.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": {
     "name": "Bartosz Sak",
     "email": "bartosz.sak@gmail.com"
@@ -20,8 +20,7 @@
   "bin": {
     "frs": "./bin/frs.js"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "autoprefixer": "^6.0.3",
     "browser-sync": "^2.9.11",
