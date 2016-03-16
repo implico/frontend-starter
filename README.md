@@ -126,7 +126,7 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 ## Directories and configuration
 All configuration definitions are placed in files: `gulpfile.dirs.js` and `gulpfile.config.js`. They will be documented soon - until then, please see the sources.
 
-To change defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
+To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
 
 ### Directories
@@ -158,7 +158,7 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 
 SASS and JS files are now mapped.
 
-To map JS Bower vendor dir, follow the same steps for the `vendor` dir.
+To map JS Bower vendor dir, follow the same steps for the `bower_components` dir.
 
 
 
