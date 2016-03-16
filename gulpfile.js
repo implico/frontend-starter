@@ -42,6 +42,7 @@ if (!process.env.FS_BASE_DIR) {
   process.exit();
 }
 var appDir = process.env.FS_BASE_DIR + '/';
+console.log('Frontend-starter: Project root dir set to ' + appDir);
 
 
 /* VARS */

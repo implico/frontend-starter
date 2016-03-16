@@ -177,11 +177,14 @@ module.exports = function(dirs) {
     }
   }
 
-  //custom config file - optional
+  //custom config file
   try {
-    require(dirs.app + 'fs.config.custom.js')(config, dirs);
+    require(dirs.app + dirs.user.configFile)(config, dirs);
   }
-  catch (ex) {}
+  catch (ex) {
+    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.user.configFile + ').');
+    process.exit(1);
+  }
 
 
   return config;

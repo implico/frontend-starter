@@ -17,8 +17,12 @@ module.exports = function(appDir) {
 
   var path = require('path');
 
-
   var dirs = {
+
+    user: {
+      dirsFile: '',
+      configFile: ''
+    },
 
     app: '',
 
@@ -53,6 +57,8 @@ module.exports = function(appDir) {
     }
   }
 
+  dirs.user.dirsFile = 'fs.dirs.custom.js';
+  dirs.user.configFile = 'fs.config.custom.js';
 
   dirs.app = appDir;
 
@@ -62,9 +68,12 @@ module.exports = function(appDir) {
 
   //custom src dir
   try {
-    require(dirs.app + 'fs.dirs.custom.js')(dirs, 'src');
+    require(dirs.app + dirs.user.dirsFile)(dirs, 'src');
   }
-  catch (ex) {}
+  catch (ex) {
+    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.user.dirsFile + ').');
+    process.exit(1);
+  }
 
 
   dirs.src.styles.main = dirs.src.main + 'styles/';
@@ -91,7 +100,7 @@ module.exports = function(appDir) {
 
   //custom dist dir
   try {
-    require(dirs.app + 'fs.dirs.custom.js')(dirs, 'dist');
+    require(dirs.app + dirs.user.dirsFile)(dirs, 'dist');
   }
   catch (ex) {}
 
@@ -126,7 +135,7 @@ module.exports = function(appDir) {
 
   //custom dir modifications/definitions - optional
   try {
-    require(dirs.app + 'fs.dirs.custom.js')(dirs, 'all');
+    require(dirs.app + dirs.user.dirsFile)(dirs, 'all');
   }
   catch (ex) {}
 
