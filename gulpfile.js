@@ -57,6 +57,7 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     fs           = require('fs');
     mainBowerFiles = require('main-bower-files'),
     merge        = require('merge-stream'),
+    multimatch    = require('multimatch'),
     path         = require('path');
     runSequence  = require('run-sequence'),
 
@@ -66,7 +67,7 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     batch        = require('gulp-batch'),
     changed      = require('gulp-changed'),
     concat       = require('gulp-concat'),
-    //filter       = require('gulp-filter'),
+    filter       = require('gulp-filter'),
     imagemin     = require('gulp-imagemin'),
     jshint       = require('gulp-jshint'),
     minifyCss    = require('gulp-minify-css'),
@@ -320,6 +321,12 @@ var tasks = {
     }
     ret = gulp.src(src, { base: dirs.src.main });
 
+    if (!isApp) {
+      ret = ret.pipe(filter(function(file) {
+        return multimatch(file.path.replace('../', ''), configJs.vendorFilter).length;
+      }));
+    }
+
     //plumber
     ret = ret
       .pipe(plumber({
@@ -357,7 +364,7 @@ var tasks = {
        .pipe(uglify());
     }
 
-    if (isApp && configJs.concatAppVendor) {
+    if (isApp && configJs.concatVendorApp) {
       //when main app, prepend vendor.js
       ret = ret
         .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
