@@ -162,7 +162,7 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 	* left field (URL prefix): change to `http://[domain]/src` (add the `src/` to the url), e.g. `http://localhost/src/`
 	* right field (folder path): ensure that is set to `/`
 
-Your app JS and SASS files are now mapped. For Bower files, follow the same instructions for the `bower_components` dir. In point 3 you will have to choose a vendor file that your application really uses. In the last point set the left URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
+Your app JS and SASS files are now mapped. For Bower files, follow the same instructions for the `bower_components` dir. In point 3 you will have to choose a vendor file that your application really uses. In the last point set the URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
 
 Refresh the browser and you're done!
 
