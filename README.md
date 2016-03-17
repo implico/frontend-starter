@@ -159,8 +159,8 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 3. In the dir structure, right click on any JavaScript file in the `js/` directory **under the added to workspace `src` directory** (at the bottom), e.g. `src/js/app.js`, choose "Map to network resource" and then the actual `[domain]/js/[filename]`, e.g. `localhost/js/app.js` in the select box that appeared.
 
 4. That's not all. Go to the console settings (click the 3 dots in the upper right corner and then "Settings"), choose "Workspace" on the left and then edit mappings for your added directory:
-* left field (URL prefix): change the url prefix to `http://[domain]/src` (add the `src/` to the url), e.g. `http://localhost/src/`
-* right field (folder path): ensure that is set to `/`
+	* left field (URL prefix): change to `http://[domain]/src` (add the `src/` to the url), e.g. `http://localhost/src/`
+	* right field (folder path): ensure that is set to `/`
 
 Your app JS and SASS files are now mapped. For Bower files, follow the same instructions for the `bower_components` dir. In point 3 you will have to choose a vendor file that your application really uses. In the last point set the left URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
 
