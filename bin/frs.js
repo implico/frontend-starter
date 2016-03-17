@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var exec        = require('child_process').exec,
+var spawn       = require('child_process').spawn,
     keypress    = require('keypress');
 
 
@@ -11,8 +11,8 @@ var childrenProc = [],
 env.FS_BASE_DIR = process.cwd();
 
 
-var execGulp = function(task, exitOnClose) {
-  var child = exec('gulp ' + task, { cwd: __dirname, env: env, killSignal: 'SIGKILL' });
+var spawnGulp = function(task, exitOnClose) {
+  var child = spawn('gulp.cmd', [task], { cwd: __dirname, env: env });
   childrenProc.push(child);
   child.stdout.on('data', function(data) {
     process.stdout.write(data);
@@ -29,7 +29,7 @@ var execGulp = function(task, exitOnClose) {
 //kill all processes on exit
 process.on('exit', function() {
   childrenProc.forEach(function(child) {
-    child.kill('SIGKILL');
+    child.kill('SIGTERM');
   });
 });
 
@@ -43,15 +43,20 @@ process.stdin.on('keypress', function(ch, key) {
   if (key.ctrl) {
     switch (key.name) {
       case 'c':
-        process.exit();
+        childrenProc.forEach(function(child) {
+          child.stdin.write('FS_CLOSE');
+        });
+        setTimeout(function() {
+          process.exit();
+        }, 500);
         break;
       case 'p':
         console.log('--- Invoked prod task from keyboard ---');
-        execGulp('prod');
+        spawnGulp('prod');
         break;
       case 'd':
         console.log('--- Invoked dev:build task from keyboard ---');
-        execGulp('dev:build');
+        spawnGulp('dev:build');
         break;
     }
   }
@@ -69,4 +74,4 @@ console.log('Ctrl+C: exit\n');
 //get task name or set to default
 var task = process.argv[2] ? process.argv[2] : 'default';
 
-execGulp(task, true);
+spawnGulp(task, true);
