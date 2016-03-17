@@ -82,6 +82,13 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     watch        = require('gulp-watch');
 
 
+//terminate Browsersync when the main process sends closing string
+process.stdin.on('data', function(data) {
+  if (data.indexOf('FS_CLOSE') >= 0) {
+    browserSync.exit();
+  }
+});
+
 
 
 var APP = {
