@@ -48,7 +48,7 @@ process.stdin.on('keypress', function(ch, key) {
         });
         setTimeout(function() {
           process.exit();
-        }, 1000);
+        }, 500);
         break;
       case 'p':
         console.log('--- Invoked prod task from keyboard ---');

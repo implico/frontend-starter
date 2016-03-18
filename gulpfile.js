@@ -82,9 +82,9 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     watch        = require('gulp-watch');
 
 
-//terminate Browsersync when the main process sends closing string
+//terminate Browsersync when the main process sends closing string (or the data is not a string)
 process.stdin.on('data', function(data) {
-  if (data.indexOf('FS_CLOSE') >= 0) {
+  if ((!data.indexOf) || (data.indexOf('FS_CLOSE') >= 0)) {
     browserSync.exit();
   }
 });
@@ -343,10 +343,11 @@ var tasks = {
         }
       }));
 
-    if (isDev) {
+    if (isDev && isApp && configJs.jsHint.enable) {
       //jshint for dev
       ret = ret
-        .pipe(jshint())
+        .pipe(jshint(configJs.jsHint.options))
+        .pipe(jshint.reporter(configJs.jsHint.reporter));
     }
 
     if (configJs.sourceMaps) {

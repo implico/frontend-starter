@@ -153,13 +153,18 @@ See the `gulpfile.config.js` file. `config` object contains configuration parame
 Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
 
 1. Open Chrome Dev Tools.
-2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively drag & drop the folder to the console).
-3. In the dir structure, right click on any file in the `src` directory different than `style.css`, e.g. `js/app.js` (in your domain, not the added directory), choose "Map to file system resource" and then `src/[path to file]` in the select box that appeared.
 
-SASS and JS files are now mapped.
+2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively just drag & drop the `src` folder to the console).
 
-To map JS Bower vendor dir, follow the same steps for the `bower_components` dir.
+3. In the dir structure, right click on any JavaScript file in the `js/` directory **under the added to workspace `src` directory** (at the bottom), e.g. `src/js/app.js`, choose "Map to network resource" and then the actual `[domain]/js/[filename]`, e.g. `localhost/js/app.js` in the select box that appeared.
 
+4. That's not all. Go to the console settings (click the 3 dots in the upper right corner and then "Settings"), choose "Workspace" on the left and then edit mappings for your added directory:
+	* left field (URL prefix): change to `http://[domain]/src` (add the `src/` to the url), e.g. `http://localhost/src/`
+	* right field (folder path): ensure that is set to `/`
+
+Your app JS and SASS files are now mapped. For Bower files, follow the same instructions for the `bower_components` dir. In point 3 you will have to choose a vendor file that your application really uses. In the last point set the URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
+
+Refresh the browser and you're done!
 
 
 

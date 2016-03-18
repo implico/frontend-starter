@@ -89,6 +89,12 @@ module.exports = function(dirs) {
             afterBower: [],   //before dirs.src.js.vendor load (you usually need this one)
           },
           app: [] //ex: ['core.js']
+        },
+
+        jsHint: {
+          enable: true,
+          options: {},
+          reporter: 'default'
         }
       },
 
@@ -97,7 +103,11 @@ module.exports = function(dirs) {
 
       prod: {
         sourceMaps: false,
-        minify: true
+        minify: true,
+
+        jsHint: {
+          enable: false
+        }
       }
     },
 
