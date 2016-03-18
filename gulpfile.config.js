@@ -182,8 +182,8 @@ module.exports = function(dirs) {
     require(dirs.app + dirs.user.configFile)(config, dirs);
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.user.configFile + ').');
-    process.exit(1);
+    console.log('Frontend-starter warning: no custom config definitions file present (' + dirs.user.configFile + ').');
+    //process.exit(1);
   }
 
 
