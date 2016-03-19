@@ -92,7 +92,7 @@ module.exports = function(dirs) {
         },
 
         jsHint: {
-          enable: true,
+          enable: false,
           options: {},
           reporter: 'default'
         }
