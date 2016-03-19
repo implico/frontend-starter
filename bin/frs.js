@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var spawn       = require('child_process').spawn,
+var exec        = require('child_process').exec,
     keypress    = require('keypress');
 
 
@@ -12,7 +12,10 @@ env.FS_BASE_DIR = process.cwd();
 
 
 var spawnGulp = function(task, exitOnClose) {
-  var child = spawn('gulp.cmd', [task], { cwd: __dirname, env: env });
+  var child = exec('gulp ' + task, { cwd: __dirname, env: env }).on('error', function() {
+    console.error('Frontend-starter: error while executing "gulp". Check if you have gulp.js installed.')
+    process.exit(1);
+  });
   childrenProc.push(child);
   child.stdout.on('data', function(data) {
     process.stdout.write(data);
@@ -21,7 +24,7 @@ var spawnGulp = function(task, exitOnClose) {
     process.stdout.write(data);
   });
   if (exitOnClose) {
-    child.stderr.on('close', function(data) {
+    child.on('close', function() {
       process.exit();
     });
   }
@@ -35,6 +38,10 @@ process.on('exit', function() {
 
 
 
+//get task name or set to default
+var task = process.argv[2] ? process.argv[2] : 'default';
+
+
 //register key events
 keypress(process.stdin);
 
@@ -44,7 +51,7 @@ process.stdin.on('keypress', function(ch, key) {
     switch (key.name) {
       case 'c':
         childrenProc.forEach(function(child) {
-          child.stdin.write('FS_CLOSE');
+          child.stdin.on('error', function() {}).write('FS_CLOSE');
         });
         setTimeout(function() {
           process.exit();
@@ -64,14 +71,14 @@ process.stdin.on('keypress', function(ch, key) {
 if (process.stdin.setRawMode)
   process.stdin.setRawMode(true);
 process.stdin.resume();
-console.log('Use keys:')
-console.log('Ctrl+P: prod');
-console.log('Ctrl+D: dev:build');
-console.log('Ctrl+C: exit\n');
+
+if (!task || (task == 'dev:watch') || (task == 'prod:preview')) {
+  console.log('Use keys:')
+  console.log('Ctrl+P: prod');
+  console.log('Ctrl+D: dev:build');
+  console.log('Ctrl+C: exit\n');
+}
 
 
-
-//get task name or set to default
-var task = process.argv[2] ? process.argv[2] : 'default';
 
 spawnGulp(task, true);

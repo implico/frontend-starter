@@ -13,15 +13,23 @@
 
 */
 
+var path = require('path');
+
+
 module.exports = function(appDir) {
 
-  var path = require('path');
-
   var dirs = {
+
+    module: '',
 
     user: {
       dirsFile: '',
       configFile: ''
+    },
+
+    tasks: {
+      main: '',
+      jsFile: ''
     },
 
     app: '',
@@ -57,8 +65,12 @@ module.exports = function(appDir) {
     }
   }
 
+  //custom config files
   dirs.user.dirsFile = 'fs.dirs.custom.js';
   dirs.user.configFile = 'fs.config.custom.js';
+
+  dirs.tasks.main = './tasks/';
+  dirs.tasks.jsFile = dirs.tasks.main + 'js.task.js';
 
   dirs.app = appDir;
 
@@ -82,11 +94,11 @@ module.exports = function(appDir) {
   dirs.src.fonts = dirs.src.main + 'fonts/';
 
   dirs.src.js.main = dirs.src.main + 'js/';
-  dirs.src.js.vendorDir = dirs.src.js.main + 'vendor/';
-  dirs.src.js.appDir = dirs.src.js.main;
+  dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
+  dirs.src.js.app = dirs.src.js.main;
   //for JS, globs are used
-  dirs.src.js.vendor = [dirs.src.js.vendorDir + '**/*.js'];
-  dirs.src.js.app = [dirs.src.js.appDir + '**/*.js', '!' + dirs.src.js.vendorDir + '{,/**}'];
+  //dirs.src.js.vendor = [dirs.src.js.vendorDir + '**/*.js'];
+  //dirs.src.js.app = [dirs.src.js.appDir + '**/*.js', '!' + dirs.src.js.vendorDir + '{,/**}'];
 
   dirs.src.img = dirs.src.main + 'img/';
 

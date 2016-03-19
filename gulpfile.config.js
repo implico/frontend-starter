@@ -73,6 +73,50 @@ module.exports = function(dirs) {
         concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
         vendorFilter: ['**/*.js'],
 
+        comps: {
+          main: {
+            vendor: ['**/*.js'],
+            vendorApp: ['**/*.js'],
+            app: ['core.js', '**/*.js'],
+            priority: {
+              vendor: ['jquery.js'],
+              vendorApp: ['vendor.js'],
+              app: ['app.js']
+            },
+            vendorCache: true,
+            excludeIn: false
+          },
+          html5shiv: {
+            vendor: ['html5shiv.js', 'inny_hatemelsziw.jotes'],
+            vendorApp: ['cos_w_apce.js'],
+            excludeIn: ['main']
+          },
+          jQuery: {
+            vendor: ['jquery.js', 'jakasbibl/jquery.costam.js'],
+            excludeIn: false
+          },
+          test: {
+            app: ['test.js', 'cos/tralala.js'],
+            excludeIn: true
+          }
+        },
+
+        packages: {
+          main: {
+            filename: 'app.js',
+            dependencies: ['main']
+          },
+          html5shiv: {
+            filename: 'html5shiv.js',
+            dependencies: ['html5shiv'],
+          },
+          test: {
+            filename: 'test.js',
+            dependencies: ['jQuery', 'test']
+          }
+        },
+
+
         mainBowerFiles: {
           paths: {
             bowerDirectory: dirs.vendor,
@@ -192,8 +236,8 @@ module.exports = function(dirs) {
     require(dirs.app + dirs.user.configFile)(config, dirs);
   }
   catch (ex) {
-    console.log('Frontend-starter warning: no custom config definitions file present (' + dirs.user.configFile + ').');
-    //process.exit(1);
+    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.user.configFile + ').');
+    process.exit(1);
   }
 
 

@@ -560,6 +560,10 @@ var tasks = {
 }
 
 
+//js task
+require(dirs.tasks.jsFile)(dirs, config, tasks);
+
+
 
 /* STYLES */
 gulp.task('styles:dev', function() {
