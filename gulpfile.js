@@ -38,7 +38,7 @@
 
 //gett app root dir
 if (!process.env.FS_BASE_DIR) {
-  console.error('Error: fs_base env variable not set. This module should not be called directly from the command line.');
+  console.error('Error: FS_BASE_DIR env variable not set. This module should not be called directly from the command line.');
   process.exit();
 }
 var appDir = process.env.FS_BASE_DIR + '/';
@@ -54,11 +54,10 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     buffer       = require('vinyl-buffer'),
     del          = require('del'),
     extend       = require('extend'),
-    fs           = require('fs');
+    fs           = require('fs'),
     mainBowerFiles = require('main-bower-files'),
     merge        = require('merge-stream'),
-    multimatch    = require('multimatch'),
-    path         = require('path');
+    path         = require('path'),
     runSequence  = require('run-sequence'),
 
     gulp         = require('gulp'),
@@ -166,21 +165,58 @@ gulp.task('dev:watch', function(cb) {
     });
   });
 
+
+  var packages = tasks.js.getPackages(true).getContent();
+      watch(['C:\\_pro\\openSource\\frontend-starter\\test/bower_components/jquery/**/*'], batch(function (events, done) {
+      tasks.js.run('test', false, true, 'js:dev (' + packageId + ')', false, (tasks) => {
+        tasks.js.run('test', true, true, false, 'js:dev (' + packageId + ')', done);
+      });
+    })).on('error', function(err) {
+      //console.error(err);
+    });
+
+  if (0)
+  for (var packageId in packages) {
+    if (!packages.hasOwnProperty(packageId))
+      continue;
+    var pkg = packages[packageId];
+    console.log(packageId);
+
+    //js - app
+    console.log('Watching app', packageId, pkg.getGlob('app'));
+    watch(pkg.getGlob('app'), batch(function (events, done) {
+      tasks.js.run(packageId, true, true, 'js:dev:main (' + packageId + ')', '', done);
+    })).on('error', function(err) {
+      //console.error(err);
+    });
+
+    console.log('Watching vendor', packageId, pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')));
+    //js - vendor
+    watch(pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')), batch(function (events, done) {
+      tasks.js.run(packageId, false, true, 'js:dev (' + packageId + ')', false, (tasks) => {
+        tasks.js.run(packageId, true, true, false, 'js:dev (' + packageId + ')', done);
+      });
+    })).on('error', function(err) {
+      //console.error(err);
+    });
+  }
+
   //js - app
-  watch(dirs.src.js.app, batch(function (events, done) {
+  /*watch(dirs.src.js.app, batch(function (events, done) {
     gulp.start('js:dev:main', done);
   })).on('error', function(err) {
     //console.error(err);
   });
 
   //js - vendor
-  watch([dirs.vendor + '**/*.js'].concat(dirs.src.js.vendor), batch(function (events, done) {
+  watch([dirs.vendor + '***.js'].concat(dirs.src.js.vendor), batch(function (events, done) {
     gulp.start('js:dev', done);
   })).on('error', function(err) {
     //console.error(err);
-  });
+  });*/
   
   //images
+  if (0)
   watch(dirs.src.img + '**/*', batch(function (events, done) {
     gulp.start('images', done);
   })).on('unlink', function(path) {
@@ -473,6 +509,7 @@ var tasks = {
   clean: {
     init: function() {
       var delDirs = [];
+      delDirs['cache'] = [dirs.cache];
       delDirs['dist'] = [];
       delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
       delDirs['sprites'] = [];

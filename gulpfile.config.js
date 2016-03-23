@@ -71,28 +71,27 @@ module.exports = function(dirs) {
         sourceMapsRoot: '/src/',
         minify: false,
         concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
-        vendorFilter: ['**/*.js'],
+        bowerFilter: ['**/*.js'],
 
         comps: {
           main: {
+            bower: ['**/*.js'],
             vendor: ['**/*.js'],
-            vendorApp: ['**/*.js'],
             app: ['core.js', '**/*.js'],
-            priority: {
+            /*priority: {
               vendor: ['jquery.js'],
               vendorApp: ['vendor.js'],
               app: ['app.js']
-            },
-            vendorCache: true,
+            },*/
             excludeIn: false
           },
           html5shiv: {
-            vendor: ['html5shiv.js', 'inny_hatemelsziw.jotes'],
-            vendorApp: ['cos_w_apce.js'],
+            bower: ['html5shiv', 'inny_hatemelsziw.jotes'],
+            vendor: ['cos_w_apce.js'],
             excludeIn: ['main']
           },
           jQuery: {
-            vendor: ['jquery.js', 'jakasbibl/jquery.costam.js'],
+            bower: ['jquery', 'jakasbibl/jquery.costam.js'],
             excludeIn: false
           },
           test: {
@@ -103,15 +102,15 @@ module.exports = function(dirs) {
 
         packages: {
           main: {
-            filename: 'app.js',
+            filename: 'app',
             dependencies: ['main']
           },
           html5shiv: {
-            filename: 'html5shiv.js',
-            dependencies: ['html5shiv'],
+            dependencies: ['html5shiv']
           },
           test: {
-            filename: 'test.js',
+            filename: 'test',
+            filenameVendor: 'vendortest',
             dependencies: ['jQuery', 'test']
           }
         },
@@ -119,22 +118,13 @@ module.exports = function(dirs) {
 
         mainBowerFiles: {
           paths: {
-            bowerDirectory: dirs.vendor,
+            bowerDirectory: dirs.bower,
             bowerrc: dirs.app + '.bowerrc',
             bowerJson: dirs.app + 'bower.json'
           },
           overrides: {}
         },
         
-        //add script filenames/globs (relative to the appropriate dirs) to be loaded first
-        priority: {
-          vendor: {
-            beforeBower: [],  //before bower components load
-            afterBower: [],   //before dirs.src.js.vendor load (you usually need this one)
-          },
-          app: [] //ex: ['core.js']
-        },
-
         jsHint: {
           enable: false,
           options: {},

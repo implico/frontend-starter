@@ -2,9 +2,12 @@ module.exports = function(dirs, config, tasks) {
 
 	var gulp       	 = require('gulp'),
 	    addsrc       = require('gulp-add-src'),
+	    debug        = require('gulp-debug'),
 	    extend       = require('extend'),
 	    filter       = require('gulp-filter'),
 	    jshint       = require('gulp-jshint'),
+	    mainBowerFiles = require('main-bower-files'),
+	    multimatch   = require('multimatch'),
 	    plumber      = require('gulp-plumber'),
 	    sourcemaps   = require('gulp-sourcemaps'),
 	    concat       = require('gulp-concat'),
@@ -19,15 +22,9 @@ module.exports = function(dirs, config, tasks) {
 		//create content
 		this.content = {};
 
-		var wasVendorCache = false;	//only one comp can have vendor cache
 		for (var id in this.compsData) {
 			if (!this.compsData.hasOwnProperty(id))
 				continue;
-			if (this.compsData[id].vendorCache) {
-				if (wasVendorCache)
-					throw new Exception('FS: Error in config.js.comps definition for ' + id + '. Property vendorCache can be set only for one entry!');
-				wasVendorCache = true;
-			}
 			this.content[id] = new Comp(this, id, this.compsData[id]);
 			//console.log(this.content[id].typeGlobs);
 		}
@@ -65,8 +62,8 @@ module.exports = function(dirs, config, tasks) {
 		this.data = data;
 		this.typeGlobs = {};
 
-		this.setGlob('vendor', dirs.vendor);
-		this.setGlob('vendorApp', dirs.src.js.vendor);
+		this.setGlob('bower', dirs.bower);
+		this.setGlob('vendor', dirs.src.js.vendor);
 		this.setGlob('app', dirs.src.js.app);
 	}
 
@@ -79,8 +76,7 @@ module.exports = function(dirs, config, tasks) {
 	}
 
 	Comp.prototype.setGlob = function(type, baseDir) {
-		var curId = this.getId(),
-				destType = type == 'vendorApp' ? 'vendor' : type;
+		var curId = this.getId();
 
 		var typeGlob = this.data[type] ? this.data[type] : [];
 
@@ -93,17 +89,21 @@ module.exports = function(dirs, config, tasks) {
 				if (!typeGlob.hasOwnProperty(i) || !typeGlob[i])
 					continue;
 
-				//add default glob prefix for vendor
-				if ((type == 'vendor') && (typeGlob[i].indexOf('/') < 0)) {
-					typeGlob[i] = '**/' + typeGlob[i];
+				//bower - no full path prepending (filtered)
+				if (type == 'bower') {
+					//add default glob prefix for bower
+					if (typeGlob[i].indexOf('/') < 0) {
+						typeGlob[i] = typeGlob[i] + '/**/*';
+					}
 				}
-
-        typeGlob[i] = baseDir + typeGlob[i];
+				else {
+					//prepend dir path
+        	typeGlob[i] = baseDir + typeGlob[i];
+        }
 			}
 		}
 
-		this.typeGlobs[destType] = this.typeGlobs[destType] ? this.typeGlobs[destType].concat(typeGlob) : typeGlob;
-
+		this.typeGlobs[type] = typeGlob;	//this.typeGlobs[destType] ? this.typeGlobs[destType].concat(typeGlob) :
 	}
 
 	Comp.prototype.getGlob = function(type, dependencies) {
@@ -111,9 +111,6 @@ module.exports = function(dirs, config, tasks) {
 		
 		if (dependencies) {
 			this.applyExcludeIn(type, typeGlob, dependencies);
-			if (type == 'vendor') {
-				this.applyExcludeIn('vendorApp', typeGlob, dependencies);
-			}
 		}
 
 		return typeGlob;
@@ -127,13 +124,17 @@ module.exports = function(dirs, config, tasks) {
 
 		var curId = this.getId();
 
+		//exclude vendor dir for app
+		if (type == 'app') {
+			typeGlob.push('!' + dirs.src.js.vendor);
+		}
+
 		var otherComps = this.comps.getContent(null, curId);
 
 		for (var id in otherComps) {
 			var otherComp = otherComps[id],
 					excludeIn = otherComp.getExcludeIn();
 
-				//console.log('spr: ', id, 'w', curId, skipCompIds);
 			if (excludeIn && ((excludeIn === true) || (excludeIn === curId) || (excludeIn.indexOf(curId) >= 0)) && (skipCompIds.indexOf(id) < 0)) {
 				otherGlob = otherComp.getGlob(type);
 				otherGlob.forEach(function(negatePattern) {
@@ -165,12 +166,12 @@ module.exports = function(dirs, config, tasks) {
 			if (!this.packagesData.hasOwnProperty(id))
 				continue;
 			this.content[id] = new Package(this, id, this.packagesData[id]);
-			console.log(id, this.content[id].typeGlobs);
+			//console.log(id, this.content[id].typeGlobs);
 		}
   }
 
-  Packages.prototype.getContent = function() {
-  	return this.content;
+  Packages.prototype.getContent = function(id) {
+  	return id ? this.content[id] : this.content;
   }
 
   Packages.prototype.getComps = function() {
@@ -184,6 +185,7 @@ module.exports = function(dirs, config, tasks) {
 		this.data = data;
 		this.typeGlobs = {};
 
+		this.setGlob('bower');
 		this.setGlob('vendor');
 		this.setGlob('app');
 	}
@@ -192,12 +194,15 @@ module.exports = function(dirs, config, tasks) {
 		return this.id;
 	}
 
+	Package.prototype.getData = function(key) {
+		return this.data[key];
+	}
+
 	Package.prototype.setGlob = function(type) {
 		this.typeGlobs[type] = [];
 		var dependencies = this.data.dependencies;
 
 		if (dependencies instanceof Array) {
-			//console.log('dep w:', this.getId(), dependencies);
 			var _this = this;
 			dependencies.forEach(function(compId) {
 				_this.typeGlobs[type] = _this.typeGlobs[type].concat(_this.packages.getComps().getContent(compId).getGlob(type, dependencies));
@@ -205,113 +210,164 @@ module.exports = function(dirs, config, tasks) {
 		}
 	}
 
-	Package.prototype.getGlob = function(type) {
-		return this.typeGlobs[type] ? this.typeGlobs[type] : [];
+	Package.prototype.getGlob = function(type, prependDir) {
+		var ret = this.typeGlobs[type] ? this.typeGlobs[type] : [];
+
+		if (prependDir && (type == 'bower') && ret.length) {
+			var globs = ret.slice(0);
+			ret = [];
+			globs.forEach((g, i) => {
+				ret.push(dirs.bower + g);
+			});
+		}
+
+		return ret;
 	}
 
 
 
 
 
-	var comps,
-			packages;
+  tasks.js = {
+  	data: {
+  		dev: {
+  			config: null,
+  			comps: null,
+  			packages: null
+  		},
+  		prod: {
+  			config: null,
+  			comps: null,
+  			packages: null
+  		}
+  	},
 
+  	run: function(packageId, isApp, isDev, taskNameBegin, taskNameEnd, cb) {
+  		if (taskNameBegin) {
+  			console.log('Starting ' + taskNameBegin + '...');
+  		}
+	    var ret,
+	        configJs = this.getConfig(isDev);
+	    var package = this.getPackages(isDev, packageId);
 
-  tasks.js = function(isApp, isDev) {
-    var ret,
-        configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
+	    //set output filenames
+	    var filename = package.getData('filename'),
+	    		filenameVendor = package.getData('filenameVendor');
+	    if (!filename)
+	    	filename = packageId;
+	    if (!filenameVendor)
+	    	filenameVendor = filename + '.vendor';
+	    filename += '.js';
+	    filenameVendor += '.js';
 
-	  if (!comps || comps.compareData(configJs.comps)) {
-	  	comps = new Comps(configJs.comps);
-	  	packages = new Packages(comps, configJs.packages);
+	    var vendorDir = configJs.concatVendorApp ? dirs.cache : dirs.dist.js;
+
+	    //get files
+	    if (isApp) {
+		    ret = gulp.src(package.getGlob('app'), { base: dirs.src.main });
+	    }
+	    else {
+	    	var bowerFilter = package.getGlob('bower');
+		    ret = gulp.src(mainBowerFiles(configJs.mainBowerFiles), { base: dirs.src.main })
+		    	.pipe(filter(function(file) {
+		    		//console.log('filtr:', file.path, multimatch(file.path.replace('../', ''), bowerFilter));
+	        	return multimatch(file.path.replace('../', ''), bowerFilter).length;
+	      	}))
+	      	.pipe(addsrc.append(package.getGlob('vendor'), { base: dirs.src.main }));
+	    }
+
+	    //plumber
+	    ret = ret
+	      .pipe(plumber({
+	        errorHandler: function (error) {
+	          console.log(error.message);
+	          this.emit('end');
+	        }
+	      }));
+
+	    if (isDev && isApp && configJs.jsHint.enable) {
+	      //jshint for dev
+	      ret = ret
+	        .pipe(jshint(configJs.jsHint.options))
+	        .pipe(jshint.reporter(configJs.jsHint.reporter));
+	    }
+
+	    if (configJs.sourceMaps) {
+	      //init source maps
+	      ret = ret
+	        .pipe(sourcemaps.init({ loadMaps: false }));
+	    }
+
+	    //concat files
+	    ret = ret
+	      .pipe(concat(isApp ? filename : filenameVendor, { newLine:'\n;' }));
+
+	    if (configJs.sourceMaps) {
+	      //write source maps
+	      ret = ret
+	       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourceMapsRoot }))
+	    }
+
+	    if (configJs.minify) {
+	      //minify
+	      ret = ret
+	       .pipe(uglify());
+	    }
+
+	    if (isApp && configJs.concatVendorApp) {
+	      //when main app, prepend vendor.js
+	      ret = ret
+	        .pipe(addsrc.prepend(vendorDir + filenameVendor));
+
+	      if (configJs.sourceMaps) {
+	        ret = ret
+	          .pipe(sourcemaps.init({ loadMaps: true }));
+	      }
+
+	      ret = ret
+	        .pipe(concat(filename, { newLine:'\n;' }));
+
+	      if (configJs.sourceMaps) {
+	        ret = ret
+	          .pipe(sourcemaps.write({ includeContent: false }));
+	      }
+	    }
+
+	    //save the file
+	    ret = ret
+	      .pipe(gulp.dest(isApp ? dirs.dist.js : vendorDir));
+
+	    ret.on('end', () => {
+	    	if (taskNameEnd)
+        	console.log('Finished ' + taskNameEnd + '.');
+        if (cb)
+          cb(tasks);
+      });
+
+	    return ret;
+	  },
+
+	  getConfig: function(isDev) {
+	  	var offset = isDev ? 'dev' : 'prod';
+	  	if (!this.data[offset].config) {
+	  		this.data[offset].config = extend(true, config.js.common, config.js[offset])
+	  	}
+	  	return this.data[offset].config;
+	  },
+
+	  getPackages: function(isDev, packageId) {
+	  	var offset = isDev ? 'dev' : 'prod',
+	  			configJs = this.getConfig(isDev);
+
+		  if (!this.data[offset].comps) {
+		  	var comps = this.data[offset].comps = new Comps(configJs.comps);
+		  	this.data[offset].packages = new Packages(comps, configJs.packages);
+		  }
+		  var packages = this.data[offset].packages;
+
+	  	return packageId ? packages.getContent(packageId) : packages;
 	  }
-
-	  process.exit();
-
-    //get files
-    var src;
-    if (isApp) {
-      src = this.priorityPrependDir(configJs.priority.app, dirs.src.js.appDir)
-              .concat(dirs.src.js.app);
-    }
-    else {
-      src = this.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
-              .concat(mainBowerFiles(configJs.mainBowerFiles))
-              .concat(this.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
-              .concat(dirs.src.js.vendor);
-    }
-    ret = gulp.src(src, { base: dirs.src.main });
-
-    if (!isApp) {
-      ret = ret.pipe(filter(function(file) {
-        return multimatch(file.path.replace('../', ''), configJs.vendorFilter).length;
-      }));
-    }
-
-    //plumber
-    ret = ret
-      .pipe(plumber({
-        errorHandler: function (error) {
-          console.log(error.message);
-          this.emit('end');
-        }
-      }));
-
-    if (isDev && isApp && configJs.jsHint.enable) {
-      //jshint for dev
-      ret = ret
-        .pipe(jshint(configJs.jsHint.options))
-        .pipe(jshint.reporter(configJs.jsHint.reporter));
-    }
-
-    if (configJs.sourceMaps) {
-      //init source maps
-      ret = ret
-        .pipe(sourcemaps.init({ loadMaps: false }));
-    }
-
-    //concat files
-    ret = ret
-      .pipe(concat(isApp ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
-
-    if (configJs.sourceMaps) {
-      //write source maps
-      ret = ret
-       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourceMapsRoot }))
-    }
-
-    if (configJs.minify) {
-      //minify
-      ret = ret
-       .pipe(uglify());
-    }
-
-    if (isApp && configJs.concatVendorApp) {
-      //when main app, prepend vendor.js
-      ret = ret
-        .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
-
-      if (configJs.sourceMaps) {
-        ret = ret
-          .pipe(sourcemaps.init({ loadMaps: true }));
-      }
-
-      ret = ret
-        .pipe(concat('app.js', { newLine:'\n;' }));
-
-      if (configJs.sourceMaps) {
-        ret = ret
-          .pipe(sourcemaps.write({ includeContent: false }));
-      }
-    }
-
-    //save the file
-    ret = ret
-      .pipe(gulp.dest(dirs.dist.js));
-
-
-    return ret;
-  }
+	}
 
 
 

@@ -20,21 +20,24 @@ module.exports = function(appDir) {
 
   var dirs = {
 
-    module: '',
-
-    user: {
-      dirsFile: '',
-      configFile: ''
-    },
+    root: '',
+    cache: '',
 
     tasks: {
       main: '',
       jsFile: ''
     },
 
-    app: '',
 
-    vendor: '',
+
+    app: '',
+    bower: '',
+
+    user: {
+      dirsFile: '',
+      configFile: ''
+    },
+
     src: {
       main: '',
       styles: {
@@ -65,6 +68,8 @@ module.exports = function(appDir) {
     }
   }
 
+  dirs.root = __dirname + '/';
+
   //custom config files
   dirs.user.dirsFile = 'fs.dirs.custom.js';
   dirs.user.configFile = 'fs.config.custom.js';
@@ -74,7 +79,8 @@ module.exports = function(appDir) {
 
   dirs.app = appDir;
 
-  dirs.vendor = dirs.app + 'bower_components/';  //change also .bowerrc
+  dirs.cache = dirs.app + '.cache/';
+  dirs.bower = dirs.app + 'bower_components/';  //change also .bowerrc
 
   dirs.src.main = dirs.app + 'src/';
 
@@ -127,13 +133,13 @@ module.exports = function(appDir) {
   //additional custom dirs to watch and (optionally) copy
   dirs.custom = {
     //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
-    html5shiv: {
+    /*html5shiv: {
       dev: true,
       prod: true,
       clean: false,
-      from: [dirs.vendor + 'html5shiv/dist/html5shiv.min.js'],
+      from: [dirs.bower + 'html5shiv/dist/html5shiv.min.js'],
       to: dirs.dist.js
-    }
+    }*/
     
   //Example:
   //  your_dir_name: {
