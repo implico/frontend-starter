@@ -167,38 +167,33 @@ gulp.task('dev:watch', function(cb) {
 
 
   var packages = tasks.js.getPackages(true).getContent();
-      watch(['C:\\_pro\\openSource\\frontend-starter\\test/bower_components/jquery/**/*'], batch(function (events, done) {
-      tasks.js.run('test', false, true, 'js:dev (' + packageId + ')', false, (tasks) => {
-        tasks.js.run('test', true, true, false, 'js:dev (' + packageId + ')', done);
-      });
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-
-  if (0)
   for (var packageId in packages) {
     if (!packages.hasOwnProperty(packageId))
       continue;
     var pkg = packages[packageId];
+    
     console.log(packageId);
 
     //js - app
-    console.log('Watching app', packageId, pkg.getGlob('app'));
-    watch(pkg.getGlob('app'), batch(function (events, done) {
-      tasks.js.run(packageId, true, true, 'js:dev:main (' + packageId + ')', '', done);
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-
-    console.log('Watching vendor', packageId, pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')));
-    //js - vendor
-    watch(pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')), batch(function (events, done) {
-      tasks.js.run(packageId, false, true, 'js:dev (' + packageId + ')', false, (tasks) => {
-        tasks.js.run(packageId, true, true, false, 'js:dev (' + packageId + ')', done);
+    (() => {
+      var curPackageId = packageId;
+      console.log('Watching app', packageId, pkg.getGlob('app'));
+      watch(pkg.getGlob('app'), batch(function (events, done) {
+        tasks.js.run(curPackageId, true, true, 'js:dev:main (' + curPackageId + ')', '', done);
+      })).on('error', function(err) {
+        //console.error(err);
       });
-    })).on('error', function(err) {
-      //console.error(err);
-    });
+
+      console.log('Watching vendor', curPackageId, pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')));
+      //js - vendor
+      watch(pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')), batch(function (events, done) {
+        tasks.js.run(curPackageId, false, true, 'js:dev (' + curPackageId + ')', false, (tasks) => {
+          tasks.js.run(curPackageId, true, true, false, 'js:dev (' + curPackageId + ')', done);
+        });
+      })).on('error', function(err) {
+        //console.error(err);
+      });
+    })();
   }
 
   //js - app
