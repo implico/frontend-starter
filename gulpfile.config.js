@@ -78,21 +78,19 @@ module.exports = function(dirs) {
             bower: ['**/*.js'],
             vendor: ['**/*.js'],
             app: ['core.js', '**/*.js'],
-            /*priority: {
-              vendor: ['jquery.js'],
-              vendorApp: ['vendor.js'],
-              app: ['app.js']
-            },*/
-            excludeIn: false
+            excludeIn: false,
+            //watch: true  //not needed, blocked only if false
           },
           html5shiv: {
             bower: ['html5shiv', 'inny_hatemelsziw.jotes'],
             vendor: ['cos_w_apce.js'],
-            excludeIn: ['main']
+            excludeIn: ['main'],
+            watch: true
           },
           jQuery: {
             bower: ['jquery', 'jakasbibl/jquery.costam.js'],
-            excludeIn: false
+            excludeIn: false,
+            watch: false
           },
           test: {
             app: ['test.js', 'cos/tralala.js'],

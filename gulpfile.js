@@ -172,27 +172,37 @@ gulp.task('dev:watch', function(cb) {
       continue;
     var pkg = packages[packageId];
     
-    console.log(packageId);
-
     //js - app
     (() => {
       var curPackageId = packageId;
-      console.log('Watching app', packageId, pkg.getGlob('app'));
-      watch(pkg.getGlob('app'), batch(function (events, done) {
-        tasks.js.run(curPackageId, true, true, 'js:dev:main (' + curPackageId + ')', '', done);
-      })).on('error', function(err) {
-        //console.error(err);
-      });
-
-      console.log('Watching vendor', curPackageId, pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')));
-      //js - vendor
-      watch(pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')), batch(function (events, done) {
-        tasks.js.run(curPackageId, false, true, 'js:dev (' + curPackageId + ')', false, (tasks) => {
-          tasks.js.run(curPackageId, true, true, false, 'js:dev (' + curPackageId + ')', done);
+      //console.log('Watching app', packageId, pkg.getGlob('app'));
+      var globApp = pkg.getGlob('app', false, true);
+      if (globApp.length) {
+        watch(globApp, batch(function (events, done) {
+          tasks.js.run(curPackageId, true, true, 'js:dev:main (' + curPackageId + ')', true, (tasks) => {
+            browserSync.reload();
+            done()
+          });
+        })).on('error', function(err) {
+          console.error(err);
         });
-      })).on('error', function(err) {
-        //console.error(err);
-      });
+      }
+
+      //console.log('Watching vendor', curPackageId, pkg.getGlob('bower', true).concat(pkg.getGlob('vendor')));
+      //js - vendor
+      var globVendor = pkg.getGlob('bower', true, true).concat(pkg.getGlob('vendor', false, true));
+      if (globVendor.length) {
+        watch(globVendor, batch(function (events, done) {
+          tasks.js.run(curPackageId, false, true, 'js:dev (' + curPackageId + ')', false, (tasks) => {
+            tasks.js.run(curPackageId, true, true, false, 'js:dev (' + curPackageId + ')', (tasks) => {
+              browserSync.reload();
+              done()
+            });
+          });
+        })).on('error', function(err) {
+          //console.error(err);
+        });
+      }
     })();
   }
 
@@ -339,95 +349,6 @@ var tasks = {
       browserSync.reload();
     });
 
-  },
-
-  js: function(isApp, isDev) {
-    var ret,
-        configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
-
-    //get files
-    var src;
-    if (isApp) {
-      src = APP.dirs.js.priorityPrependDir(configJs.priority.app, dirs.src.js.appDir)
-              .concat(dirs.src.js.app);
-    }
-    else {
-      src = APP.dirs.js.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
-              .concat(mainBowerFiles(configJs.mainBowerFiles))
-              .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
-              .concat(dirs.src.js.vendor);
-    }
-    ret = gulp.src(src, { base: dirs.src.main });
-
-    if (!isApp) {
-      ret = ret.pipe(filter(function(file) {
-        return multimatch(file.path.replace('../', ''), configJs.vendorFilter).length;
-      }));
-    }
-
-    //plumber
-    ret = ret
-      .pipe(plumber({
-        errorHandler: function (error) {
-          console.log(error.message);
-          this.emit('end');
-        }
-      }));
-
-    if (isDev && isApp && configJs.jsHint.enable) {
-      //jshint for dev
-      ret = ret
-        .pipe(jshint(configJs.jsHint.options))
-        .pipe(jshint.reporter(configJs.jsHint.reporter));
-    }
-
-    if (configJs.sourceMaps) {
-      //init source maps
-      ret = ret
-        .pipe(sourcemaps.init({ loadMaps: false }));
-    }
-
-    //concat files
-    ret = ret
-      .pipe(concat(isApp ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
-
-    if (configJs.sourceMaps) {
-      //write source maps
-      ret = ret
-       .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourceMapsRoot }))
-    }
-
-    if (configJs.minify) {
-      //minify
-      ret = ret
-       .pipe(uglify());
-    }
-
-    if (isApp && configJs.concatVendorApp) {
-      //when main app, prepend vendor.js
-      ret = ret
-        .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
-
-      if (configJs.sourceMaps) {
-        ret = ret
-          .pipe(sourcemaps.init({ loadMaps: true }));
-      }
-
-      ret = ret
-        .pipe(concat('app.js', { newLine:'\n;' }));
-
-      if (configJs.sourceMaps) {
-        ret = ret
-          .pipe(sourcemaps.write({ includeContent: false }));
-      }
-    }
-
-    //save the file
-    ret = ret
-      .pipe(gulp.dest(dirs.dist.js));
-
-
-    return ret;
   },
 
   views: function(isDev) {
@@ -628,13 +549,51 @@ gulp.task('sprites', function() {
 
 /* JS SCRIPTS */
 gulp.task('js:dev:main', function() {
-  return tasks.js(true, true)
-    .pipe(browserSync.stream());
+  // return tasks.js(true, true)
+  //   .pipe(browserSync.stream());
+
+
+  var promises = [];
+
+  var packages = tasks.js.getPackages(true).getContent();
+  for (var packageId in packages) {
+    if (!packages.hasOwnProperty(packageId))
+      continue;
+    var pkg = packages[packageId];
+
+    promises.push(new Promise((resolve, reject) => {
+      tasks.js.run(packageId, true, true, '', '', (tasks) => {
+        browserSync.reload();
+        resolve();
+      });
+    }));
+  }
+
+  return Promise.all(promises);
 });
 
 gulp.task('js:dev:vendor', function() {
-  return tasks.js(false, true)
-    .pipe(browserSync.stream());
+  // return tasks.js(false, true)
+  //   .pipe(browserSync.stream());
+
+
+  var promises = [];
+
+  var packages = tasks.js.getPackages(true).getContent();
+  for (var packageId in packages) {
+    if (!packages.hasOwnProperty(packageId))
+      continue;
+    var pkg = packages[packageId];
+
+    promises.push(new Promise((resolve, reject) => {
+      tasks.js.run(packageId, false, true, packageId, '', (tasks) => {
+        browserSync.reload();
+        resolve();
+      });
+    }));
+  }
+
+  return Promise.all(promises);
 });
 
 gulp.task('js:dev', function() {
@@ -643,16 +602,25 @@ gulp.task('js:dev', function() {
 
 gulp.task('js:prod', function() {
 
-  var ret = tasks.js(false, false);
+  var promises = [];
 
-  ret.on('end', function() {
-    tasks.js(true, false).on('end', function() {
-      del(dirs.dist.js + 'vendor.js', { force: true });
-    });
-  });
+  var packages = tasks.js.getPackages(false).getContent();
+  for (var packageId in packages) {
+    if (!packages.hasOwnProperty(packageId))
+      continue;
+    var pkg = packages[packageId];
 
-  return ret;
+    promises.push(new Promise((resolve, reject) => {
+      var curPackageId = packageId;
+      tasks.js.run(curPackageId, false, false, '', '', (tasks) => {
+        tasks.js.run(curPackageId, true, false, '', '', (tasks) => {
+          resolve();
+        });
+      });
+    }));
+  }
 
+  return Promise.all(promises);
 });
 
 

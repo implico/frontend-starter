@@ -71,6 +71,10 @@ module.exports = function(dirs, config, tasks) {
 		return this.id;
 	}
 
+	Comp.prototype.getData = function(key) {
+		return this.data[key];
+	}
+
 	Comp.prototype.getExcludeIn = function() {
 		return this.data.excludeIn;
 	}
@@ -93,7 +97,7 @@ module.exports = function(dirs, config, tasks) {
 				if (type == 'bower') {
 					//add default glob prefix for bower
 					if (typeGlob[i].indexOf('/') < 0) {
-						typeGlob[i] = typeGlob[i] + '/**/*';
+						typeGlob[i] = '**/' + typeGlob[i] + '/**/*';
 					}
 				}
 				else {
@@ -184,6 +188,7 @@ module.exports = function(dirs, config, tasks) {
 		this.packages = packages;
 		this.data = data;
 		this.typeGlobs = {};
+		this.typeGlobsWatch = {};
 
 		this.setGlob('bower');
 		this.setGlob('vendor');
@@ -200,18 +205,36 @@ module.exports = function(dirs, config, tasks) {
 
 	Package.prototype.setGlob = function(type) {
 		this.typeGlobs[type] = [];
+		this.typeGlobsWatch[type] = [];
 		var dependencies = this.data.dependencies;
 
 		if (dependencies instanceof Array) {
 			var _this = this;
 			dependencies.forEach(function(compId) {
-				_this.typeGlobs[type] = _this.typeGlobs[type].concat(_this.packages.getComps().getContent(compId).getGlob(type, dependencies));
+				var comp = _this.packages.getComps().getContent(compId),
+						compGlob = comp.getGlob(type, dependencies);
+
+				_this.typeGlobs[type] = _this.typeGlobs[type].concat(compGlob);
+				if (comp.getData('watch') !== false) {
+					_this.typeGlobsWatch[type] = _this.typeGlobsWatch[type].concat(compGlob);
+				}
 			});
+			if ((type == 'app') && (this.typeGlobs[type].length)) {
+				var negateVendor = '!' + dirs.src.js.vendor + '**/*';
+				this.typeGlobs[type].push(negateVendor);
+				this.typeGlobsWatch[type].push(negateVendor);
+			}
 		}
 	}
 
-	Package.prototype.getGlob = function(type, prependDir) {
-		var ret = this.typeGlobs[type] ? this.typeGlobs[type] : [];
+	Package.prototype.getGlob = function(type, prependDir, watch) {
+		var ret;
+		if (watch) {
+			ret = this.typeGlobsWatch[type] ? this.typeGlobsWatch[type] : [];
+		}
+		else {
+			ret = this.typeGlobs[type] ? this.typeGlobs[type] : [];
+		}
 
 		if (prependDir && (type == 'bower') && ret.length) {
 			var globs = ret.slice(0);
@@ -220,7 +243,6 @@ module.exports = function(dirs, config, tasks) {
 				ret.push(dirs.bower + g);
 			});
 		}
-
 		return ret;
 	}
 
@@ -246,6 +268,9 @@ module.exports = function(dirs, config, tasks) {
   		if (taskNameBegin) {
   			console.log('Starting ' + taskNameBegin + '...');
   		}
+  		if (taskNameEnd === true) {
+  			taskNameEnd = taskNameBegin;
+  		}
 	    var ret,
 	        configJs = this.getConfig(isDev);
 	    var package = this.getPackages(isDev, packageId);
@@ -270,7 +295,6 @@ module.exports = function(dirs, config, tasks) {
 	    	var bowerFilter = package.getGlob('bower');
 		    ret = gulp.src(mainBowerFiles(configJs.mainBowerFiles), { base: dirs.src.main })
 		    	.pipe(filter(function(file) {
-		    		//console.log('filtr:', file.path, multimatch(file.path.replace('../', ''), bowerFilter));
 	        	return multimatch(file.path.replace('../', ''), bowerFilter).length;
 	      	}))
 	      	.pipe(addsrc.append(package.getGlob('vendor'), { base: dirs.src.main }));
@@ -337,7 +361,7 @@ module.exports = function(dirs, config, tasks) {
 	    ret = ret
 	      .pipe(gulp.dest(isApp ? dirs.dist.js : vendorDir));
 
-	    ret.on('end', () => {
+	    ret.on('finish', () => {
 	    	if (taskNameEnd)
         	console.log('Finished ' + taskNameEnd + '.');
         if (cb)
