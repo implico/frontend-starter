@@ -23,17 +23,12 @@ module.exports = function(appDir) {
     root: '',
     cache: '',
 
-    tasks: {
-      main: '',
-      jsFile: ''
-    },
-
-
+    tasks: '',
 
     app: '',
     bower: '',
 
-    user: {
+    customConfig: {
       dirsFile: '',
       configFile: ''
     },
@@ -71,11 +66,10 @@ module.exports = function(appDir) {
   dirs.root = __dirname + '/';
 
   //custom config files
-  dirs.user.dirsFile = 'fs.dirs.custom.js';
-  dirs.user.configFile = 'fs.config.custom.js';
+  dirs.customConfig.dirsFile = 'fs.dirs.custom.js';
+  dirs.customConfig.configFile = 'fs.config.custom.js';
 
-  dirs.tasks.main = './tasks/';
-  dirs.tasks.jsFile = dirs.tasks.main + 'js.task.js';
+  dirs.tasks = './tasks/';
 
   dirs.app = appDir;
 
@@ -86,10 +80,10 @@ module.exports = function(appDir) {
 
   //custom src dir
   try {
-    require(dirs.app + dirs.user.dirsFile)(dirs, 'src');
+    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.user.dirsFile + ').');
+    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
     process.exit(1);
   }
 
@@ -118,7 +112,7 @@ module.exports = function(appDir) {
 
   //custom dist dir
   try {
-    require(dirs.app + dirs.user.dirsFile)(dirs, 'dist');
+    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'dist');
   }
   catch (ex) {}
 
@@ -153,7 +147,7 @@ module.exports = function(appDir) {
 
   //custom dir modifications/definitions - optional
   try {
-    require(dirs.app + dirs.user.dirsFile)(dirs, 'all');
+    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'all');
   }
   catch (ex) {}
 

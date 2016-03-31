@@ -1,4 +1,4 @@
-module.exports = function(dirs, config, tasks) {
+module.exports = function(dirs, config, app, tasks) {
 
 	var gulp       	 = require('gulp'),
 	    addsrc       = require('gulp-add-src'),
@@ -8,6 +8,7 @@ module.exports = function(dirs, config, tasks) {
 	    jshint       = require('gulp-jshint'),
 	    mainBowerFiles = require('main-bower-files'),
 	    multimatch   = require('multimatch'),
+	    path				 = require('path'),
 	    plumber      = require('gulp-plumber'),
 	    sourcemaps   = require('gulp-sourcemaps'),
 	    concat       = require('gulp-concat'),
@@ -82,28 +83,39 @@ module.exports = function(dirs, config, tasks) {
 	Comp.prototype.setGlob = function(type, baseDir) {
 		var curId = this.getId();
 
-		var typeGlob = this.data[type] ? this.data[type] : [];
+		//get priority glob for type
+		var priorityGlob;
+		if (type != 'bower') {
+			priorityGlob = (this.data.priority && this.data.priority[type]) ? this.data.priority[type] : [];
+			if (!(priorityGlob instanceof Array))
+				priorityGlob = [priorityGlob];
+		}
 
+		//get main glob for type
+		var typeGlob = this.data[type] ? this.data[type] : [];
 		if (!(typeGlob instanceof Array))
 			typeGlob = [typeGlob];
 
+		//prepend priority glob
+		if (priorityGlob) {
+			typeGlob = priorityGlob.concat(typeGlob);
+		}
+
+		//modify glob (bower)/prepend dir
 		if (typeGlob.length) {
 
 			for (var i in typeGlob) {
 				if (!typeGlob.hasOwnProperty(i) || !typeGlob[i])
 					continue;
 
-				//bower - no full path prepending (filtered)
+				//bower - add default glob suffix
 				if (type == 'bower') {
-					//add default glob prefix for bower
 					if (typeGlob[i].indexOf('/') < 0) {
-						typeGlob[i] = '**/' + typeGlob[i] + '/**/*';
+						typeGlob[i] = typeGlob[i] + '/**/*';
 					}
 				}
-				else {
-					//prepend dir path
-        	typeGlob[i] = baseDir + typeGlob[i];
-        }
+				//prepend dir path
+      	typeGlob[i] = baseDir + typeGlob[i];
 			}
 		}
 
@@ -227,21 +239,13 @@ module.exports = function(dirs, config, tasks) {
 		}
 	}
 
-	Package.prototype.getGlob = function(type, prependDir, watch) {
+	Package.prototype.getGlob = function(type, watch) {
 		var ret;
 		if (watch) {
 			ret = this.typeGlobsWatch[type] ? this.typeGlobsWatch[type] : [];
 		}
 		else {
 			ret = this.typeGlobs[type] ? this.typeGlobs[type] : [];
-		}
-
-		if (prependDir && (type == 'bower') && ret.length) {
-			var globs = ret.slice(0);
-			ret = [];
-			globs.forEach((g, i) => {
-				ret.push(dirs.bower + g);
-			});
 		}
 		return ret;
 	}
@@ -295,7 +299,7 @@ module.exports = function(dirs, config, tasks) {
 	    	var bowerFilter = package.getGlob('bower');
 		    ret = gulp.src(mainBowerFiles(configJs.mainBowerFiles), { base: dirs.src.main })
 		    	.pipe(filter(function(file) {
-	        	return multimatch(file.path.replace('../', ''), bowerFilter).length;
+	        	return multimatch(path.normalize(file.path), bowerFilter).length;
 	      	}))
 	      	.pipe(addsrc.append(package.getGlob('vendor'), { base: dirs.src.main }));
 	    }
@@ -392,105 +396,4 @@ module.exports = function(dirs, config, tasks) {
 	  	return packageId ? packages.getContent(packageId) : packages;
 	  }
 	}
-
-
-
-
-	/*tasks.js = function(isApp, isDev) {
-
-
-	  var ret,
-	      configJs = extend(true, config.js.common, config.js[isDev ? 'dev': 'prod']);
-
-	  if (!comps || comps.compareData(configJs.comps)) {
-	  	comps = new Comps(configJs.comps);
-	  	packages = new Packages(comps, configJs.packages);
-	  }
-
-	  //temp
-	  process.exit();
-
-	  //get files
-	  var src;
-	  if (isApp) {
-	    src = APP.dirs.js.priorityPrependDir(configJs.priority.app, dirs.src.js.appDir)
-	            .concat(dirs.src.js.app);
-	  }
-	  else {
-	    src = APP.dirs.js.priorityPrependDir(configJs.priority.vendor.beforeBower, dirs.src.js.vendorDir)
-	      .concat(mainBowerFiles(configJs.mainBowerFiles))
-	      .concat(APP.dirs.js.priorityPrependDir(configJs.priority.vendor.afterBower, dirs.src.js.vendorDir))
-	      .concat(dirs.src.js.vendor);
-	  }
-	  ret = gulp.src(src, { base: dirs.src.main });
-
-	  //apply vendor filter glob
-	  if (!isApp) {
-	    ret = ret
-	      .pipe(filter(configJs.vendorFilter));
-	  }
-
-	  //plumber
-	  ret = ret
-	    .pipe(plumber({
-	      errorHandler: function (error) {
-	        console.log(error.message);
-	        this.emit('end');
-	      }
-	    }));
-
-	  if (isDev) {
-	    //jshint for dev
-	    ret = ret
-	      .pipe(jshint())
-	  }
-
-	  if (configJs.sourceMaps) {
-	    //init source maps
-	    ret = ret
-	      .pipe(sourcemaps.init({ loadMaps: false }));
-	  }
-
-	  //concat files
-	  ret = ret
-	    .pipe(concat(isApp ? 'app.js' : 'vendor.js', { newLine:'\n;' }));
-
-	  if (configJs.sourceMaps) {
-	    //write source maps
-	    ret = ret
-	     .pipe(sourcemaps.write({ includeContent: false, sourceRoot: configJs.sourceMapsRoot }))
-	  }
-
-	  if (configJs.minify) {
-	    //minify
-	    ret = ret
-	     .pipe(uglify());
-	  }
-
-	  if (isApp && configJs.concatAppVendor) {
-	    //when main app, prepend vendor.js
-	    ret = ret
-	      .pipe(addsrc.prepend(dirs.dist.js + 'vendor.js'));
-
-	    if (configJs.sourceMaps) {
-	      ret = ret
-	        .pipe(sourcemaps.init({ loadMaps: true }));
-	    }
-
-	    ret = ret
-	      .pipe(concat('app.js', { newLine:'\n;' }));
-
-	    if (configJs.sourceMaps) {
-	      ret = ret
-	        .pipe(sourcemaps.write({ includeContent: false }));
-	    }
-	  }
-
-	  //save the file
-	  ret = ret
-	    .pipe(gulp.dest(dirs.dist.js));
-
-	  return ret;
-	}*/
-
 }

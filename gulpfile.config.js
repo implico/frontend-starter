@@ -17,6 +17,11 @@ module.exports = function(dirs) {
 
   var config = {
 
+    //system variables
+    system: {
+      isInvokedFromTerminal: process.argv && (process.argv.indexOf('-t') >= 0)
+    },
+
     styles: {
 
       common: {
@@ -75,26 +80,28 @@ module.exports = function(dirs) {
 
         comps: {
           main: {
-            bower: ['**/*.js'],
-            vendor: ['**/*.js'],
-            app: ['core.js', '**/*.js'],
+            bower: ['**/*.js'],   //set only name of the package
+            vendor: ['**/*.js'],  //path relative to the appropriate directory
+            app: ['**/*.js'],     //path relative to the appropriate directory
+
+            //set prioritized paths
+            priority: {
+              vendor: [],
+              app: []
+            },
+
+            //set comps to exclude all loaded scripts in other comps, e.g.
+            //excludeIn: ['comp1', 'comp2'] //excluded in selected comps
+            //excludeIn: true   //excluded in all other comps
+            //excludeIn: false  //no exclusion
             excludeIn: false,
-            //watch: true  //not needed, blocked only if false
+
+            watch: true  //not needed, watch blocked only if false
           },
           html5shiv: {
-            bower: ['html5shiv', 'inny_hatemelsziw.jotes'],
-            vendor: ['cos_w_apce.js'],
-            excludeIn: ['main'],
-            watch: true
-          },
-          jQuery: {
-            bower: ['jquery', 'jakasbibl/jquery.costam.js'],
-            excludeIn: false,
+            bower: ['html5shiv'],
+            excludeIn: true,
             watch: false
-          },
-          test: {
-            app: ['test.js', 'cos/tralala.js'],
-            excludeIn: true
           }
         },
 
@@ -105,11 +112,6 @@ module.exports = function(dirs) {
           },
           html5shiv: {
             dependencies: ['html5shiv']
-          },
-          test: {
-            filename: 'test',
-            filenameVendor: 'vendortest',
-            dependencies: ['jQuery', 'test']
           }
         },
 
@@ -221,10 +223,10 @@ module.exports = function(dirs) {
 
   //custom config file
   try {
-    require(dirs.app + dirs.user.configFile)(config, dirs);
+    require(dirs.app + dirs.customConfig.configFile)(config, dirs);
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.user.configFile + ').');
+    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
     process.exit(1);
   }
 

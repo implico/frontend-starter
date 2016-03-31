@@ -29,11 +29,18 @@ var spawnGulp = function(task, exitOnClose) {
     });
   }
 }
-//kill all processes on exit
-process.on('exit', function() {
+
+//kills all processes
+var killProcesses = function() {
   childrenProc.forEach(function(child) {
+    child.stdin.on('error', function() {}).write('FS_CLOSE');
     child.kill('SIGTERM');
   });
+}
+
+//kill all processes on exit
+process.on('exit', function() {
+  killProcesses();
 });
 
 
@@ -50,20 +57,20 @@ process.stdin.on('keypress', function(ch, key) {
   if (key.ctrl) {
     switch (key.name) {
       case 'c':
-        childrenProc.forEach(function(child) {
-          child.stdin.on('error', function() {}).write('FS_CLOSE');
-        });
-        setTimeout(function() {
-          process.exit();
-        }, 500);
+        process.exit();
+        break;
+      case 'r':
+        console.log('--- Invoked dev:watch restart from keyboard ---');
+        killProcesses();
+        spawnGulp('default -r', false);
         break;
       case 'p':
         console.log('--- Invoked prod task from keyboard ---');
-        spawnGulp('prod');
+        spawnGulp('prod -t');
         break;
       case 'd':
         console.log('--- Invoked dev:build task from keyboard ---');
-        spawnGulp('dev:build');
+        spawnGulp('dev:build -t');
         break;
     }
   }
@@ -72,13 +79,13 @@ if (process.stdin.setRawMode)
   process.stdin.setRawMode(true);
 process.stdin.resume();
 
-if (!task || (task == 'dev:watch') || (task == 'prod:preview')) {
+//if (!task || (task == 'dev:watch') || (task == 'prod:preview')) {
   console.log('Use keys:')
   console.log('Ctrl+P: prod');
   console.log('Ctrl+D: dev:build');
+  console.log('Ctrl+R: restart dev:watch');
   console.log('Ctrl+C: exit\n');
-}
+//}
 
 
-
-spawnGulp(task, true);
+spawnGulp(task, (task != 'default') && (task != 'dev') && (task != 'dev:watch'));
