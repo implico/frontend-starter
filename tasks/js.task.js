@@ -27,14 +27,37 @@ module.exports = function(dirs, config, app, tasks) {
 			if (!this.compsData.hasOwnProperty(id))
 				continue;
 			this.content[id] = new Comp(this, id, this.compsData[id]);
-			//console.log(this.content[id].typeGlobs);
 		}
 
-		// for (var compId in this.content) {
-		// 	if (!this.content.hasOwnProperty(compId))
-		// 		continue;
-		// 	this.content[compId].applyExcludeIn();
-		// }
+		['setGlob', 'setDependencies', 'setFinal'].forEach((step) => {
+			for (var compId in this.content) {
+				if (!this.content.hasOwnProperty(compId))
+					continue;
+
+				var comp = this.content[compId];
+
+				switch (step) {
+					//set globs (without dependencies)
+					case 'setGlob':
+						comp.setGlob('bower', dirs.bower);
+						comp.setGlob('vendor', dirs.src.js.vendor);
+						comp.setGlob('app', dirs.src.js.app);
+						break;
+
+					//include dependencies in globs (after having base globs for all comps)
+					case 'setDependencies':
+						comp.setDependencies('bower');
+						comp.setDependencies('vendor');
+						comp.setDependencies('app');
+						break;
+
+					//finalize
+					case 'setFinal':
+						comp.setFinal();
+						break;
+				}
+			}
+		});
 	}
 
 	Comps.prototype.getContent = function(includeId, excludeId) {
@@ -61,11 +84,9 @@ module.exports = function(dirs, config, app, tasks) {
 		this.id = id;
 		this.comps = comps;
 		this.data = data;
+		this.typeGlobsOwn = {};
+		this.typeGlobsWatch = {};
 		this.typeGlobs = {};
-
-		this.setGlob('bower', dirs.bower);
-		this.setGlob('vendor', dirs.src.js.vendor);
-		this.setGlob('app', dirs.src.js.app);
 	}
 
 	Comp.prototype.getId = function() {
@@ -82,6 +103,10 @@ module.exports = function(dirs, config, app, tasks) {
 
 	Comp.prototype.setGlob = function(type, baseDir) {
 		var curId = this.getId();
+
+		this.typeGlobsOwn[type] = [];
+		this.typeGlobsWatch[type] = [];
+		this.typeGlobs[type] = [];
 
 		//get priority glob for type
 		var priorityGlob;
@@ -119,14 +144,81 @@ module.exports = function(dirs, config, app, tasks) {
 			}
 		}
 
-		this.typeGlobs[type] = typeGlob;	//this.typeGlobs[destType] ? this.typeGlobs[destType].concat(typeGlob) :
+		this.typeGlobsOwn[type] = typeGlob;
+		if (this.getData('watch') !== false) {
+			this.typeGlobsWatch[type] = typeGlob.slice(0);
+		}
 	}
 
-	Comp.prototype.getGlob = function(type, dependencies) {
-		var typeGlob = this.typeGlobs[type] ? this.typeGlobs[type].slice(0) : [];
-		
-		if (dependencies) {
-			this.applyExcludeIn(type, typeGlob, dependencies);
+	Comp.prototype.setDependencies = function(type) {
+		var curId = this.getId();
+
+		var dependencies = this.data.dependencies;
+		if (!dependencies) {
+			dependencies = [];
+		}
+		else if (!(dependencies instanceof Array)) {
+			dependencies = [dependencies];
+		}
+
+		var _this = this;
+		_this.typeGlobs[type] = _this.typeGlobsOwn[type].slice(0);
+
+		//add dependencies globs
+		dependencies.forEach((depCompId) => {
+			var depComp = _this.comps.getContent(depCompId),
+					depCompGlob = depComp.getGlob(type, false, true);
+
+			_this.typeGlobs[type] = _this.typeGlobs[type].concat(depCompGlob);
+			if (depComp.getData('watch') !== false) {
+				_this.typeGlobsWatch[type] = _this.typeGlobsWatch[type].concat(depCompGlob);
+			}
+		});
+
+		//apply other comps exclude in (if not in dependencies)
+		if (_this.typeGlobs[type].length) {
+			var otherComps = this.comps.getContent(null, curId);
+			for (var id in otherComps) {
+				var otherComp = otherComps[id],
+						excludeIn = otherComp.getExcludeIn();
+
+				if (excludeIn && ((excludeIn === true) || (excludeIn === curId) || ((excludeIn instanceof Array) && (excludeIn.indexOf(curId) >= 0)))
+					 && (dependencies.indexOf(id) < 0)) {
+					otherGlob = otherComp.getGlob(type, false, true);
+					otherGlob.forEach(function(patternToNegate) {
+						var negatedPattern = '!' + patternToNegate;
+						_this.typeGlobs[type].push(negatedPattern);
+						if (_this.typeGlobsWatch[type].length) {
+							_this.typeGlobsWatch[type].push(negatedPattern);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	Comp.prototype.setFinal = function() {
+		if (this.typeGlobs['app'].length) {
+			var negateVendor = '!' + dirs.src.js.vendor + '{,**/*}';
+			this.typeGlobs['app'].push(negateVendor);
+			if (this.typeGlobsWatch['app'].length) {
+				this.typeGlobsWatch['app'].push(negateVendor);
+			}
+		}
+		//console.log(this.id, this.typeGlobs);
+	}
+
+	Comp.prototype.getGlob = function(type, watch, own) {
+		var typeGlob;
+
+		if (watch) {
+			typeGlob = this.typeGlobsWatch[type] ? this.typeGlobsWatch[type] : [];
+		}
+		else if (own) {
+			typeGlob = this.typeGlobsOwn[type] ? this.typeGlobsOwn[type] : [];
+		}
+		else {
+			typeGlob = this.typeGlobs[type] ? this.typeGlobs[type] : [];
 		}
 
 		return typeGlob;
@@ -140,168 +232,76 @@ module.exports = function(dirs, config, app, tasks) {
 
 		var curId = this.getId();
 
-		//exclude vendor dir for app
-		if (type == 'app') {
-			typeGlob.push('!' + dirs.src.js.vendor);
-		}
-
 		var otherComps = this.comps.getContent(null, curId);
 
 		for (var id in otherComps) {
 			var otherComp = otherComps[id],
 					excludeIn = otherComp.getExcludeIn();
 
-			if (excludeIn && ((excludeIn === true) || (excludeIn === curId) || (excludeIn.indexOf(curId) >= 0)) && (skipCompIds.indexOf(id) < 0)) {
+			if (excludeIn && ((excludeIn === true) || (excludeIn === curId) || ((excludeIn instanceof Array) && (excludeIn.indexOf(curId) >= 0))) && (skipCompIds.indexOf(id) < 0)) {
 				otherGlob = otherComp.getGlob(type);
-				otherGlob.forEach(function(negatePattern) {
-					typeGlob.push('!' + negatePattern);
+				otherGlob.forEach(function(patternToNegate) {
+					typeGlob.push('!' + patternToNegate);
 				});
 			}
 		}
 	}
-
-	Comp.prototype.prependDir = function(glob, dir) {
-    var ret = [];
-    if (glob && (glob instanceof Array)) {
-      glob.forEach(function(d) {
-        ret.push(dir + d);
-      });
-    }
-    return ret;
-  }
-
-
-
-  var Packages = function(comps, packagesData) {
- 		this.packagesData = packagesData;
- 		this.comps = comps;
-
-		//create content
-		this.content = {};
-		for (var id in this.packagesData) {
-			if (!this.packagesData.hasOwnProperty(id))
-				continue;
-			this.content[id] = new Package(this, id, this.packagesData[id]);
-			//console.log(id, this.content[id].typeGlobs);
-		}
-  }
-
-  Packages.prototype.getContent = function(id) {
-  	return id ? this.content[id] : this.content;
-  }
-
-  Packages.prototype.getComps = function() {
-  	return this.comps;
-  }
-
-
-	var Package = function(packages, id, data) {
-		this.id = id;
-		this.packages = packages;
-		this.data = data;
-		this.typeGlobs = {};
-		this.typeGlobsWatch = {};
-
-		this.setGlob('bower');
-		this.setGlob('vendor');
-		this.setGlob('app');
-	}
-
-	Package.prototype.getId = function() {
-		return this.id;
-	}
-
-	Package.prototype.getData = function(key) {
-		return this.data[key];
-	}
-
-	Package.prototype.setGlob = function(type) {
-		this.typeGlobs[type] = [];
-		this.typeGlobsWatch[type] = [];
-		var dependencies = this.data.dependencies;
-
-		if (dependencies instanceof Array) {
-			var _this = this;
-			dependencies.forEach(function(compId) {
-				var comp = _this.packages.getComps().getContent(compId),
-						compGlob = comp.getGlob(type, dependencies);
-
-				_this.typeGlobs[type] = _this.typeGlobs[type].concat(compGlob);
-				if (comp.getData('watch') !== false) {
-					_this.typeGlobsWatch[type] = _this.typeGlobsWatch[type].concat(compGlob);
-				}
-			});
-			if ((type == 'app') && (this.typeGlobs[type].length)) {
-				var negateVendor = '!' + dirs.src.js.vendor + '**/*';
-				this.typeGlobs[type].push(negateVendor);
-				this.typeGlobsWatch[type].push(negateVendor);
-			}
-		}
-	}
-
-	Package.prototype.getGlob = function(type, watch) {
-		var ret;
-		if (watch) {
-			ret = this.typeGlobsWatch[type] ? this.typeGlobsWatch[type] : [];
-		}
-		else {
-			ret = this.typeGlobs[type] ? this.typeGlobs[type] : [];
-		}
-		return ret;
-	}
-
-
-
 
 
   tasks.js = {
   	data: {
   		dev: {
   			config: null,
-  			comps: null,
-  			packages: null
+  			comps: null
   		},
   		prod: {
   			config: null,
-  			comps: null,
-  			packages: null
+  			comps: null
   		}
   	},
 
-  	run: function(packageId, isApp, isDev, taskNameBegin, taskNameEnd, cb) {
+  	run: function(compId, isApp, isDev, taskNameBegin, taskNameEnd, cb) {
+	    var ret,
+	        configJs = this.getConfig(isDev);
+	    var comp = this.getComps(isDev, compId);
+
+	    //set output filenames
+	    var filename = comp.getData('filename'),
+	    		filenameVendor = comp.getData('filenameVendor');
+	    if (filename === false) {
+	    	//just auxiliary comp, leaving
+        if (cb)
+          cb(tasks);
+	    	return Promise.resolve();
+	    }
+	    if (!filename)
+	    	filename = compId;
+	    if (!filenameVendor)
+	    	filenameVendor = filename + '.vendor';
+	    filename += '.js';
+	    filenameVendor += '.js';
+
+	    //log task begin
   		if (taskNameBegin) {
   			console.log('Starting ' + taskNameBegin + '...');
   		}
   		if (taskNameEnd === true) {
   			taskNameEnd = taskNameBegin;
   		}
-	    var ret,
-	        configJs = this.getConfig(isDev);
-	    var package = this.getPackages(isDev, packageId);
-
-	    //set output filenames
-	    var filename = package.getData('filename'),
-	    		filenameVendor = package.getData('filenameVendor');
-	    if (!filename)
-	    	filename = packageId;
-	    if (!filenameVendor)
-	    	filenameVendor = filename + '.vendor';
-	    filename += '.js';
-	    filenameVendor += '.js';
 
 	    var vendorDir = configJs.concatVendorApp ? dirs.cache : dirs.dist.js;
 
 	    //get files
 	    if (isApp) {
-		    ret = gulp.src(package.getGlob('app'), { base: dirs.src.main });
+		    ret = gulp.src(comp.getGlob('app'), { base: dirs.src.main });
 	    }
 	    else {
-	    	var bowerFilter = package.getGlob('bower');
+	    	var bowerFilter = comp.getGlob('bower');
 		    ret = gulp.src(mainBowerFiles(configJs.mainBowerFiles), { base: dirs.src.main })
 		    	.pipe(filter(function(file) {
 	        	return multimatch(path.normalize(file.path), bowerFilter).length;
 	      	}))
-	      	.pipe(addsrc.append(package.getGlob('vendor'), { base: dirs.src.main }));
+	      	.pipe(addsrc.append(comp.getGlob('vendor'), { base: dirs.src.main }));
 	    }
 
 	    //plumber
@@ -383,17 +383,16 @@ module.exports = function(dirs, config, app, tasks) {
 	  	return this.data[offset].config;
 	  },
 
-	  getPackages: function(isDev, packageId) {
+	  getComps: function(isDev, compId) {
 	  	var offset = isDev ? 'dev' : 'prod',
 	  			configJs = this.getConfig(isDev);
 
 		  if (!this.data[offset].comps) {
-		  	var comps = this.data[offset].comps = new Comps(configJs.comps);
-		  	this.data[offset].packages = new Packages(comps, configJs.packages);
+		  	this.data[offset].comps = new Comps(configJs.comps);
 		  }
-		  var packages = this.data[offset].packages;
+		  var comps = this.data[offset].comps;
 
-	  	return packageId ? packages.getContent(packageId) : packages;
+	  	return compId ? comps.getContent(compId) : comps;
 	  }
 	}
 }

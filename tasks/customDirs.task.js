@@ -27,7 +27,7 @@ module.exports = function(dirs, config, app, tasks) {
 
 	        streams.push(stream);
 	      }
-	    };
+	    }
 
 	    if (streams.length) {
 	      return merge.apply(null, streams).on('finish', function() {

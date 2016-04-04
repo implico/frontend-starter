@@ -19,7 +19,7 @@ module.exports = function(dirs) {
 
     //system variables
     system: {
-      isInvokedFromTerminal: process.argv && (process.argv.indexOf('-t') >= 0)
+      isInvokedByAction: process.argv && (process.argv.indexOf('-t') >= 0)
     },
 
     styles: {
@@ -80,6 +80,8 @@ module.exports = function(dirs) {
 
         comps: {
           main: {
+            filename: 'app',      //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+
             bower: ['**/*.js'],   //set only name of the package
             vendor: ['**/*.js'],  //path relative to the appropriate directory
             app: ['**/*.js'],     //path relative to the appropriate directory
@@ -90,6 +92,9 @@ module.exports = function(dirs) {
               app: []
             },
 
+            //set other comp ids to include
+            dependencies: [],
+
             //set comps to exclude all loaded scripts in other comps, e.g.
             //excludeIn: ['comp1', 'comp2'] //excluded in selected comps
             //excludeIn: true   //excluded in all other comps
@@ -98,23 +103,13 @@ module.exports = function(dirs) {
 
             watch: true  //not needed, watch blocked only if false
           },
+
           html5shiv: {
             bower: ['html5shiv'],
             excludeIn: true,
             watch: false
           }
         },
-
-        packages: {
-          main: {
-            filename: 'app',
-            dependencies: ['main']
-          },
-          html5shiv: {
-            dependencies: ['html5shiv']
-          }
-        },
-
 
         mainBowerFiles: {
           paths: {

@@ -120,35 +120,35 @@ gulp.task('dev:watch', function(cb) {
   });
 
 
-  var packages = tasks.js.getPackages(true).getContent();
-  for (var packageId in packages) {
-    if (!packages.hasOwnProperty(packageId))
+  var comps = tasks.js.getComps(true).getContent();
+  for (var compId in comps) {
+    if (!comps.hasOwnProperty(compId))
       continue;
-    var pkg = packages[packageId];
+    var comp = comps[compId];
     
     //js - app
     (() => {
-      var curPackageId = packageId;
-      //console.log('Watching app', packageId, pkg.getGlob('app'));
-      var globApp = pkg.getGlob('app', true);
+      var curCompId = compId;
+      //console.log('Watching app', compId, comp.getGlob('app', true));
+      var globApp = comp.getGlob('app', true);
       if (globApp.length) {
         watch(globApp, batch(function (events, done) {
-          tasks.js.run(curPackageId, true, true, 'js:dev:main (' + curPackageId + ')', true, (tasks) => {
+          tasks.js.run(curCompId, true, true, 'js:dev:app (' + curCompId + ')', true, (tasks) => {
             browserSync.reload();
             done()
           });
         })).on('error', function(err) {
-          console.error(err);
+          //console.error(err);
         });
       }
 
-      //console.log('Watching vendor', curPackageId, pkg.getGlob('bower').concat(pkg.getGlob('vendor')));
+      //console.log('Watching vendor', curCompId, comp.getGlob('bower', true).concat(comp.getGlob('vendor', true)));
       //js - vendor
-      var globVendor = pkg.getGlob('bower', true).concat(pkg.getGlob('vendor', true));
+      var globVendor = comp.getGlob('bower', true).concat(comp.getGlob('vendor', true));
       if (globVendor.length) {
         watch(globVendor, batch(function (events, done) {
-          tasks.js.run(curPackageId, false, true, 'js:dev (' + curPackageId + ')', false, (tasks) => {
-            tasks.js.run(curPackageId, true, true, false, 'js:dev (' + curPackageId + ')', (tasks) => {
+          tasks.js.run(curCompId, false, true, 'js:dev (' + curCompId + ')', false, (tasks) => {
+            tasks.js.run(curCompId, true, true, false, 'js:dev (' + curCompId + ')', (tasks) => {
               browserSync.reload();
               done()
             });
@@ -201,9 +201,12 @@ gulp.task('dev:watch', function(cb) {
 
 gulp.task('dev:build', function(cb) {
   runSequence('clean:dev', 'views:dev', 'fonts', 'sprites:dev', ['images:dev', 'styles:dev', 'js:dev', 'custom-dirs:dev'], function() {
+    if (config.system.isInvokedByAction) {
+      cb();
+    }
     //just tu ensure all assets are ready
     setTimeout(function() {
-      if (config.system.isInvokedFromTerminal) {
+      if (config.system.isInvokedByAction) {
         process.exit();
       }
       else {
@@ -216,17 +219,19 @@ gulp.task('dev:build', function(cb) {
 
 gulp.task('prod', function(cb) {
   runSequence('clean:prod', 'views:prod', 'fonts', 'sprites:prod', ['images:prod', 'styles:prod', 'js:prod', 'custom-dirs:prod'], function() {
+    if (config.system.isInvokedByAction) {
+      cb();
+    }
     //just tu ensure all assets are ready
     setTimeout(function() {
-      if (config.system.isInvokedFromTerminal) {
+      if (config.system.isInvokedByAction) {
         process.exit();
       }
       else {
         browserSync.reload();
+        cb();
       }
     }, 1000);
-
-    cb();
   });
 });
 
@@ -284,17 +289,17 @@ gulp.task('sprites:prod', function() {
 
 
 /* JS SCRIPTS */
-gulp.task('js:dev:main', function() {
+gulp.task('js:dev:app', function() {
   var promises = [];
 
-  var packages = tasks.js.getPackages(true).getContent();
-  for (var packageId in packages) {
-    if (!packages.hasOwnProperty(packageId))
+  var comps = tasks.js.getComps(true).getContent();
+  for (var compId in comps) {
+    if (!comps.hasOwnProperty(compId))
       continue;
-    var pkg = packages[packageId];
+    var comp = comps[compId];
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(packageId, true, true, '', '', (tasks) => {
+      tasks.js.run(compId, true, true, '', '', (tasks) => {
         browserSync.reload();
         resolve();
       });
@@ -307,14 +312,13 @@ gulp.task('js:dev:main', function() {
 gulp.task('js:dev:vendor', function() {
   var promises = [];
 
-  var packages = tasks.js.getPackages(true).getContent();
-  for (var packageId in packages) {
-    if (!packages.hasOwnProperty(packageId))
+  var comps = tasks.js.getComps(true).getContent();
+  for (var compId in comps) {
+    if (!comps.hasOwnProperty(compId))
       continue;
-    var pkg = packages[packageId];
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(packageId, false, true, packageId, '', (tasks) => {
+      tasks.js.run(compId, false, true, compId, '', (tasks) => {
         browserSync.reload();
         resolve();
       });
@@ -324,24 +328,23 @@ gulp.task('js:dev:vendor', function() {
   return Promise.all(promises);
 });
 
-gulp.task('js:dev', function() {
-  return runSequence('js:dev:vendor', 'js:dev:main');
+gulp.task('js:dev', function(cb) {
+  return runSequence('js:dev:vendor', 'js:dev:app', cb);
 });
 
 gulp.task('js:prod', function() {
 
   var promises = [];
 
-  var packages = tasks.js.getPackages(false).getContent();
-  for (var packageId in packages) {
-    if (!packages.hasOwnProperty(packageId))
+  var comps = tasks.js.getComps(false).getContent();
+  for (var compId in comps) {
+    if (!comps.hasOwnProperty(compId))
       continue;
-    var pkg = packages[packageId];
 
     promises.push(new Promise((resolve, reject) => {
-      var curPackageId = packageId;
-      tasks.js.run(curPackageId, false, false, '', '', (tasks) => {
-        tasks.js.run(curPackageId, true, false, '', '', (tasks) => {
+      var curCompId = compId;
+      tasks.js.run(curCompId, false, false, '', '', (tasks) => {
+        tasks.js.run(curCompId, true, false, '', '', (tasks) => {
           resolve();
         });
       });
@@ -387,11 +390,11 @@ gulp.task('views:prod', function() {
 
 
 /* CUSTOM DIRS */
-gulp.task('custom-dirs:dev', function() {
+gulp.task('custom-dirs:dev', function(cb) {
   return tasks.customDirs.run(dirs.custom, true);
 });
 
-gulp.task('custom-dirs:prod', function() {
+gulp.task('custom-dirs:prod', function(cb) {
   return tasks.customDirs.run(dirs.custom, false);
 });
 
