@@ -247,7 +247,7 @@ var tasks = {}
 //autoload tasks
 var tasksList = ['js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
 tasksList.forEach((t) => {
-  require(dirs.tasks + t + '.task.js')(dirs, config, app, tasks);
+  require(dirs.tasks + t + '.js')(dirs, config, app, tasks);
 })
 
 
