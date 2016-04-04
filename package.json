@@ -15,7 +15,8 @@
     "gulpfile.js",
     "gulpfile.dirs.js",
     "gulpfile.config.js",
-    "bin"
+    "bin",
+    "tasks"
   ],
   "bin": {
     "frs": "./bin/frs.js"
