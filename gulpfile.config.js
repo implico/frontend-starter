@@ -222,7 +222,7 @@ module.exports = function(dirs) {
   }
   catch (ex) {
     console.log('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
-    //process.exit(1);
+    process.exit(1);
   }
 
 
