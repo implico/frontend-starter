@@ -83,8 +83,8 @@ module.exports = function(appDir) {
     require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
-    process.exit(1);
+    console.log('Frontend-starter warning: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
+    //process.exit(1);
   }
 
 
@@ -126,15 +126,6 @@ module.exports = function(appDir) {
 
   //additional custom dirs to watch and (optionally) copy
   dirs.custom = {
-    //html5shiv: excluded in bower.json, copying manually (not necessarry in the app.js result file, included conditionally)
-    /*html5shiv: {
-      dev: true,
-      prod: true,
-      clean: false,
-      from: [dirs.bower + 'html5shiv/dist/html5shiv.min.js'],
-      to: dirs.dist.js
-    }*/
-    
   //Example:
   //  your_dir_name: {
   //    dev: true,    //set true if use also for dev tasks

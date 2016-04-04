@@ -39,7 +39,7 @@
 //gett app root dir
 var appDir;
 if (!process.env.FS_BASE_DIR) {
-  console.log('Warning: FS_BASE_DIR env variable not set. This module should not be called directly from the command line.');
+  console.log('Frontend-starter warning: FS_BASE_DIR env variable not set. This module should not be called directly from the command line.');
   // process.exit();
   appDir = __dirname + '/';
 }

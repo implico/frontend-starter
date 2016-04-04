@@ -183,9 +183,9 @@ module.exports = function(dirs) {
         enable: true,  //for prod, applies prod:preview
 
         options: {
-          //tip: set to [project-name].localhost and uncomment the "open: external" option
+          //tip: set host to "[project-name].localhost" and set "open" to "external"
           host: 'localhost',
-          //open: 'external',
+          open: 'local',
           port: 80,
           reloadOnRestart: true,
           server: {
@@ -221,8 +221,8 @@ module.exports = function(dirs) {
     require(dirs.app + dirs.customConfig.configFile)(config, dirs);
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
-    process.exit(1);
+    console.log('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
+    //process.exit(1);
   }
 
 
