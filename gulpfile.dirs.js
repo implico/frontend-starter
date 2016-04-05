@@ -83,7 +83,7 @@ module.exports = function(appDir) {
     require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
+    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ') or syntax error.');
     process.exit(1);
   }
 
