@@ -96,9 +96,6 @@ module.exports = function(appDir) {
   dirs.src.js.main = dirs.src.main + 'js/';
   dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
   dirs.src.js.app = dirs.src.js.main;
-  //for JS, globs are used
-  //dirs.src.js.vendor = [dirs.src.js.vendorDir + '**/*.js'];
-  //dirs.src.js.app = [dirs.src.js.appDir + '**/*.js', '!' + dirs.src.js.vendorDir + '{,/**}'];
 
   dirs.src.img = dirs.src.main + 'img/';
 
