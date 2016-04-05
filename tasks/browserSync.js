@@ -17,6 +17,7 @@ module.exports = function(dirs, config, app, tasks) {
 	        });
 	      });
 	    }
+	    else return Promise.resolve();
 	  }
   }
 }

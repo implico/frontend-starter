@@ -14,12 +14,16 @@ module.exports = function(dirs, config, app, tasks) {
       	delDirs['cache'] = [dirs.cache];
       }
       delDirs['dist'] = [];
-      delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
-      delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
+      if (dirs.src.fonts)
+        delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
+      if (dirs.src.styles.main)
+        delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
       delDirs['sprites'] = [];
       delDirs['js'] = this.getConfigDirGlob(dirs.dist.js, config.clean.js);
-      delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
-      delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
+      if (dirs.src.img)
+        delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
+      if (dirs.src.views.main)
+        delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
       delDirs['custom'] = [];
 
       //add dist dir
@@ -38,7 +42,7 @@ module.exports = function(dirs, config, app, tasks) {
       }
 
       //add views subdirs
-      if (delDirs['views'].length && fs.existsSync(dirs.dist.views)) {
+      if (dirs.src.views.main && delDirs['views'].length && fs.existsSync(dirs.dist.views)) {
         delDirs['views'] = delDirs['views'].concat(fs.readdirSync(dirs.src.views.scripts).filter(function(file) {
           return fs.statSync(path.join(dirs.src.views.scripts, file)).isDirectory();
         }).map(function(dir) {
