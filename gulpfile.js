@@ -97,18 +97,22 @@ gulp.task('dev', function(cb) {
 gulp.task('dev:watch', function(cb) {
 
   //styles
-  watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
-    gulp.start('styles:dev', done);
-  })).on('error', function(err) {
-    //console.error(err);
-  });
+  if (dirs.src.styles.main) {
+    watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
+      gulp.start('styles:dev', done);
+    })).on('error', function(err) {
+      //console.error(err);
+    });
+  }
 
   //fonts
-  watch(dirs.src.fonts + '**/*', batch(function (events, done) {
-    gulp.start('fonts', done);
-  })).on('error', function(err) {
-    //console.error(err);
-  });
+  if (dirs.src.fonts) {
+    watch(dirs.src.fonts + '**/*', batch(function (events, done) {
+      gulp.start('fonts', done);
+    })).on('error', function(err) {
+      //console.error(err);
+    });
+  }
 
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
@@ -161,13 +165,15 @@ gulp.task('dev:watch', function(cb) {
   }
   
   //images
-  watch(dirs.src.img + '**/*', batch(function (events, done) {
-    gulp.start('images:dev', done);
-  })).on('unlink', function(path) {
-    //TODO: handle images removal in dist dir
-  }).on('error', function(err) {
-    //console.error(err);
-  });
+  if (dirs.src.img) {
+    watch(dirs.src.img + '**/*', batch(function (events, done) {
+      gulp.start('images:dev', done);
+    })).on('unlink', function(path) {
+      //TODO: handle images removal in dist dir
+    }).on('error', function(err) {
+      //console.error(err);
+    });
+  }
 
   //views
   if (dirs.src.views.main) {

@@ -9,6 +9,9 @@ module.exports = function(dirs, config, app, tasks) {
 
 	tasks.views = {
 		run: function(isDev) {
+			if (!dirs.src.views.main)
+				return Promise.resolve();
+			
 	    var configViews = extend(true, config.views.common, config.views[isDev ? 'dev': 'prod']);
 
 	    var ret = gulp.src(dirs.src.views.scripts + '**/*');

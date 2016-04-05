@@ -12,6 +12,9 @@ module.exports = function(dirs, config, app, tasks) {
 
 	tasks.styles = {
 		run: function(isDev) {
+			if (!dirs.src.styles.main)
+				return Promise.resolve();
+			
 			var configStyles = extend(true, config.styles.common, config.styles[isDev ? 'dev': 'prod']);
 
 			var ret = gulp.src(dirs.src.styles.main + '*.scss')

@@ -9,6 +9,9 @@ module.exports = function(dirs, config, app, tasks) {
 
 	tasks.images = {
 		run: function(isDev) {
+			if (!dirs.src.img)
+				return Promise.resolve();
+			
 	    var imgGlob = [dirs.src.img + '**/*'];
 	    config.sprites.items.forEach(function(spriteDir) {
 	      imgGlob.push('!' + spriteDir.imgSource);
