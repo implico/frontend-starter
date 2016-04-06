@@ -15,17 +15,17 @@ What distinguishes this tool is basically:
 
 * core, including tasks, separated from your project code (as a global Node.js package):
   - you can update it independently and use new features
-  - you create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific projects with common configuration
+  - you create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific projects (clients?) with common configuration
   - you don't have to run `npm install` and wait years to initialize a project - just start coding
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
 * by default, only **one** output JavaScript file is built, also for the dev environment (with source mapping):
-  - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
+  - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
-* as you know, the standard `gulp.watch` does not see any new files, just changes; this framework uses [gulp-watch], so new file will trigger a task too
+* as you know, the standard `gulp.watch` does not see any new files, just changes; this framework uses [gulp-watch], so new file will also trigger a task
 * automatically creates sprites for defined directories (and you can use them responsively)
 * `clean` task does not remove the whole dist directory, but handles them separately; that's why you can mix your framework assets with files from other sources (e.g. backend)
-* provides key shortcuts (Ctrl+...): rebuild, build production version, restart
+* provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, restart
 
 Thanks to the above parameters, it is very easy to integrate with a backend application, including non-RESTful/SPAs (Single Page Applications).
 
@@ -63,7 +63,7 @@ Installation registers a `frs` command to run the tasks.
 
 <a name="bundles"></a>
 ## Bundles
-Use on of the available bundles or create your own:
+Use on of the available bundles (bootstrap configuration and asset structure) or create your own:
 
 * [default bundle][bundle-default]
 * AngularJS bundle (soon)
@@ -123,7 +123,7 @@ Cleans the dist directory.
 * prod: `styles:prod`, `js:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
 
 
-### Key shortcuts
+### Keyboard shortcuts
 While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
 * Ctrl+P: to build the prod version (init `prod` task)
 * Ctrl+D: to build the dev version (init `dev:build` task)
@@ -146,47 +146,39 @@ You can use [Bower][bower], place any file into the `src/js/vendor` directory or
 
 #### JavaScript compositions
 
-Sometimes, you will want to create separate JavaScript compositions, built using some Bower, vendor and own script files. Let's say, that you want to create previously mentioned `register.js` file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
+You can generate separate JavaScript compositions, dependent on selected Bower, vendor and/or own script files. Let's say, that you want to create previously mentioned `register.js` file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
 
 ```js
-config = {
-  js: {
-    common: {
-      comps: {
-        register: {
-          filename: 'register', //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+config.js.common.comps.register = {
+  filename: 'register', //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
 
-          bower: [],                                  //set only name of the package
-          vendor: [],                                 //just example, you don't have to define when not used
-          app: ['utilities.js', 'register.js'],      //path relative to the appropriate directory
+  bower: [],                                  //set only name of the package
+  vendor: [],                                 //just example, you don't have to define when not used
+  app: ['utilities.js', 'register.js'],      //path relative to the appropriate directory
 
-          //set prioritized paths
-          priority: {
-            vendor: [],
-            app: ['utilities.js']   //this file will be included before register.js
-          },
+  //set prioritized paths
+  priority: {
+    vendor: [],
+    app: ['utilities.js']   //this file will be included before register.js
+  },
 
-          //set other comp ids to include
-          dependencies: ['jQuery'],
+  //set other comp ids to include
+  dependencies: ['jQuery'],
 
-          //set comps to exclude all loaded scripts in other comps, e.g.
-          //excludeIn: ['comp1', 'comp2']   //excluded in selected comps
-          //excludeIn: true                 //excluded in all other comps
-          //excludeIn: false                //no exclusion
-          excludeIn: true,                  //here: we exclude it in any other comps
+  //set comps to exclude all loaded scripts in other comps, e.g.
+  //excludeIn: ['comp1', 'comp2']   //excluded in selected comps
+  //excludeIn: true                 //excluded in all other comps
+  //excludeIn: false                //no exclusion
+  excludeIn: true,                  //here: we exclude it in any other comps
 
-          watch: true  //not needed, watch blocked only if false
-        },
+  watch: true  //not needed, watch blocked only if false
+}
 
-        //we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
-        jQuery: {
-          filename: false,    //we don't want to create any output - this is just an auxiliary comp
-          bower: ['jquery'],
-          watch: false
-        }
-      }
-    }
-  }
+//we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
+config.js.common.comps.jQuery: {
+  filename: false,    //we don't want to create any output - this is just an auxiliary comp
+  bower: ['jquery'],
+  watch: false
 }
 
 ```
@@ -194,7 +186,7 @@ config = {
 
 ### Images
 
-Images are optimized ([gulp-imagemin]) and copied into the dist directory.
+Images are optimized (for production, [gulp-imagemin]) and copied into the dist directory.
 
 
 
@@ -213,13 +205,13 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. They will be documented soon - until then, please see the [default bundle][bundle-default] config files for common examples and the [dir](https://github.com/implico/frontend-starter/blob/master/gulpfile.config.js) or [config](https://github.com/implico/frontend-starter/blob/master/gulpfile.dirs.js) sources. It's very simple.
+All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir](https://github.com/implico/frontend-starter/blob/master/gulpfile.config.js) or [config](https://github.com/implico/frontend-starter/blob/master/gulpfile.dirs.js) sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
 
 ### Directories
-You can see the default definitons of each directory in the `gulpfile.dirs.js` file.
+You can see the default definitons of each directory in the `gulpfile.dirs.js` file. The `fs.dirs.custom.js` is included in three stages: right after defining the src directory (so you can change it then, and the value will populate to other src directories), right after defining the dist directory (simiralry or change some src directories) and at the end (to change some dist directories or set custom dirs). See the [default bundle](https://github.com/implico/fs-bundle-default/blob/master/fs.dirs.custom.js) examples.
 
 
 ### Config object
@@ -262,7 +254,7 @@ Refresh the browser and you're done!
 * [Babel](https://babeljs.io/) support
 * full task customization based on hooks (injected for every task step, allowing to modify or remove)
 * ability to register custom tasks
-* to be fixed: as for now, the script does not quit, even if you run non-watching tasks such as `dev:build` and needs to quit manually (Ctrl+C)
+* to be fixed: as for now, the script does not exit, even if you run non-watching tasks such as `dev:build` and needs to quit manually (Ctrl+C)
 
 
 
