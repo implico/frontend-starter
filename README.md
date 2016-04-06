@@ -205,7 +205,7 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir][bundle-default-dir] or [config][bundle-default-config] sources. It's very simple.
+All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
@@ -268,8 +268,8 @@ Refresh the browser and you're done!
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
 [bundle-default]: https://github.com/implico/fs-bundle-default
-[bundle-default-dir]: https://github.com/implico/frontend-starter/blob/master/gulpfile.dirs.js
-[bundle-default-config]: https://github.com/implico/frontend-starter/blob/master/gulpfile.config.js
+[bundle-default-dir]: https://github.com/implico/fs-bundle-default/blob/master/fs.dirs.custom.js
+[bundle-default-config]: https://github.com/implico/fs-bundle-default/blob/master/fs.config.custom.js
 [chokidar]: https://github.com/paulmillr/chokidar
 [gulp]: http://gulpjs.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
