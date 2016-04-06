@@ -251,10 +251,10 @@ Your app JS and SASS files are now mapped. For Bower files, follow the same inst
 Refresh the browser and you're done!
 
 
+<br />
+## Standalone (local) version
 
-## Standalone version
-
-Clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the higher-level directory (`../`).
+To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the higher-level directory (`../`).
 
 
 <br>
