@@ -13,7 +13,8 @@
 
 */
 
-var path = require('path');
+var path = require('path'),
+    fs   = require('fs');
 
 
 module.exports = function(appDir) {
@@ -78,12 +79,22 @@ module.exports = function(appDir) {
 
   dirs.src.main = dirs.app + 'src/';
 
-  //custom src dir
+  //custom src dir - check if exists
+  try {
+    fs.accessSync(dirs.app + dirs.customConfig.dirsFile, fs.R_OK);
+  }
+  catch (ex) {
+    console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
+    process.exit(1);
+  }
+
+  //custom src dir - require
   try {
     require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
+    console.error('Frontend-starter: error in custom dir definitions file (' + dirs.customConfig.dirsFile + '):');
+    console.error(ex.message);
     process.exit(1);
   }
 

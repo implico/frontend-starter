@@ -15,6 +15,9 @@
 
 module.exports = function(dirs) {
 
+  var fs   = require('fs');
+
+
   var config = {
 
     //system variables
@@ -217,14 +220,26 @@ module.exports = function(dirs) {
   }
 
   //custom config file
+  var noCustomFile = false;
   try {
-    require(dirs.app + dirs.customConfig.configFile)(config, dirs);
+    fs.accessSync(dirs.app + dirs.customConfig.configFile, fs.R_OK);
   }
   catch (ex) {
-    console.log('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
-    //process.exit(1);
+    noCustomFile = true;
+    console.error('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
   }
 
+  //custom config file - require
+  if (!noCustomFile) {
+    try {
+      require(dirs.app + dirs.customConfig.configFile)(config, dirs);
+    }
+    catch (ex) {
+      console.error('Frontend-starter: error in custom config definitions file (' + dirs.customConfig.configFile + '):');
+      console.error(ex.message);
+      process.exit(1);
+    }
+  }
 
   return config;
 }
