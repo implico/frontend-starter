@@ -13,7 +13,8 @@
 
 */
 
-var path = require('path');
+var path = require('path'),
+    fs   = require('fs');
 
 
 module.exports = function(appDir) {
@@ -78,14 +79,17 @@ module.exports = function(appDir) {
 
   dirs.src.main = dirs.app + 'src/';
 
-  //custom src dir
+  //custom src dir - check if exists
   try {
-    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
+    fs.accessSync(dirs.app + dirs.customConfig.dirsFile, fs.R_OK);
   }
   catch (ex) {
-    console.log('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ') or syntax error.');
+    console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
     process.exit(1);
   }
+
+  //custom src dir - require
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
 
 
   dirs.src.styles.main = dirs.src.main + 'styles/';
@@ -124,7 +128,7 @@ module.exports = function(appDir) {
   //additional custom dirs to watch and (optionally) copy
   dirs.custom = {
   //Example:
-  //  your_dir_name: {
+  //  your_dir_id: {
   //    dev: true,    //set true if use also for dev tasks
   //    clean: true,  //deletes the directory on clean task
   //    from: dirs.src.main + 'custom/**/*',

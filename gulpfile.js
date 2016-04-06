@@ -33,7 +33,7 @@
     same as prod, additionally launches browsersync
 
 */
-
+ var path = require('path');
 
 
 //gett app root dir
@@ -41,10 +41,10 @@ var appDir;
 if (!process.env.FS_BASE_DIR) {
   console.log('Frontend-starter warning: FS_BASE_DIR env variable not set. This module should not be called directly from the command line.');
   // process.exit();
-  appDir = __dirname + '/';
+  appDir = path.normalize(__dirname + '../');
 }
 else {
-  appDir = process.env.FS_BASE_DIR + '/';
+  appDir = path.normalize(process.env.FS_BASE_DIR + '/');
 }
 console.log('Frontend-starter: Project root dir set to ' + appDir);
 
@@ -79,6 +79,15 @@ var app = {
     
   init: function() {
     this.browserSync = browserSync;
+  },
+
+  reload: function(cb) {
+    var _this = this;
+    return function() {
+      _this.browserSync.reload();
+      if (cb)
+        cb();
+    }
   }
 }
 
@@ -108,7 +117,7 @@ gulp.task('dev:watch', function(cb) {
   //fonts
   if (dirs.src.fonts) {
     watch(dirs.src.fonts + '**/*', batch(function (events, done) {
-      gulp.start('fonts', done);
+      gulp.start('fonts', app.reload(done));
     })).on('error', function(err) {
       //console.error(err);
     });
@@ -117,7 +126,7 @@ gulp.task('dev:watch', function(cb) {
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
     watch(itemInfo.imgSource + '**/*.*', batch(function (events, done) {
-      tasks.sprites.run(true, itemInfo, done);
+      tasks.sprites.run(true, itemInfo, app.reload(done));
     })).on('error', function(err) {
       //console.error(err);
     });
@@ -137,10 +146,7 @@ gulp.task('dev:watch', function(cb) {
       var globApp = comp.getGlob('app', true);
       if (globApp.length) {
         watch(globApp, batch(function (events, done) {
-          tasks.js.run(curCompId, true, true, 'js:dev:app (' + curCompId + ')', true, (tasks) => {
-            browserSync.reload();
-            done()
-          });
+          tasks.js.run(curCompId, true, true, 'js:dev:app (' + curCompId + ')', true, done);
         })).on('error', function(err) {
           //console.error(err);
         });
@@ -152,10 +158,7 @@ gulp.task('dev:watch', function(cb) {
       if (globVendor.length) {
         watch(globVendor, batch(function (events, done) {
           tasks.js.run(curCompId, false, true, 'js:dev (' + curCompId + ')', false, (tasks) => {
-            tasks.js.run(curCompId, true, true, false, 'js:dev (' + curCompId + ')', (tasks) => {
-              browserSync.reload();
-              done()
-            });
+            tasks.js.run(curCompId, true, true, false, 'js:dev (' + curCompId + ')', done);
           });
         })).on('error', function(err) {
           //console.error(err);
@@ -167,7 +170,7 @@ gulp.task('dev:watch', function(cb) {
   //images
   if (dirs.src.img) {
     watch(dirs.src.img + '**/*', batch(function (events, done) {
-      gulp.start('images:dev', done);
+      gulp.start('images:dev', app.reload(done));
     })).on('unlink', function(path) {
       //TODO: handle images removal in dist dir
     }).on('error', function(err) {
@@ -178,7 +181,7 @@ gulp.task('dev:watch', function(cb) {
   //views
   if (dirs.src.views.main) {
     watch([dirs.src.views.main + '**/*'], batch(function (events, done) {
-      gulp.start('views:dev', done);
+      gulp.start('views:dev', app.reload(done));
     })).on('error', function(err) {
       //console.error(err);
     });
@@ -193,7 +196,7 @@ gulp.task('dev:watch', function(cb) {
 
     if (dirInfo.dev) {
       watch(dirInfo.from, batch(function (events, done) {
-        tasks.customDirs.run([dirInfo], true, done);
+        tasks.customDirs.run([dirInfo], true, app.reload(done));
       })).on('error', function(err) {
         //console.error(err);
       });
@@ -305,10 +308,7 @@ gulp.task('js:dev:app', function() {
     var comp = comps[compId];
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(compId, true, true, '', '', (tasks) => {
-        browserSync.reload();
-        resolve();
-      });
+      tasks.js.run(compId, true, true, '', '', resolve);
     }));
   }
 
@@ -324,10 +324,7 @@ gulp.task('js:dev:vendor', function() {
       continue;
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(compId, false, true, compId, '', (tasks) => {
-        browserSync.reload();
-        resolve();
-      });
+      tasks.js.run(compId, false, true, compId, '', resolve);
     }));
   }
 
@@ -350,9 +347,7 @@ gulp.task('js:prod', function() {
     promises.push(new Promise((resolve, reject) => {
       var curCompId = compId;
       tasks.js.run(curCompId, false, false, '', '', (tasks) => {
-        tasks.js.run(curCompId, true, false, '', '', (tasks) => {
-          resolve();
-        });
+        tasks.js.run(curCompId, true, false, '', '', resolve);
       });
     }));
   }
@@ -376,8 +371,7 @@ gulp.task('images:prod', function() {
 /* VIEWS */
 gulp.task('views:dev', function() {
   if (dirs.src.views.main) {
-    return tasks.views.run(true)
-      .pipe(browserSync.stream());
+    return tasks.views.run(true);
   }
   else {
     return Promise.resolve();
