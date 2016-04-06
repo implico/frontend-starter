@@ -252,6 +252,11 @@ Refresh the browser and you're done!
 
 
 
+## Standalone version
+
+Clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the higher-level directory (`../`).
+
+
 <br>
 ## Known issues, TODO
 * take advantage of [cssnano](https://github.com/ben-eb/cssnano), [HTMLMinifier](https://github.com/kangax/html-minifier)
