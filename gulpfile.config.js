@@ -231,14 +231,7 @@ module.exports = function(dirs) {
 
   //custom config file - require
   if (!noCustomFile) {
-    try {
-      require(dirs.app + dirs.customConfig.configFile)(config, dirs);
-    }
-    catch (ex) {
-      console.error('Frontend-starter: error in custom config definitions file (' + dirs.customConfig.configFile + '):');
-      console.error(ex.message);
-      process.exit(1);
-    }
+    require(dirs.app + dirs.customConfig.configFile)(config, dirs);
   }
 
   return config;

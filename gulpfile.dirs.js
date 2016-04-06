@@ -89,14 +89,7 @@ module.exports = function(appDir) {
   }
 
   //custom src dir - require
-  try {
-    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
-  }
-  catch (ex) {
-    console.error('Frontend-starter: error in custom dir definitions file (' + dirs.customConfig.dirsFile + '):');
-    console.error(ex.message);
-    process.exit(1);
-  }
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
 
 
   dirs.src.styles.main = dirs.src.main + 'styles/';
@@ -135,7 +128,7 @@ module.exports = function(appDir) {
   //additional custom dirs to watch and (optionally) copy
   dirs.custom = {
   //Example:
-  //  your_dir_name: {
+  //  your_dir_id: {
   //    dev: true,    //set true if use also for dev tasks
   //    clean: true,  //deletes the directory on clean task
   //    from: dirs.src.main + 'custom/**/*',
