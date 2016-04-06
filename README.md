@@ -205,13 +205,17 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir](https://github.com/implico/frontend-starter/blob/master/gulpfile.config.js) or [config](https://github.com/implico/frontend-starter/blob/master/gulpfile.dirs.js) sources. It's very simple.
+All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir][bundle-default-dir] or [config][bundle-default-config] sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
 
 ### Directories
-You can see the default definitons of each directory in the `gulpfile.dirs.js` file. The `fs.dirs.custom.js` is included in three stages: right after defining the src directory (so you can change it then, and the value will populate to other src directories), right after defining the dist directory (simiralry or change some src directories) and at the end (to change some dist directories or set custom dirs). See the [default bundle](https://github.com/implico/fs-bundle-default/blob/master/fs.dirs.custom.js) examples.
+You can see the default definitons of each directory in the `gulpfile.dirs.js` file. The `fs.dirs.custom.js` is included in three stages:
+
+* right after defining the src directory (so you can change it and the value will populate to src subdirectories like images, styles...)
+* right after defining the dist directory (simiralry as in the previous case or for change some src directories)
+* at the end (to change some dist directories or set custom dirs). See the [default bundle dir config][bundle-default-dir].
 
 
 ### Config object
@@ -225,7 +229,7 @@ See the `gulpfile.config.js` file. `config` object contains configuration parame
 * *browserSync*: [Browsersync][browsersync] options
 * *clean*: modify deletion options
 
-
+See the [default bundle custom config][bundle-default-config].
 
 
 <br>
@@ -264,6 +268,8 @@ Refresh the browser and you're done!
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
 [bundle-default]: https://github.com/implico/fs-bundle-default
+[bundle-default-dir]: https://github.com/implico/frontend-starter/blob/master/gulpfile.dirs.js
+[bundle-default-config]: https://github.com/implico/frontend-starter/blob/master/gulpfile.config.js
 [chokidar]: https://github.com/paulmillr/chokidar
 [gulp]: http://gulpjs.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
