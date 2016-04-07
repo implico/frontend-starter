@@ -2,23 +2,23 @@
 
 Frontend gulp builder. A prepared, configurable [gulp][gulp] environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
-Development is based on fully configurable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
+Development is based on fully customizable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
 
 
 ## About
 
-This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows you to build separate JavaScript packages (named comps), no AMD-like build-in support.
+This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (named comps), no AMD-like build-in support.
 
-The framework is intended for use in small or medium size projects, including those to be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
+The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
 
 What distinguishes this tool is basically:
 
 * core, including tasks, separated from your project code (as a global Node.js package):
   - you can update it independently and use new features
-  - you create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific projects (clients?) with common configuration
+  - create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific project types (e.g. clients) with common configuration
   - you don't have to run `npm install` and wait years to initialize a project - just start coding
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
-* by default, only **one** output JavaScript file is built, also for the dev environment (with source mapping):
+* by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
   - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
