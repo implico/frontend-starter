@@ -20,11 +20,6 @@ module.exports = function(dirs) {
 
   var config = {
 
-    //system variables
-    system: {
-      isInvokedByAction: process.argv && (process.argv.indexOf('-t') >= 0)
-    },
-
     styles: {
 
       common: {

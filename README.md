@@ -118,9 +118,9 @@ Cleans the dist directory.
 
 
 ### Partial tasks
-* common: `images`, `sprites`, `fonts`
-* dev: `styles:dev`, `js:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`
-* prod: `styles:prod`, `js:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
+* common: `sprites`, `fonts`
+* dev: `styles:dev`, `js:dev`, `images:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`
+* prod: `styles:prod`, `js:prod`, `images:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
 
 
 ### Keyboard shortcuts
@@ -263,7 +263,12 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 * [Babel](https://babeljs.io/) support
 * full task customization based on hooks (injected for every task step, allowing to modify or remove)
 * ability to register custom tasks
-* to be fixed: as for now, the script does not exit, even if you run non-watching tasks such as `dev:build` and needs to quit manually (Ctrl+C)
+
+
+<br>
+## Known issues
+* to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restarting by Ctrl+R); depends on [Chokidar][chokidar]
+* as for now for partial tasks (`styles:dev`, `js:dev` etc.), after finishing the job the script does not exit (needs quitting manually by Ctrl+C)
 
 
 

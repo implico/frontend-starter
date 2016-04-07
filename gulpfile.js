@@ -65,7 +65,7 @@ var dirs         = require('./gulpfile.dirs')(appDir),
 
 //terminate Browsersync when the main process sends closing string (or the data is not a string)
 process.stdin.on('data', function(data) {
-  if ((!data.indexOf) || (data.indexOf('FS_CLOSE') >= 0)) {
+  if ((!data.indexOf) || (data.indexOf('_FRS_CLOSE_') >= 0)) {
     browserSync.exit();
     process.exit();
   }
@@ -81,12 +81,34 @@ var app = {
     this.browserSync = browserSync;
   },
 
+  //aux: reloads Browsersync and calls the callback
   reload: function(cb) {
     var _this = this;
     return function() {
       _this.browserSync.reload();
       if (cb)
         cb();
+    }
+  },
+
+  //used for main tasks to quit after it's done, unless a higher level task locked it
+  quit: {
+    isLocked: null,
+
+    //returns true if quitting was locked by a higher level task
+    wasLocked: function() {
+      var ret = this.isLocked !== null;
+      if (!ret)
+        this.isLocked = true;
+      return ret;
+    },
+
+    //exits if a task was not locked before
+    finalize: function(wasLocked, cb) {
+      if (cb)
+        cb();
+      if (!wasLocked)
+        process.exit();
     }
   }
 }
@@ -100,11 +122,12 @@ gulp.task('default', ['dev:watch']);
 
 
 gulp.task('dev', function(cb) {
+  app.quit.wasLocked();
   runSequence('dev:build', 'dev:watch', cb);
 });
 
 gulp.task('dev:watch', function(cb) {
-
+  app.quit.wasLocked();
   //styles
   if (dirs.src.styles.main) {
     //exclude sprite stylesheets
@@ -136,7 +159,7 @@ gulp.task('dev:watch', function(cb) {
     });
   });
 
-
+  //JS
   var comps = tasks.js.getComps(true).getContent();
   for (var compId in comps) {
     if (!comps.hasOwnProperty(compId))
@@ -219,43 +242,30 @@ gulp.task('dev:watch', function(cb) {
 });
 
 gulp.task('dev:build', function(cb) {
+  var wasLocked = app.quit.wasLocked();
   runSequence('clean:dev', 'views:dev', 'fonts', 'sprites:dev', ['images:dev', 'styles:dev', 'js:dev', 'custom-dirs:dev'], function() {
-    if (config.system.isInvokedByAction) {
-      cb();
-    }
     //just tu ensure all assets are ready
     setTimeout(function() {
-      if (config.system.isInvokedByAction) {
-        process.exit();
-      }
-      else {
-        browserSync.reload();
-        cb();
-      }
+      app.quit.finalize(wasLocked, cb);
+      browserSync.reload();
     }, 1000);
   });
 });
 
 gulp.task('prod', function(cb) {
+  var wasLocked = app.quit.wasLocked();
   runSequence('clean:prod', 'views:prod', 'fonts', 'sprites:prod', ['images:prod', 'styles:prod', 'js:prod', 'custom-dirs:prod'], function() {
-    if (config.system.isInvokedByAction) {
-      cb();
-    }
     //just tu ensure all assets are ready
     setTimeout(function() {
-      if (config.system.isInvokedByAction) {
-        process.exit();
-      }
-      else {
-        browserSync.reload();
-        cb();
-      }
+      app.quit.finalize(wasLocked, cb);
+      browserSync.reload();
     }, 1000);
   });
 });
 
-gulp.task('prod:preview', ['prod'], function(cb) {
-  runSequence('browser-sync:prod');
+gulp.task('prod:preview', [], function(cb) {
+  app.quit.wasLocked();
+  runSequence('prod', 'browser-sync:prod');
 });
 
 
@@ -411,8 +421,11 @@ gulp.task('custom-dirs:prod', function(cb) {
 
 
 /* CLEAN PUBLIC FOLDERS */
-gulp.task('clean', ['clean:dev'], function(cb) {
-  cb();
+gulp.task('clean', function(cb) {
+  var wasLocked = app.quit.wasLocked();
+  runSequence('clean:dev', function() {
+    app.quit.finalize(wasLocked, cb);
+  });
 });
 
 gulp.task('clean:dev', function(cb) {

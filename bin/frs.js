@@ -33,7 +33,7 @@ var spawnGulp = function(task, exitOnClose) {
 //kills all processes
 var killProcesses = function() {
   childrenProc.forEach(function(child) {
-    child.stdin.on('error', function() {}).write('FS_CLOSE');
+    child.stdin.on('error', function() {}).write('_FRS_CLOSE_');
     child.kill('SIGTERM');
   });
 }
