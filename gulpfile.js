@@ -33,7 +33,7 @@
     same as prod, additionally launches browsersync
 
 */
-
+ var path = require('path');
 
 
 //gett app root dir
@@ -41,10 +41,10 @@ var appDir;
 if (!process.env.FS_BASE_DIR) {
   console.log('Frontend-starter warning: FS_BASE_DIR env variable not set. This module should not be called directly from the command line.');
   // process.exit();
-  appDir = __dirname + '/';
+  appDir = path.normalize(__dirname + '/../');
 }
 else {
-  appDir = process.env.FS_BASE_DIR + '/';
+  appDir = path.normalize(process.env.FS_BASE_DIR + '/');
 }
 console.log('Frontend-starter: Project root dir set to ' + appDir);
 
@@ -107,7 +107,11 @@ gulp.task('dev:watch', function(cb) {
 
   //styles
   if (dirs.src.styles.main) {
-    watch([dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'], batch(function (events, done) {
+    //exclude sprite stylesheets
+    var watchGlob = [dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'];
+    watchGlob.push('!' + dirs.src.styles.sprites);
+    
+    watch(watchGlob, batch(function (events, done) {
       gulp.start('styles:dev', done);
     })).on('error', function(err) {
       //console.error(err);
@@ -169,7 +173,13 @@ gulp.task('dev:watch', function(cb) {
   
   //images
   if (dirs.src.img) {
-    watch(dirs.src.img + '**/*', batch(function (events, done) {
+    //exclude sprite dirs
+    var watchGlob = [dirs.src.img + '**/*'];
+    config.sprites.items.forEach((spriteInfo) => {
+      watchGlob.push('!' + spriteInfo.options.imgSource);
+    });
+
+    watch(watchGlob, batch(function (events, done) {
       gulp.start('images:dev', app.reload(done));
     })).on('unlink', function(path) {
       //TODO: handle images removal in dist dir

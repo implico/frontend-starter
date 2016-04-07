@@ -14,16 +14,12 @@ module.exports = function(dirs, config, app, tasks) {
       	delDirs['cache'] = [dirs.cache];
       }
       delDirs['dist'] = [];
-      if (dirs.src.fonts)
-        delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
-      if (dirs.src.styles.main)
-        delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
-      delDirs['sprites'] = [];
+      delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
+      delDirs['styles'] = this.getConfigDirGlob(dirs.dist.styles, config.clean.styles);
+      delDirs['sprites'] = this.getConfigDirGlob(dirs.src.styles.sprites, config.clean.sprites);
       delDirs['js'] = this.getConfigDirGlob(dirs.dist.js, config.clean.js);
-      if (dirs.src.img)
-        delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
-      if (dirs.src.views.main)
-        delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
+      delDirs['img'] = this.getConfigDirGlob(dirs.dist.img, config.clean.img);
+      delDirs['views'] = this.getConfigDirGlob(dirs.dist.views, config.clean.views, '*.*');
       delDirs['custom'] = [];
 
       //add dist dir
@@ -32,14 +28,14 @@ module.exports = function(dirs, config, app, tasks) {
       }
 
       //add sprites src styles
-      if (config.clean.sprites) {
-        config.sprites.items.forEach(function(spriteInfo){
-          var filename = spriteInfo.options.cssName;
-          if (filename) {
-            delDirs['sprites'].push(dirs.src.styles.sprites + filename);
-          }
-        });
-      }
+      // if (config.clean.sprites) {
+      //   config.sprites.items.forEach(function(spriteInfo){
+      //     var filename = spriteInfo.options.cssName;
+      //     if (filename) {
+      //       delDirs['sprites'].push(dirs.src.styles.sprites + filename);
+      //     }
+      //   });
+      // }
 
       //add views subdirs
       if (dirs.src.views.main && delDirs['views'].length && fs.existsSync(dirs.dist.views)) {

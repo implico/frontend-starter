@@ -93,7 +93,7 @@ module.exports = function(appDir) {
 
 
   dirs.src.styles.main = dirs.src.main + 'styles/';
-  dirs.src.styles.sprites = dirs.src.styles.main + '_partials/';
+  dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
 
   dirs.src.fonts = dirs.src.main + 'fonts/';
 
