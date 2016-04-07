@@ -1,15 +1,44 @@
 # Frontend-starter
 
-Frontend gulp builder. This is (just?) a prepared, configurable [gulp][gulp] environment. Automatically produces clean and optimized output code. A perfect solution for any frontend work, especially landing pages. Very easy to integrate with any backend environment.
+Frontend gulp builder. A prepared, configurable [gulp][gulp] environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
-Development is based on fully configurable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
+Development is based on fully customizable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
+
+
+## About
+
+This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (named comps), no AMD-like build-in support.
+
+The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
+
+What distinguishes this tool is basically:
+
+* core, including tasks, separated from your project code (as a global Node.js package):
+  - you can update it independently and use new features
+  - create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific project types (e.g. clients) with common configuration
+  - you don't have to run `npm install` and wait years to initialize a project - just start coding
+* fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
+* by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
+  - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
+  - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
+  - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
+* as you know, the standard `gulp.watch` does not see any new files, just changes; this framework uses [gulp-watch], so new file will also trigger a task
+* automatically creates sprites for defined directories (and you can use them responsively)
+* `clean` task does not remove the whole dist directory, but handles them separately; that's why you can mix your framework assets with files from other sources (e.g. backend)
+* provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, restart
+
+Thanks to the above parameters, it is very easy to integrate with a backend application, including non-RESTful/SPAs (Single Page Applications).
+
+The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs `gulp [task]` in its own direcotry (so it uses the core `gulpfile.js`), but gets the assets from directories defined in your configuration files. So you can consider it as a kind of [gulp.js][gulp] pipeline.
+
+The result: you just develop fast. Modify/create new stylesheets or images and see your page automatically refreshing with changes. Put pictures into sprites dir and get all things done. Install or paste new JavaScript files and see the results instantly, with source maps. Use [Swig's][swig] template inheritance, includes and variables.
 
 
 ## Features
 The framework provides the following functionality via [gulp][gulp] plugins:
 * separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
-* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change)
+* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change), custom packages (compositions)
 * Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
 * Views: [Swig template engine][swig] with [gulp-swig]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
@@ -29,12 +58,12 @@ npm install frontend-starter -g
 
 If you use Visual Studio, close it while npm installs the modules.
 
-Installation registers a `frs` command to run the tasks. This is just a kind of pipeline to execute gulp in proper directories.
+Installation registers a `frs` command to run the tasks.
 
 
 <a name="bundles"></a>
 ## Bundles
-Use on of the available bundles or create your own:
+Use on of the available bundles (bootstrap configuration and asset structure) or create your own:
 
 * [default bundle][bundle-default]
 * AngularJS bundle (soon)
@@ -94,10 +123,11 @@ Cleans the dist directory.
 * prod: `styles:prod`, `js:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
 
 
-### Key shortcuts
+### Keyboard shortcuts
 While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
-* Ctrl+P: to build the prod version (init `prod` task) and reload the browser
-* Ctrl+D: to build the dev version (init `dev:build` task) and reload the browser
+* Ctrl+P: to build the prod version (init `prod` task)
+* Ctrl+D: to build the dev version (init `dev:build` task)
+* Ctrl+R: to restart watching (without opening new Browsersync window in the browser)
 * Ctrl+C: to exit
 
 
@@ -105,13 +135,64 @@ While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can 
 <br>
 ## Functionality
 
-### Views, Styles (including fonts, sprites), JavaScript
+### Views, Styles (including fonts, sprites)
 
 See your [bundle](#bundles) docs.
 
 
+### JavaScript
+
+You can use [Bower][bower], place any file into the `src/js/vendor` directory or create any file in `src/js`. By default, they will be merged into single `app.js` file (in the above order).
+
+#### JavaScript compositions
+
+You can generate separate JavaScript compositions, dependent on selected Bower, vendor and/or own script files. Let's say, that you want to create previously mentioned `register.js` file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
+
+```js
+config.js.common.comps.register = {
+  filename: 'register', //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+
+  bower: [],                                  //set only name of the package
+  vendor: [],                                 //just example, you don't have to define when not used
+  app: ['utilities.js', 'register.js'],      //path relative to the appropriate directory
+
+  //set prioritized paths
+  priority: {
+    vendor: [],
+    app: ['utilities.js']   //this file will be included before register.js
+  },
+
+  //set other comp ids to include
+  dependencies: ['jQuery'],
+
+  //set comps to exclude all loaded scripts in other comps, e.g.
+  //excludeIn: ['comp1', 'comp2']   //excluded in selected comps
+  //excludeIn: true                 //excluded in all other comps
+  //excludeIn: false                //no exclusion
+  excludeIn: true,                  //here: we exclude it in any other comps
+
+  watch: true  //not needed, watch blocked only if false
+}
+
+//we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
+config.js.common.comps.jQuery: {
+  filename: false,    //we don't want to create any output - this is just an auxiliary comp
+  bower: ['jquery'],
+  watch: false
+}
+
+```
+
+
 ### Images
-Images are optimized ([gulp-imagemin]) and copied into the dist directory.
+
+Images are optimized (for production, [gulp-imagemin]) and copied into the dist directory.
+
+
+
+### Custom directories
+
+You can setup custom directories to watch (and optionally copy). For example, if you integrate the framework with backend that has own view templating system, set the appropriate directory to be watched. In this case, you will also probably need to set [Browsersync][browsersync] proxy (see the [default bundle][bundle-default] example configuration) to have your page refreshing on each time the view files change.
 
 
 ### Server
@@ -124,15 +205,18 @@ Images are optimized ([gulp-imagemin]) and copied into the dist directory.
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in files: `gulpfile.dirs.js` and `gulpfile.config.js`. They will be documented soon - until then, please see the sources.
+All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
 
 ### Directories
-You can see the default definitons of each directory in the first section of the `gulpfile.dirs.js` file.
+You can see the default definitons of each directory in the `gulpfile.dirs.js` file. The `fs.dirs.custom.js` is included in three stages:
 
-You can also add your custom directories (for example - download assets like PDFs) by editing `dirs.custom`. See the commented out example below the dir definitions.
+* right after defining the src directory (so you can change it and the value will populate to src subdirectories like images, styles...)
+* right after defining the dist directory (simiralry as in the previous case or for change some src directories)
+* at the end (to change some dist directories or set custom dirs). See the [default bundle dir config][bundle-default-dir].
+
 
 ### Config object
 See the `gulpfile.config.js` file. `config` object contains configuration parameters divided into key sections. Most of them have subsets, with options applied according to the environment mode: `common` (all), `dev` and `prod`.
@@ -145,7 +229,7 @@ See the `gulpfile.config.js` file. `config` object contains configuration parame
 * *browserSync*: [Browsersync][browsersync] options
 * *clean*: modify deletion options
 
-
+See the [default bundle custom config][bundle-default-config].
 
 
 <br>
@@ -167,10 +251,19 @@ Your app JS and SASS files are now mapped. For Bower files, follow the same inst
 Refresh the browser and you're done!
 
 
+<br />
+## Standalone (local) version
+
+To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the higher-level directory (`../`).
+
 
 <br>
 ## Known issues, TODO
-* bundles: define custom plugins and tasks
+* take advantage of [cssnano](https://github.com/ben-eb/cssnano), [HTMLMinifier](https://github.com/kangax/html-minifier)
+* [Babel](https://babeljs.io/) support
+* full task customization based on hooks (injected for every task step, allowing to modify or remove)
+* ability to register custom tasks
+* to be fixed: as for now, the script does not exit, even if you run non-watching tasks such as `dev:build` and needs to quit manually (Ctrl+C)
 
 
 
@@ -180,6 +273,8 @@ Refresh the browser and you're done!
 [browsersync]: https://www.browsersync.io/
 [bower]: http://bower.io/
 [bundle-default]: https://github.com/implico/fs-bundle-default
+[bundle-default-dir]: https://github.com/implico/fs-bundle-default/blob/master/fs.dirs.custom.js
+[bundle-default-config]: https://github.com/implico/fs-bundle-default/blob/master/fs.config.custom.js
 [chokidar]: https://github.com/paulmillr/chokidar
 [gulp]: http://gulpjs.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
