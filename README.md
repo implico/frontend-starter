@@ -238,17 +238,16 @@ Source maps allow you to bind concatenated/minified/compiled dist JS and SASS co
 
 1. Open Chrome Dev Tools.
 
-2. Click the Sources tab, right click on the dir structure on the left and choose Add folder to workspace. Choose the `app/src` folder and confirm permission (alternatively just drag & drop the `src` folder to the console).
+2. Click the Sources tab and drag & drop the `src` folder to the console (alternatively right click on the dir structure on the left and choose "Add folder to workspace"). Confirm permission.
 
-3. In the dir structure, right click on any JavaScript file in the `js/` directory **under the added to workspace `src` directory** (at the bottom), e.g. `src/js/app.js`, choose "Map to network resource" and then the actual `[domain]/js/[filename]`, e.g. `localhost/js/app.js` in the select box that appeared.
+3. Go to the console settings (click the 3 dots in the upper right corner and then "Settings"), choose "Workspace" on the left and add a mapping for this folder:
+  * left field (URL prefix): set to `http://[domain]/src`, e.g. `http://localhost/src/`
+  * right field (folder path): set to `/`
 
-4. That's not all. Go to the console settings (click the 3 dots in the upper right corner and then "Settings"), choose "Workspace" on the left and then edit mappings for your added directory:
-	* left field (URL prefix): change to `http://[domain]/src` (add the `src/` to the url), e.g. `http://localhost/src/`
-	* right field (folder path): ensure that is set to `/`
 
-Your app JS and SASS files are now mapped. For Bower files, follow the same instructions for the `bower_components` dir. In point 3 you will have to choose a vendor file that your application really uses. In the last point set the URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
+Your app JS and SASS files are now mapped. Refresh the browser and you're done!
 
-Refresh the browser and you're done!
+If you want to have mapping for Bower files, follow the same instructions for the `bower_components` dir. In the last point set the URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
 
 
 <br />
@@ -258,7 +257,7 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 
 <br>
-## Known issues, TODO
+## Known issues
 * take advantage of [cssnano](https://github.com/ben-eb/cssnano), [HTMLMinifier](https://github.com/kangax/html-minifier)
 * [Babel](https://babeljs.io/) support
 * full task customization based on hooks (injected for every task step, allowing to modify or remove)
