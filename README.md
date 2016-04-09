@@ -257,11 +257,11 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 
 <br>
-## Known issues
+## TODO
 * take advantage of [cssnano](https://github.com/ben-eb/cssnano), [HTMLMinifier](https://github.com/kangax/html-minifier)
 * [Babel](https://babeljs.io/) support
-* full task customization based on hooks (injected for every task step, allowing to modify or remove)
-* ability to register custom tasks
+* full task customization based on hooks (injected for every task step, allowing to modify or remove it)
+* ability to register custom tasks with key shortcuts
 
 
 <br>
