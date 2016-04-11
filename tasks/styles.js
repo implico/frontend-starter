@@ -38,7 +38,7 @@ module.exports = function(dirs, config, app, tasks) {
 
 			if (configStyles.sourceMaps) {
 			  ret = ret
-			    .pipe(sourcemaps.write({ sourceRoot: configStyles.sourceMapsRoot }));
+			    .pipe(sourcemaps.write(/*'.'*/null, { sourceRoot: configStyles.sourceMapsRoot }));	//saving sourcemaps to an external file causes Browsersync to reload whole page on SASS change
 			}
 
 			ret = ret
