@@ -363,8 +363,11 @@ module.exports = function(dirs, config, app, tasks) {
 
 	    //save the file
 	    ret = ret
-	      .pipe(gulp.dest(isApp ? dirs.dist.js : vendorDir))
-	      .pipe(app.browserSync.stream());
+	      .pipe(gulp.dest(isApp ? dirs.dist.js : vendorDir));
+
+	    if (isApp)
+	    	ret = ret
+	      	.pipe(app.browserSync.stream());
 
 	    ret.on('finish', () => {
 	    	if (taskNameEnd)
