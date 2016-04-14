@@ -7,6 +7,9 @@
     "email": "bartosz.sak@gmail.com"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">= 0.10"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/implico/frontend-starter.git"
@@ -18,8 +21,9 @@
     "bin",
     "tasks"
   ],
+  "main": "gulpfile.js",
   "bin": {
-    "frs": "./bin/frs.js"
+    "frs": "bin/frs.js"
   },
   "dependencies": {
     "autoprefixer": "^6.0.3",
