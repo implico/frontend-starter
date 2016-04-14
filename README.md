@@ -48,7 +48,9 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 ## Installation
 You need the following tools to start using the framework:
 * [nodejs]
-* [gulp]
+  - for Windows, use the [installer](https://nodejs.org/en/download/)
+  - for Linux, the easiest way is to [install via package manager](https://nodejs.org/en/download/package-manager/)
+* [gulp] installed [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
 
 <br>
 Then, install the framework globally:
