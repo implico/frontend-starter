@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
   "description": "A simple frontend builder.",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "author": {
     "name": "Bartosz Sak",
     "email": "bartosz.sak@gmail.com"
@@ -57,6 +57,5 @@
     "gulp-watch": "4.*",
     "gulp-uglify": "^1.4.2"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
