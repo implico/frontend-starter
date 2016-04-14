@@ -4,7 +4,7 @@ var exec        = require('child_process').exec,
     keypress    = require('keypress');
 
 
-//execute gulp on module direcotry passing the project dir in a parameter
+//execute gulp on module direcotry passing the project dir as a parameter
 var childrenProc = [],
     env = process.env;
 
