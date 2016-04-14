@@ -37,6 +37,7 @@
     "path": "^0.11.14",
     "run-sequence": "1.*",
     "vinyl-buffer": "1.*",
+    "gulp": "3.*.*",
     "gulp-add-src": "0.*",
     "gulp-batch": "1.*",
     "gulp-changed": "1.*",
@@ -57,6 +58,5 @@
     "gulp-uglify": "^1.4.2"
   },
   "devDependencies": {
-    "gulp": "3.*.*"
   }
 }
