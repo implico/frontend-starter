@@ -112,10 +112,7 @@ module.exports = function(appDir) {
   dirs.dist.main = dirs.app + 'dist/';
 
   //custom dist dir
-  try {
-    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'dist');
-  }
-  catch (ex) {}
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'dist');
 
 
   dirs.dist.styles = dirs.dist.main + 'css/';
@@ -138,10 +135,7 @@ module.exports = function(appDir) {
 
 
   //custom dir modifications/definitions - optional
-  try {
-    require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'all');
-  }
-  catch (ex) {}
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'all');
 
 
   return dirs;
