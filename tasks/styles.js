@@ -30,11 +30,9 @@ module.exports = function(dirs, config, app, tasks) {
 			    .pipe(sourcemaps.init());
 			}
 
-			var ret = ret
-			      .pipe(sass(configStyles.sass).on('error', sass.logError));
-
 			ret = ret
-			  .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]));
+			      .pipe(sass(configStyles.sass).on('error', sass.logError))
+					  .pipe(postcss([ autoprefixer({ browsers: configStyles.autoprefixer.browsers }) ]));
 
 			if (configStyles.sourceMaps) {
 			  ret = ret
