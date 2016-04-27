@@ -170,7 +170,7 @@ module.exports = function(dirs) {
 
     images: {
       imagemin: {
-        optimizationLevel: 0,
+        optimizationLevel: 3,
         progressive: true,
         interlaced: true
       }
