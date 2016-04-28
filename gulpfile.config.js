@@ -63,6 +63,10 @@ module.exports = function(dirs) {
             imgName: 'sprites.png',
             imgPath: '../img/sprites.png',
             cssName: '_sprites.scss',
+            cssSpritesheetName: 'spritesheet',
+            cssVarMap: function (sprite) {
+              sprite.name = 'sprite_' + sprite.name;
+            }
           }
         }
       ]

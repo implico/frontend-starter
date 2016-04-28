@@ -228,11 +228,13 @@ gulp.task('dev:watch', function(cb) {
     var dirInfo = dirs.custom[dirName];
 
     if (dirInfo.dev) {
-      watch(dirInfo.from, batch(function (events, done) {
-        tasks.customDirs.run([dirInfo], true, app.reload(done));
-      })).on('error', function(err) {
-        //console.error(err);
-      });
+      ((dirInfo) => {
+        watch(dirInfo.from, batch(function (events, done) {
+          tasks.customDirs.run([dirInfo], true, app.reload(done));
+        })).on('error', function(err) {
+          //console.error(err);
+        });
+      })(dirInfo);
     }
   }
 
