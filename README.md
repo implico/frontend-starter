@@ -29,7 +29,7 @@ What distinguishes this tool is basically:
 
 Thanks to the above parameters, it is very easy to integrate with a backend application, including non-RESTful/SPAs (Single Page Applications).
 
-The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs `gulp [task]` in its own direcotry (so it uses the core `gulpfile.js`), but gets the assets from directories defined in your configuration files. So you can consider it as a kind of [gulp.js][gulp] pipeline.
+The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs [gulp] in the framework directory (so it uses the core `gulpfile.js`), but gets the assets from (and builds to) the directories defined in your configuration files. So you can consider it as a kind of [gulp.js][gulp] pipeline.
 
 The result: you just develop fast. Modify/create new stylesheets or images and see your page automatically refreshing with changes. Put pictures into sprites dir and get all things done. Install or paste new JavaScript files and see the results instantly, with source maps. Use [Swig's][swig] template inheritance, includes and variables.
 
@@ -50,7 +50,8 @@ You need the following tools to start using the framework:
 * [nodejs]
   - for Windows, use the [installer](https://nodejs.org/en/download/)
   - for Linux, the easiest way is to [install via package manager](https://nodejs.org/en/download/package-manager/)
-* [gulp] installed [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
+* [gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
+
 
 <br>
 Then, install the framework globally:

@@ -42,6 +42,7 @@
     "gulp-batch": "1.*",
     "gulp-changed": "1.*",
     "gulp-concat": "2.6.0",
+    "gulp-cli": "^1.2.1",
     "gulp-debug": "*",
     "gulp-filter": "4.*.*",
     "gulp-imagemin": "^2.4.0",

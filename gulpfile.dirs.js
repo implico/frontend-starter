@@ -67,8 +67,8 @@ module.exports = function(appDir) {
   dirs.root = __dirname + '/';
 
   //custom config files
-  dirs.customConfig.dirsFile = 'fs.dirs.custom.js';
-  dirs.customConfig.configFile = 'fs.config.custom.js';
+  dirs.customConfig.dirsFile = 'frs.dirs.custom.js';
+  dirs.customConfig.configFile = 'frs.config.custom.js';
 
   dirs.tasks = './tasks/';
 
@@ -80,11 +80,17 @@ module.exports = function(appDir) {
   dirs.src.main = dirs.app + 'src/';
 
   //custom src dir - check if exists
-  try {
+try {
     fs.accessSync(dirs.app + dirs.customConfig.dirsFile, fs.R_OK);
   }
   catch (ex) {
-    console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ').');
+    try {
+      fs.accessSync(dirs.app + 'fs.dirs.custom.js', fs.R_OK);
+      console.error('Frontend-starter error: PLEASE RENAME fs.dirs.custom.js to ' + dirs.customConfig.dirsFile + ' and fs.config.custom.js to ' + dirs.customConfig.configFile);
+    }
+    catch (err) {
+      console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ') - check if running in project directory.');
+    }
     process.exit(1);
   }
 

@@ -8,7 +8,8 @@ var exec        = require('child_process').exec,
 var childrenProc = [],
     env = process.env;
 
-env.FS_BASE_DIR = process.cwd();
+env.FRS_BASE_DIR = process.cwd();
+process.chdir(__dirname);
 
 
 var spawnGulp = function(task, exitOnClose) {
@@ -88,4 +89,5 @@ process.stdin.resume();
 //}
 
 
-spawnGulp(task, (task != 'default') && (task != 'dev') && (task != 'dev:watch'));
+//spawnGulp(task, (task != 'default') && (task != 'dev') && (task != 'dev:watch'));
+require('gulp-cli')();
