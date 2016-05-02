@@ -83,6 +83,8 @@ module.exports = function(dirs) {
         comps: {
           main: {
             filename: 'app',      //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+                                  //.js extension added automatically unless the name contains a dot
+            //filenameVendor: 'vendor',//if concatVendorApp is false, specifies the vendor filename
 
             bower: ['**/*.js'],   //set only name of the package
             vendor: ['**/*.js'],  //path relative to the appropriate directory

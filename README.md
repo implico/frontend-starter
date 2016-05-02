@@ -120,6 +120,15 @@ Same as `prod`, but additionally launches a Browsersync preview.
 Cleans the dist directory.
 
 
+### Restart
+To restart the builder without opening a new Browsersync window in the browser, add a `-r` parameter for the tasks: default (`dev:watch`) and `dev`, e.g.
+
+```
+frs -r
+frs dev -r
+```
+
+
 ### Partial tasks
 * common: `sprites`, `fonts`
 * dev: `styles:dev`, `js:dev`, `images:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`
