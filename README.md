@@ -279,7 +279,6 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 <br>
 ## Known issues
 * to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restarting by Ctrl+R); depends on [Chokidar][chokidar]
-* as for now for partial tasks (`styles:dev`, `js:dev` etc.), after finishing the job the script does not exit (needs quitting manually by Ctrl+C)
 
 
 

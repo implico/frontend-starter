@@ -1,17 +1,17 @@
 module.exports = function(dirs, config, app, tasks) {
 
-	var 
+  var 
     del          = require('del'),
     fs           = require('fs'),
     path         = require('path');
 
 
-	tasks.clean = {
+  tasks.clean = {
     run: function(clearCache) {
       var delDirs = [];
 
       if (clearCache) {
-      	delDirs['cache'] = [dirs.cache];
+        delDirs['cache'] = [dirs.cache];
       }
       delDirs['dist'] = [];
       delDirs['fonts'] = this.getConfigDirGlob(dirs.dist.fonts, config.clean.fonts);
@@ -96,5 +96,5 @@ module.exports = function(dirs, config, app, tasks) {
       
       return ret;
     }
-	}
+  }
 }
