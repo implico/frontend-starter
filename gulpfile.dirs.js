@@ -24,10 +24,13 @@ module.exports = function(appDir) {
     root: '',
     cache: '',
 
-    tasks: '',
-
     app: '',
     bower: '',
+
+    lib: {
+      main: '',
+      tasks: ''
+    },
 
     customConfig: {
       dirsFile: '',
@@ -70,9 +73,10 @@ module.exports = function(appDir) {
   dirs.customConfig.dirsFile = 'frs.dirs.custom.js';
   dirs.customConfig.configFile = 'frs.config.custom.js';
 
-  dirs.tasks = './tasks/';
-
   dirs.app = appDir;
+
+  dirs.lib.main = dirs.root + 'lib/';
+  dirs.lib.tasks = dirs.lib.main + 'tasks/';
 
   dirs.cache = dirs.app + '.cache/';
   dirs.bower = dirs.app + 'bower_components/';  //change also .bowerrc
