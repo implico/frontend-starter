@@ -179,6 +179,16 @@ module.exports = function(dirs) {
         optimizationLevel: 3,
         progressive: true,
         interlaced: true
+      },
+
+      inject: {
+        cancel: null,
+
+        init: null,
+        changed: null,
+        imagemin: null, //only for prod
+        dest: null,
+        finish: null
       }
     },
 

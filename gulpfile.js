@@ -282,7 +282,7 @@ var tasks = {}
 //autoload tasks
 var tasksList = ['js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
 tasksList.forEach((t) => {
-  require(dirs.lib.tasks + t + '.js')({ dirs: dirs, config: config, app: app, tasks: tasks }, Injector);
+  require(dirs.lib.tasks + t + '.js')({ dirs: dirs, config: config, app: app, tasks: tasks, Injector: Injector });
 })
 
 
