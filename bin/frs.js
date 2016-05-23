@@ -55,7 +55,7 @@ keypress(process.stdin);
 
 process.stdin.on('keypress', function(ch, key) {
 
-  if (key.ctrl) {
+  if (key && key.ctrl) {
     switch (key.name) {
       case 'c':
         process.exit();

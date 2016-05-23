@@ -52,6 +52,7 @@ console.log('Frontend-starter: Project base dir set to ' + appDir);
 /* VARS */
 var dirs         = require('./gulpfile.dirs')(appDir),
     config       = require('./gulpfile.config')(dirs),
+    Injector     = require(dirs.lib.main + 'injector'),
 
     browserSync  = require('browser-sync'),
     merge        = require('merge-stream'),
@@ -153,7 +154,7 @@ gulp.task('dev:watch', function(cb) {
   //sprites
   config.sprites.items.forEach(function(itemInfo) {
     watch(itemInfo.imgSource + '**/*.*', batch(function (events, done) {
-      tasks.sprites.run(true, itemInfo, app.reload(done));
+      tasks.sprites.run({ isDev: true, itemInfo: itemInfo, cb: app.reload(done) });
     })).on('error', function(err) {
       //console.error(err);
     });
@@ -173,7 +174,7 @@ gulp.task('dev:watch', function(cb) {
       var globApp = comp.getGlob('app', true);
       if (globApp.length) {
         watch(globApp, batch(function (events, done) {
-          tasks.js.run(curCompId, true, true, 'js:dev:app (' + curCompId + ')', true, done);
+          tasks.js.run({ compId: curCompId, isApp: true, isDev: true, taskNameBegin: 'js:dev:app (' + curCompId + ')', taskNameEnd: true, cb: done });
         })).on('error', function(err) {
           //console.error(err);
         });
@@ -184,9 +185,9 @@ gulp.task('dev:watch', function(cb) {
       var globVendor = comp.getGlob('bower', true).concat(comp.getGlob('vendor', true));
       if (globVendor.length) {
         watch(globVendor, batch(function (events, done) {
-          tasks.js.run(curCompId, false, true, 'js:dev (' + curCompId + ')', false, (tasks) => {
-            tasks.js.run(curCompId, true, true, false, 'js:dev (' + curCompId + ')', done);
-          });
+          tasks.js.run({ compId: curCompId, isApp: false, isDev: true, taskNameBegin: 'js:dev (' + curCompId + ')', taskNameEnd: false, cb: (tasks) => {
+            tasks.js.run({ compId: curCompId, isApp: true, isDev: true, taskNameBegin: false, taskNameEnd: 'js:dev (' + curCompId + ')', cb: done });
+          } });
         })).on('error', function(err) {
           //console.error(err);
         });
@@ -203,7 +204,10 @@ gulp.task('dev:watch', function(cb) {
     });
 
     watch(watchGlob, batch(function (events, done) {
-      gulp.start('images:dev', app.reload(done));
+      //timeout for temp files to be erased
+      setTimeout(() => {
+        gulp.start('images:dev', app.reload(done));
+      }, 500);
     })).on('unlink', function(path) {
       //TODO: handle images removal in dist dir
     }).on('error', function(err) {
@@ -230,7 +234,7 @@ gulp.task('dev:watch', function(cb) {
     if (dirInfo.dev) {
       ((dirInfo) => {
         watch(dirInfo.from, batch(function (events, done) {
-          tasks.customDirs.run([dirInfo], true, app.reload(done));
+          tasks.customDirs.run({ dirInfos: [dirInfo], isDev: true, cb: app.reload(done) });
         })).on('error', function(err) {
           //console.error(err);
         });
@@ -238,7 +242,7 @@ gulp.task('dev:watch', function(cb) {
     }
   }
 
-  tasks.browserSync.run(true, process.argv && (process.argv.indexOf('-r') >= 0)).then(() => {
+  tasks.browserSync.run({ isDev: true, blockOpen: process.argv && (process.argv.indexOf('-r') >= 0) }).then(() => {
     cb();
   });
 });
@@ -278,30 +282,30 @@ var tasks = {}
 //autoload tasks
 var tasksList = ['js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
 tasksList.forEach((t) => {
-  require(dirs.lib.tasks + t + '.js')({ dirs: dirs, config: config, app: app, tasks: tasks });
+  require(dirs.lib.tasks + t + '.js')({ dirs: dirs, config: config, app: app, tasks: tasks }, Injector);
 })
 
 
 
 /* STYLES */
 gulp.task('styles:dev', function() {
-  return tasks.styles.run(true)
+  return tasks.styles.run({ isDev: true })
     .pipe(browserSync.stream());
 });
 
 gulp.task('styles:prod', function() {
-  return tasks.styles.run(false);
+  return tasks.styles.run({ isDev: false });
 });
 
 gulp.task('fonts', function() {
-  return tasks.fonts.run();
+  return tasks.fonts.run({});
 });
 
 gulp.task('sprites:dev', function() {
   var ret = [];
 
   config.sprites.items.forEach(function(itemInfo) {
-    ret.push(tasks.sprites.run(true, itemInfo));
+    ret.push(tasks.sprites.run({ isDev: true, itemInfo: itemInfo, cb: null }));
   });
 
   return merge.apply(null, ret);
@@ -311,7 +315,7 @@ gulp.task('sprites:prod', function() {
   var ret = [];
 
   config.sprites.items.forEach(function(itemInfo) {
-    ret.push(tasks.sprites.run(false, itemInfo));
+    ret.push(tasks.sprites.run({ isDev: false, itemInfo: itemInfo, cb: null }));
   });
 
   return merge.apply(null, ret);
@@ -330,7 +334,7 @@ gulp.task('js:dev:app', function() {
     var comp = comps[compId];
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(compId, true, true, '', '', resolve);
+      tasks.js.run({ compId: compId, isApp: true, isDev: true, taskNameBegin: '', taskNameEnd: '', cb: resolve });
     }));
   }
 
@@ -346,7 +350,7 @@ gulp.task('js:dev:vendor', function() {
       continue;
 
     promises.push(new Promise((resolve, reject) => {
-      tasks.js.run(compId, false, true, compId, '', resolve);
+      tasks.js.run({ compId: compId, isApp: false, isDev: true, taskNameBegin: compId, taskNameEnd: '', cb: resolve });
     }));
   }
 
@@ -368,9 +372,9 @@ gulp.task('js:prod', function() {
 
     promises.push(new Promise((resolve, reject) => {
       var curCompId = compId;
-      tasks.js.run(curCompId, false, false, '', '', (tasks) => {
-        tasks.js.run(curCompId, true, false, '', '', resolve);
-      });
+      tasks.js.run({ compId: curCompId, isApp: false, isDev: false, taskNameBegin: '', taskNameEnd: '', cb: (tasks) => {
+        tasks.js.run({ compId: curCompId, isApp: true, isDev: false, taskNameBegin: '', taskNameEnd: '', cb: resolve });
+      } });
     }));
   }
 
@@ -381,11 +385,11 @@ gulp.task('js:prod', function() {
 
 /* IMAGES */
 gulp.task('images:dev', function() {
-  return tasks.images.run(true);
+  return tasks.images.run({ isDev: true });
 });
 
 gulp.task('images:prod', function() {
-  return tasks.images.run(false);
+  return tasks.images.run({ isDev: false });
 });
 
 
@@ -393,7 +397,7 @@ gulp.task('images:prod', function() {
 /* VIEWS */
 gulp.task('views:dev', function() {
   if (dirs.src.views.main) {
-    return tasks.views.run(true);
+    return tasks.views.run({ isDev: true });
   }
   else {
     return Promise.resolve();
@@ -402,7 +406,7 @@ gulp.task('views:dev', function() {
 
 gulp.task('views:prod', function() {
   if (dirs.src.views.main) {
-    return tasks.views.run(false);
+    return tasks.views.run({ isDev: false });
   }
   else {
     return Promise.resolve();
@@ -413,11 +417,11 @@ gulp.task('views:prod', function() {
 
 /* CUSTOM DIRS */
 gulp.task('custom-dirs:dev', function(cb) {
-  return tasks.customDirs.run(dirs.custom, true);
+  return tasks.customDirs.run({ dirInfos: dirs.custom, isDev: true });
 });
 
 gulp.task('custom-dirs:prod', function(cb) {
-  return tasks.customDirs.run(dirs.custom, false);
+  return tasks.customDirs.run({ dirInfos: dirs.custom, isDev: false });
 });
 
 
@@ -431,20 +435,20 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('clean:dev', function(cb) {
-  return tasks.clean.run(true);
+  return tasks.clean.run({ clearCache: true });
 });
 
 gulp.task('clean:prod', function(cb) {
-  return tasks.clean.run();
+  return tasks.clean.run({ clearCache: false });
 });
 
 
 
 /* BROWSER SYNC */
 gulp.task('browser-sync:dev', function() {
-  return tasks.browserSync.run(true);
+  return tasks.browserSync.run({ isDev: true });
 });
 
 gulp.task('browser-sync:prod', function() {
-  return tasks.browserSync.run(false);
+  return tasks.browserSync.run({ isDev: false });
 });
