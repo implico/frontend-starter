@@ -58,7 +58,7 @@ module.exports = function(dirs) {
         {
           imgSource: dirs.src.img + 'sprites/',
           imgDest: dirs.dist.img,
-          //additional options passed to the plugin
+          //options passed to the plugin
           options: {
             imgName: 'sprites.png',
             imgPath: '../img/sprites.png',
@@ -69,7 +69,27 @@ module.exports = function(dirs) {
             }
           }
         }
-      ]
+      ],
+
+      inject: {
+        cancelTask: null,
+        init: null,
+        imgSrc: null, //must return a stream
+        imgOptimize: null,
+        imgDest: null,
+        cssSrc: null,
+        cssDest: null,
+        finish: null
+      },
+
+      dev: {
+        inject: {
+          imgOptimize: false
+        }
+      },
+
+      prod: {
+      }
     },
 
     js: {
@@ -175,44 +195,65 @@ module.exports = function(dirs) {
     },
 
     images: {
-      imagemin: {
+      optimize: {
         optimizationLevel: 3,
         progressive: true,
         interlaced: true
       },
 
       inject: {
+        cancelTask: null,
         cancel: null,
 
         init: null,
         changed: null,
-        imagemin: null, //only for prod
+        optimize: null,
         dest: null,
         finish: null
-      }
-    },
-
-    browserSync: {
-      common: {
-        enable: true,  //for prod, applies prod:preview
-
-        options: {
-          //tip: set host to "[project-name].localhost" and set "open" to "external"
-          host: 'localhost',
-          open: 'local',
-          port: 80,
-          reloadOnRestart: true,
-          server: {
-            baseDir: dirs.dist.main
-          }
-        }
       },
 
       dev: {
-
+        inject: {
+          optimize: false
+        }
       },
 
       prod: {
+
+      },
+
+      //compatibility fallback
+      imagemin: {}
+    },
+
+    browserSync: {
+      options: {
+        //tip: set host to "[project-name].localhost" and set "open" to "external"
+        host: 'localhost',
+        open: 'local',
+        port: 80,
+        reloadOnRestart: true,
+        server: {
+          baseDir: dirs.dist.main
+        }
+      },
+
+      inject: {
+        cancelTask: null,
+        cancel: null,
+        init: null  //overrides default browserSync run, must return a promise or stream
+      },
+
+      dev: {
+      },
+
+      //only for prod:preview task
+      prod: {
+      },
+
+      //compatibility fallback
+      common: {
+        options: {}
       }
     },
 
