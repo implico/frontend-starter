@@ -196,9 +196,9 @@ gulp.task('dev:watch', function(cb) {
   }
   
   //images
-  if (dirs.src.img) {
+  if (dirs.src.images) {
     //exclude sprite dirs
-    var watchGlob = [dirs.src.img + '**/*'];
+    var watchGlob = [dirs.src.images + '**/*'];
     config.sprites.items.forEach((spriteInfo) => {
       watchGlob.push('!' + spriteInfo.imgSource);
     });

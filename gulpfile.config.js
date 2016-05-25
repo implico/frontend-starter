@@ -72,9 +72,11 @@ module.exports = function(dirs) {
       ],
 
       inject: {
-        cancelTask: null,
+        cancelTask: false,
+        cancel: [],
+
         init: null,
-        imgSrc: null, //must return a stream
+        imgSrc: null,
         imgOptimize: null,
         imgDest: null,
         cssSrc: null,
@@ -93,62 +95,76 @@ module.exports = function(dirs) {
     },
 
     js: {
-      common: {
-        sourceMaps: true,
-        sourceMapsRoot: '/src/',
-        minify: false,
-        concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
-        bowerFilter: ['**/*.js'],
+      sourceMaps: true,
+      sourceMapsRoot: '/src/',
+      minify: false,
+      concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
+      bowerFilter: ['**/*.js'],
 
-        comps: {
-          main: {
-            filename: 'app',      //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
-                                  //.js extension added automatically unless the name contains a dot
-            //filenameVendor: 'vendor',//if concatVendorApp is false, specifies the vendor filename
+      comps: {
+        main: {
+          filename: 'app',      //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+                                //.js extension added automatically unless the name contains a dot
+          //filenameVendor: 'vendor',//if concatVendorApp is false, specifies the vendor filename
 
-            bower: ['**/*.js'],   //set only name of the package
-            vendor: ['**/*.js'],  //path relative to the appropriate directory
-            app: ['**/*.js'],     //path relative to the appropriate directory
+          bower: ['**/*.js'],   //set only name of the package
+          vendor: ['**/*.js'],  //path relative to the appropriate directory
+          app: ['**/*.js'],     //path relative to the appropriate directory
 
-            //set prioritized paths
-            priority: {
-              vendor: [],
-              app: []
-            },
-
-            //set other comp ids to include
-            dependencies: [],
-
-            //set comps to exclude all loaded scripts in other comps, e.g.
-            //excludeIn: ['comp1', 'comp2'] //excluded in selected comps
-            //excludeIn: true   //excluded in all other comps
-            //excludeIn: false  //no exclusion
-            excludeIn: false,
-
-            watch: true  //not needed, watch blocked only if false
+          //set prioritized paths
+          priority: {
+            vendor: [],
+            app: []
           },
 
-          html5shiv: {
-            bower: ['html5shiv'],
-            excludeIn: true,
-            watch: false
-          }
+          //set other comp ids to include
+          dependencies: [],
+
+          //set comps to exclude all loaded scripts in other comps, e.g.
+          //excludeIn: ['comp1', 'comp2'] //excluded in selected comps
+          //excludeIn: true   //excluded in all other comps
+          //excludeIn: false  //no exclusion
+          excludeIn: false,
+
+          watch: true  //not needed, watch blocked only if false
         },
 
-        mainBowerFiles: {
-          paths: {
-            bowerDirectory: dirs.bower,
-            bowerrc: dirs.app + '.bowerrc',
-            bowerJson: dirs.app + 'bower.json'
-          },
-          overrides: {}
-        },
-        
-        jsHint: {
-          enable: false,
-          options: {},
-          reporter: 'default'
+        html5shiv: {
+          bower: ['html5shiv'],
+          excludeIn: true,
+          watch: false
         }
+      },
+
+      mainBowerFiles: {
+        paths: {
+          bowerDirectory: dirs.bower,
+          bowerrc: dirs.app + '.bowerrc',
+          bowerJson: dirs.app + 'bower.json'
+        },
+        overrides: {}
+      },
+      
+      jsHint: {
+        enable: false,
+        options: {},
+        reporter: 'default'
+      },
+
+      inject: {
+        cancelTask: false,
+        cancel: [],
+
+        //receive stream and an object { comp, ...} (see the source injectorData for more)
+        src: null,
+        sourceMapsInit: null,
+        concat: null,
+        sourceMapsWrite: null,
+        minify: null,
+        concatVendorApp: null,
+        dest: null,
+        reload: null,
+        finish: null
       },
 
       dev: {
@@ -161,7 +177,52 @@ module.exports = function(dirs) {
         jsHint: {
           enable: false
         }
+      },
+
+      //compatibility fallback, to be removed
+      common: {
+        comps: {
+          main: {
+            priority: {
+              vendor: [],
+              app: []
+            }
+          },
+          html5shiv: {}
+        }
       }
+    },
+
+    images: {
+      optimize: {
+        optimizationLevel: 3,
+        progressive: true,
+        interlaced: true
+      },
+
+      inject: {
+        cancelTask: false,
+        cancel: [],
+
+        src: null,
+        changed: null,
+        optimize: null,
+        dest: null,
+        finish: null
+      },
+
+      dev: {
+        inject: {
+          optimize: false
+        }
+      },
+
+      prod: {
+
+      },
+
+      //compatibility fallback
+      imagemin: {}
     },
 
     views: {
@@ -194,36 +255,14 @@ module.exports = function(dirs) {
       }
     },
 
-    images: {
-      optimize: {
-        optimizationLevel: 3,
-        progressive: true,
-        interlaced: true
-      },
-
+    customDirs: {
       inject: {
-        cancelTask: null,
-        cancel: null,
+        cancelTask: false,
+        cancel: [],
 
-        init: null,
-        changed: null,
-        optimize: null,
-        dest: null,
-        finish: null
-      },
-
-      dev: {
-        inject: {
-          optimize: false
-        }
-      },
-
-      prod: {
-
-      },
-
-      //compatibility fallback
-      imagemin: {}
+        init: null, //receives the object of custom directory definitions
+        finish: null  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
+      }
     },
 
     browserSync: {
@@ -239,8 +278,8 @@ module.exports = function(dirs) {
       },
 
       inject: {
-        cancelTask: null,
-        cancel: null,
+        cancelTask: false,
+        cancel: [],
         init: null  //overrides default browserSync run, must return a promise or stream
       },
 
@@ -258,16 +297,23 @@ module.exports = function(dirs) {
     },
 
     clean: {
-      //set to true for default config dir value, false to block deletion
-      //or pass any glob pattern as an array (e.g. "styles: [dirs.dist.styles + 'style.css']" to delete only this one file)
-      dist: false,       //only true/false; if true, whole dist dir is deleted
-      styles: true,
-      sprites: true,    //only true/false; set to false to block deletion of any generated by spritesmith SASS file in the src directory
-      fonts: true,
-      js: true,
-      img: true,
-      views: true,
-      custom: true      //only true/false; set to false to block deletion of any custom dir
+
+      inject: {
+        cancelTask: false,
+        cancel: [],
+
+        //receive current glob array (incremental, containing previously added patterns) passed at the end to delete function
+        cache: null,
+        styles: null,
+        sprites: null,
+        fonts: null,
+        js: null,
+        images: null,
+        views: null,
+        custom: null,
+        del: null,
+        finish: null
+      }
     }
   }
 

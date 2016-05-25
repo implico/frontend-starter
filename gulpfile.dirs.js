@@ -49,7 +49,7 @@ module.exports = function(appDir) {
         main: '',
         vendor: ''
       },
-      img: '',
+      images: '',
       views: {
         main: '',
         layouts: '',
@@ -62,7 +62,7 @@ module.exports = function(appDir) {
       styles: '',
       fonts: '',
       js: '',
-      img: '',
+      images: '',
       views: ''
     }
   }
@@ -111,7 +111,7 @@ try {
   dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
   dirs.src.js.app = dirs.src.js.main;
 
-  dirs.src.img = dirs.src.main + 'img/';
+  dirs.src.images = dirs.src.main + 'img/';
 
   dirs.src.views.main = dirs.src.main + 'views/'; //set to a falsy value to drop views support
   dirs.src.views.layouts = dirs.src.views.main + 'layouts/';
@@ -128,19 +128,33 @@ try {
   dirs.dist.styles = dirs.dist.main + 'css/';
   dirs.dist.fonts = dirs.dist.styles + 'fonts/';
   dirs.dist.js = dirs.dist.main + 'js/';
-  dirs.dist.img = dirs.dist.main + 'img/';
+  dirs.dist.images = dirs.dist.main + 'img/';
   dirs.dist.views = dirs.dist.main;
 
 
   //additional custom dirs to watch and (optionally) copy
   dirs.custom = {
-  //Example:
-  //  your_dir_id: {
-  //    dev: true,    //set true if use also for dev tasks
-  //    clean: true,  //deletes the directory on clean task
-  //    from: dirs.src.main + 'custom/**/*',
-  //    to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
-  //  }
+
+    // //Example:
+    // my_dir: {
+    //   from: dirs.src.main + 'custom/**/*',
+    //   to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
+
+    //   inject: {
+    //     //main task
+    //     cancelTask: false,
+    //     cancel: [],
+    //     //receive stream and { id: dirName, dirInfo: dirInfo } as a second parameter
+    //     src: null,
+    //     changed: null,
+    //     dest: null,
+
+    //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second
+    //     //not needed to disable if "to" is null
+    //     clean: null
+    //   }
+    // }
+
   };
 
 
