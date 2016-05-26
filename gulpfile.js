@@ -216,8 +216,8 @@ gulp.task('dev:watch', function(cb) {
   }
 
   //views
-  if (dirs.src.views.main) {
-    watch([dirs.src.views.main + '**/*'], batch(function (events, done) {
+  if (dirs.src.views) {
+    watch([dirs.src.views + '**/*'], batch(function (events, done) {
       gulp.start('views:dev', app.reload(done));
     })).on('error', function(err) {
       //console.error(err);
@@ -396,7 +396,7 @@ gulp.task('images:prod', function() {
 
 /* VIEWS */
 gulp.task('views:dev', function() {
-  if (dirs.src.views.main) {
+  if (dirs.src.views) {
     return tasks.views.run({ isDev: true });
   }
   else {
@@ -405,7 +405,7 @@ gulp.task('views:dev', function() {
 });
 
 gulp.task('views:prod', function() {
-  if (dirs.src.views.main) {
+  if (dirs.src.views) {
     return tasks.views.run({ isDev: false });
   }
   else {
@@ -426,7 +426,7 @@ gulp.task('custom-dirs:prod', function(cb) {
 
 
 
-/* CLEAN PUBLIC FOLDERS */
+/* CLEAN DIST FOLDERS */
 gulp.task('clean', function(cb) {
   var wasLocked = app.quit.wasLocked();
   runSequence('clean:dev', function() {
@@ -435,11 +435,11 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('clean:dev', function(cb) {
-  return tasks.clean.run({ clearCache: true });
+  return tasks.clean.run({ isDev: true });
 });
 
 gulp.task('clean:prod', function(cb) {
-  return tasks.clean.run({ clearCache: false });
+  return tasks.clean.run({ isDev: false });
 });
 
 

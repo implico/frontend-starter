@@ -22,16 +22,24 @@ module.exports = function(dirs) {
 
     styles: {
 
-      common: {
-        sourceMaps: true,
-        sourceMapsRoot: '/src/styles/',
+      sourceMaps: true,
+      sourceMapsRoot: '/src/styles/',
 
-        autoprefixer: {
-          browsers: ['> 1%', 'last 3 versions', 'IE 8']
-        },
+      autoprefixer: {
+        browsers: ['> 1%', 'last 3 versions', 'IE 8']
+      },
 
-        sass: {
-        }
+      sass: {
+      },
+
+      inject: {
+        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        sourceMapsInit: true,
+        sass: true,
+        autoprefixer: true,
+        sourceMapsWrite: true,
+        dest: true,
+        finish: true
       },
 
       dev: {
@@ -48,6 +56,19 @@ module.exports = function(dirs) {
         sass: {
           outputStyle: 'compressed'
         }
+      },
+
+      //compatibility fallback, to be removed
+      common: {}
+    },
+
+    fonts: {
+
+      inject: {
+        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        limit: true,  //gulp-changed plugin
+        dest: true,
+        finish: true
       }
     },
 
@@ -56,8 +77,8 @@ module.exports = function(dirs) {
       items: [
         //you can add more items (dirs), simply add an element
         {
-          imgSource: dirs.src.img + 'sprites/',
-          imgDest: dirs.dist.img,
+          imgSource: dirs.src.images + 'sprites/',
+          imgDest: dirs.dist.images,
           //options passed to the plugin
           options: {
             imgName: 'sprites.png',
@@ -72,16 +93,13 @@ module.exports = function(dirs) {
       ],
 
       inject: {
-        cancelTask: false,
-        cancel: [],
-
-        init: null,
-        imgSrc: null,
-        imgOptimize: null,
-        imgDest: null,
-        cssSrc: null,
-        cssDest: null,
-        finish: null
+        init: true,
+        imgSrc: true,
+        imgOptimize: true,
+        imgDest: true,
+        cssSrc: true,
+        cssDest: true,
+        finish: true
       },
 
       dev: {
@@ -152,22 +170,22 @@ module.exports = function(dirs) {
       },
 
       inject: {
-        cancelTask: false,
-        cancel: [],
-
         //receive stream and an object { comp, ...} (see the source injectorData for more)
-        src: null,
-        sourceMapsInit: null,
-        concat: null,
-        sourceMapsWrite: null,
-        minify: null,
-        concatVendorApp: null,
-        dest: null,
-        reload: null,
-        finish: null
+        src: true,
+        sourceMapsInit: true,
+        concat: true,
+        sourceMapsWrite: true,
+        minify: true,
+        concatVendorApp: true,
+        dest: true,
+        reload: true,
+        finish: true
       },
 
       dev: {
+        inject: {
+          optimize: false
+        }
       },
 
       prod: {
@@ -201,14 +219,11 @@ module.exports = function(dirs) {
       },
 
       inject: {
-        cancelTask: false,
-        cancel: [],
-
-        src: null,
-        changed: null,
-        optimize: null,
-        dest: null,
-        finish: null
+        src: true,      //function must return: a stream (if canceled) or a glob array passed to the src
+        limit: true,    //gulp-changed plugin
+        optimize: true,
+        dest: true,
+        finish: true
       },
 
       dev: {
@@ -227,41 +242,31 @@ module.exports = function(dirs) {
 
     views: {
 
-      common: {
-        useSwig: true,
-        swig: {
-          defaults: { cache: false },
-          setup: function(swig) {
-            swig.setDefaults({
-              //set base dir
-              loader: swig.loaders.fs(dirs.src.views.layouts)
-            });
-          },
-          //variable context (data) passed to all templates
-          data: {}
-        }
+      inject: {
+        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        limit: true,  //gulp-changed plugin
+        dest: true,
+        finish: true
       },
 
       dev: {
-        swig: {
-
-        }
       },
 
       prod: {
-        swig: {
+      },
 
-        }
-      }
+      //compatibility fallback, to be removed
+      common: {}
     },
 
     customDirs: {
       inject: {
-        cancelTask: false,
-        cancel: [],
-
-        init: null, //receives the object of custom directory definitions
-        finish: null  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
+        init: true, //receives the object of custom directory definitions
+        finish: true  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
+      },
+      dev: {
+      },
+      prod: {
       }
     },
 
@@ -278,9 +283,7 @@ module.exports = function(dirs) {
       },
 
       inject: {
-        cancelTask: false,
-        cancel: [],
-        init: null  //overrides default browserSync run, must return a promise or stream
+        init: true  //overrides default browserSync run, must return a promise or stream
       },
 
       dev: {
@@ -299,20 +302,27 @@ module.exports = function(dirs) {
     clean: {
 
       inject: {
-        cancelTask: false,
-        cancel: [],
+        //functions receive current glob array (incremental, containing previously added patterns) passed at the end to the del function
+        init: true,
+        cache: true,
+        styles: true,
+        sprites: true,
+        fonts: true,
+        js: true,
+        images: true,
+        views: true,
+        custom: true,
+        del: true,
+        finish: true
+      },
 
-        //receive current glob array (incremental, containing previously added patterns) passed at the end to delete function
-        cache: null,
-        styles: null,
-        sprites: null,
-        fonts: null,
-        js: null,
-        images: null,
-        views: null,
-        custom: null,
-        del: null,
-        finish: null
+      dev: {
+      },
+
+      prod: {
+        inject: {
+          cache: false
+        }
       }
     }
   }

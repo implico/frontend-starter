@@ -50,11 +50,7 @@ module.exports = function(appDir) {
         vendor: ''
       },
       images: '',
-      views: {
-        main: '',
-        layouts: '',
-        scripts: ''
-      },
+      views: '',
     },
 
     dist: {
@@ -68,6 +64,7 @@ module.exports = function(appDir) {
   }
 
   dirs.root = __dirname + '/';
+  dirs.rootModules = dirs.root + 'node_modules/';
 
   //custom config files
   dirs.customConfig.dirsFile = 'frs.dirs.custom.js';
@@ -112,10 +109,10 @@ try {
   dirs.src.js.app = dirs.src.js.main;
 
   dirs.src.images = dirs.src.main + 'img/';
+  //compatibility fallback, to be removed
+  dirs.src.img = dirs.src.images;
 
-  dirs.src.views.main = dirs.src.main + 'views/'; //set to a falsy value to drop views support
-  dirs.src.views.layouts = dirs.src.views.main + 'layouts/';
-  dirs.src.views.scripts = dirs.src.views.main + 'scripts/';
+  dirs.src.views = dirs.src.main + 'views/';
 
 
   //dist dirs
@@ -129,6 +126,9 @@ try {
   dirs.dist.fonts = dirs.dist.styles + 'fonts/';
   dirs.dist.js = dirs.dist.main + 'js/';
   dirs.dist.images = dirs.dist.main + 'img/';
+  //compatibility fallback, to be removed
+  dirs.dist.img = dirs.dist.images;
+
   dirs.dist.views = dirs.dist.main;
 
 
@@ -141,12 +141,9 @@ try {
     //   to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
 
     //   inject: {
-    //     //main task
-    //     cancelTask: false,
-    //     cancel: [],
-    //     //receive stream and { id: dirName, dirInfo: dirInfo } as a second parameter
-    //     src: null,
-    //     changed: null,
+    //     //main task, receives stream and { id: dirName, dirInfo: dirInfo } as a second parameter
+    //     src: null,   //function must return: a stream (if canceled) or a glob array passed to the src
+    //     limit: null, //gulp-changed plugin
     //     dest: null,
 
     //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second
