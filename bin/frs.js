@@ -61,17 +61,17 @@ process.stdin.on('keypress', function(ch, key) {
         process.exit();
         break;
       case 'r':
-        console.log('--- Invoked dev:watch restart from keyboard ---');
+        console.log('--- Invoked watch restart from keyboard ---');
         killProcesses();
         spawnGulp('default -r', false);
         break;
       case 'p':
-        console.log('--- Invoked prod task from keyboard ---');
-        spawnGulp('prod -t');
+        console.log('--- Invoked build production task from keyboard ---');
+        spawnGulp('build -p');
         break;
       case 'd':
-        console.log('--- Invoked dev:build task from keyboard ---');
-        spawnGulp('dev:build -t');
+        console.log('--- Invoked build development task from keyboard ---');
+        spawnGulp('build');
         break;
     }
   }
@@ -80,14 +80,11 @@ if (process.stdin.setRawMode)
   process.stdin.setRawMode(true);
 process.stdin.resume();
 
-//if (!task || (task == 'dev:watch') || (task == 'prod:preview')) {
-  console.log('Use keys:')
-  console.log('Ctrl+P: prod');
-  console.log('Ctrl+D: dev:build');
-  console.log('Ctrl+R: restart dev:watch');
-  console.log('Ctrl+C: exit\n');
-//}
+console.log('Use keys:')
+console.log('Ctrl+P: build production');
+console.log('Ctrl+D: build development');
+console.log('Ctrl+R: watch restart');
+console.log('Ctrl+C: exit\n');
 
 
-//spawnGulp(task, (task != 'default') && (task != 'dev') && (task != 'dev:watch'));
 require('gulp-cli')();

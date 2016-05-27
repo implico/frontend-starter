@@ -78,13 +78,16 @@ module.exports = function(appDir) {
   dirs.cache = dirs.app + '.cache/';
   dirs.bower = dirs.app + 'bower_components/';  //change also .bowerrc
 
+  //main src/dist dirs
   dirs.src.main = dirs.app + 'src/';
+  dirs.dist.main = dirs.app + 'dist/';
 
-  //custom src dir - check if exists
-try {
+  //custom main src/dist dirs - check if exists
+  try {
     fs.accessSync(dirs.app + dirs.customConfig.dirsFile, fs.R_OK);
   }
   catch (ex) {
+    //fallback
     try {
       fs.accessSync(dirs.app + 'fs.dirs.custom.js', fs.R_OK);
       console.error('Frontend-starter error: PLEASE RENAME fs.dirs.custom.js to ' + dirs.customConfig.dirsFile + ' and fs.config.custom.js to ' + dirs.customConfig.configFile);
@@ -95,10 +98,11 @@ try {
     process.exit(1);
   }
 
-  //custom src dir - require
-  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'src');
+  //custom main src/dist dirs - require
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'main');
 
 
+  //src subdirs
   dirs.src.styles.main = dirs.src.main + 'styles/';
   dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
 
@@ -115,13 +119,7 @@ try {
   dirs.src.views = dirs.src.main + 'views/';
 
 
-  //dist dirs
-  dirs.dist.main = dirs.app + 'dist/';
-
-  //custom dist dir
-  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'dist');
-
-
+  //dist subdirs
   dirs.dist.styles = dirs.dist.main + 'css/';
   dirs.dist.fonts = dirs.dist.styles + 'fonts/';
   dirs.dist.js = dirs.dist.main + 'js/';
@@ -142,21 +140,21 @@ try {
 
     //   inject: {
     //     //main task, receives stream and { id: dirName, dirInfo: dirInfo } as a second parameter
-    //     src: null,   //function must return: a stream (if canceled) or a glob array passed to the src
-    //     limit: null, //gulp-changed plugin
-    //     dest: null,
+    //     src: true,   //function must return: a stream (if cancels) or a glob array passed to the src
+    //     limit: true, //gulp-changed plugin
+    //     dest: true,
 
     //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second
     //     //not needed to disable if "to" is null
-    //     clean: null
+    //     clean: true
     //   }
     // }
 
   };
 
 
-  //custom dir modifications/definitions - optional
-  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'all');
+  //custom src/dist subdir modifications
+  require(dirs.app + dirs.customConfig.dirsFile)(dirs, 'sub');
 
 
   return dirs;

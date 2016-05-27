@@ -15,10 +15,16 @@
 
 module.exports = function(dirs) {
 
-  var fs   = require('fs');
+  var fs        = require('fs'),
+      minimist  = require('minimist');
 
 
   var config = {
+
+    main: {
+      isDev: null,
+      isRestart: null
+    },
 
     styles: {
 
@@ -26,14 +32,14 @@ module.exports = function(dirs) {
       sourceMapsRoot: '/src/styles/',
 
       autoprefixer: {
-        browsers: ['> 1%', 'last 3 versions', 'IE 8']
+        browsers: ['> 1%', 'last 3 versions', 'IE >= 9']
       },
 
       sass: {
       },
 
       inject: {
-        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         sourceMapsInit: true,
         sass: true,
         autoprefixer: true,
@@ -62,15 +68,17 @@ module.exports = function(dirs) {
       common: {}
     },
 
+
     fonts: {
 
       inject: {
-        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         limit: true,  //gulp-changed plugin
         dest: true,
         finish: true
       }
     },
+
 
     sprites: {
 
@@ -112,10 +120,10 @@ module.exports = function(dirs) {
       }
     },
 
+
     js: {
       sourceMaps: true,
       sourceMapsRoot: '/src/',
-      minify: false,
       concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
       bowerFilter: ['**/*.js'],
 
@@ -184,13 +192,12 @@ module.exports = function(dirs) {
 
       dev: {
         inject: {
-          optimize: false
+          minify: false
         }
       },
 
       prod: {
         sourceMaps: false,
-        minify: true,
 
         jsHint: {
           enable: false
@@ -211,6 +218,7 @@ module.exports = function(dirs) {
       }
     },
 
+
     images: {
       optimize: {
         optimizationLevel: 3,
@@ -219,7 +227,7 @@ module.exports = function(dirs) {
       },
 
       inject: {
-        src: true,      //function must return: a stream (if canceled) or a glob array passed to the src
+        src: true,      //function must return: a stream (if cancels) or a glob array passed to the src
         limit: true,    //gulp-changed plugin
         optimize: true,
         dest: true,
@@ -240,10 +248,11 @@ module.exports = function(dirs) {
       imagemin: {}
     },
 
+
     views: {
 
       inject: {
-        src: true,    //function must return: a stream (if canceled) or a glob array passed to the src
+        src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         limit: true,  //gulp-changed plugin
         dest: true,
         finish: true
@@ -258,6 +267,7 @@ module.exports = function(dirs) {
       //compatibility fallback, to be removed
       common: {}
     },
+
 
     customDirs: {
       inject: {
@@ -326,6 +336,22 @@ module.exports = function(dirs) {
       }
     }
   }
+
+  //parse cli args
+  var optsConfig = {
+    string: ['env'],
+    boolean: ['prod', 'restart'],
+    alias: {
+      prod: 'p',
+      restart: 'r'
+    },
+    default: {
+      prod: process.env.NODE_ENV === 'production'
+    }
+  }
+  var opts = minimist(process.argv.slice(2), optsConfig);
+  config.main.isDev = !opts.prod && opts.env !== 'production';
+  config.main.isRestart = opts.restart;
 
   //custom config file
   var noCustomFile = false;
