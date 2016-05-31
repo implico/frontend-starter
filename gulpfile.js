@@ -225,15 +225,13 @@ gulp.task('watch', function(cb) {
 
     var dirInfo = dirs.custom[dirName];
 
-    if (dirInfo.dev) {
-      ((dirInfo) => {
-        watch(dirInfo.from, batch(function (events, done) {
-          tasks.customDirs.run({ dirInfos: [dirInfo], cb: app.reload(done) });
-        })).on('error', function(err) {
-          //console.error(err);
-        });
-      })(dirInfo);
-    }
+    ((dirInfo) => {
+      watch(dirInfo.from, batch(function (events, done) {
+        tasks.customDirs.run({ dirInfos: [dirInfo], cb: app.reload(done) });
+      })).on('error', function(err) {
+        //console.error(err);
+      });
+    })(dirInfo);
   }
 
   tasks.browserSync.run({ blockOpen: config.main.isRestart }).then(() => {
