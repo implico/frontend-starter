@@ -368,5 +368,12 @@ module.exports = function(dirs) {
     require(dirs.app + dirs.customConfig.configFile)(config, dirs);
   }
 
+  //compatibility falback
+  if (config.clean.views === false) {
+    //config.clean.inject.views = false;
+    console.error('Frontend-starter error (deprecated): please rename "config.clean.views = false;" into "config.clean.inject.views = false;" in your ' + dirs.customConfig.configFile + ' file');
+    process.exit(1);
+  }
+
   return config;
 }
