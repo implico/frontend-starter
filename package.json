@@ -19,7 +19,7 @@
     "gulpfile.dirs.js",
     "gulpfile.config.js",
     "bin",
-    "tasks"
+    "lib"
   ],
   "main": "gulpfile.js",
   "bin": {
