@@ -45,6 +45,7 @@ module.exports = function(dirs) {
         autoprefixer: true,
         sourceMapsWrite: true,
         dest: true,
+        reload: true,
         finish: true
       },
 

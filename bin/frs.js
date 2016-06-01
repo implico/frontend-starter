@@ -4,7 +4,7 @@ var exec        = require('child_process').exec,
     keypress    = require('keypress');
 
 
-//execute gulp on module direcotry passing the project dir as a parameter
+//execute gulp on module directory passing the project dir in an anv variable
 var childrenProc = [],
     env = process.env;
 
@@ -60,11 +60,6 @@ process.stdin.on('keypress', function(ch, key) {
       case 'c':
         process.exit();
         break;
-      case 'r':
-        console.log('--- Invoked watch restart from keyboard ---');
-        killProcesses();
-        spawnGulp('default -r', false);
-        break;
       case 'p':
         console.log('--- Invoked build production task from keyboard ---');
         spawnGulp('build -p');
@@ -83,7 +78,6 @@ process.stdin.resume();
 console.log('Use keys:')
 console.log('Ctrl+P: build production');
 console.log('Ctrl+D: build development');
-console.log('Ctrl+R: watch restart');
 console.log('Ctrl+C: exit\n');
 
 

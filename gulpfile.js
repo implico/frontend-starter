@@ -20,14 +20,21 @@
   gulp start
     runs build and watch
 
-  gulp build [-p]
+  gulp build
     cleans and compiles/builds the app (with -p: optimized for production)
 
   gulp watch
     runs watch with Browsersync
 
+  options:
+  -p production mode
+  -r restart mode (blocked opening new browserSync window)
+
 */
- var path = require('path');
+
+'use strict';
+
+var path = require('path');
 
 
 //gett app root dir
@@ -53,9 +60,7 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     runSequence  = require('run-sequence'),
 
     gulp         = require('gulp'),
-    debug        = require('gulp-debug'),
-    batch        = require('gulp-batch'),
-    watch        = require('gulp-watch');
+    debug        = require('gulp-debug');
 
 
 //terminate Browsersync when the main process sends closing string (or the data is not a string)
@@ -67,43 +72,108 @@ process.stdin.on('data', function(data) {
 });
 
 
+//core tasks container
+var tasks = {};
+
+//tasks registry
+var taskReg = {};
+
 
 var app = {
 
-  browserSync: null,
-    
+  invokedTask: 'default',
+
   init: function() {
-    this.browserSync = browserSync;
+    this.setInvokedTask();
+  },
+
+  setInvokedTask: function() {
+    var args = process.argv.slice(2),
+        task;
+    args.some((arg) => {
+      if (arg.charAt(0) != '-') {
+        task = arg;
+        return true;
+      }
+    });
+
+    if (task) {
+      this.invokedTask = task;
+    }
+  },
+
+  quitIfInvoked: function(taskName, cb) {
+    if (cb) {
+      cb();
+    }
+    if (this.invokedTask == taskName) {
+      process.exit();
+    }
+  },
+
+  streamToPromise: function(stream) {
+    if (!(stream instanceof Promise)) {
+      return new Promise((resolve, reject) => {
+        stream.on('finish', resolve);
+      });
+    }
+    return stream;
   },
 
   //aux: reloads Browsersync and calls the callback
   reload: function(cb) {
     var _this = this;
     return function() {
-      _this.browserSync.reload();
-      if (cb)
+      browserSync.reload();
+      if (cb) {
         cb();
+      }
     }
   },
 
-  //used for main tasks to quit after it's done, unless a higher level task locked it
-  quit: {
-    isLocked: null,
+  //taskReg utils
+  taskReg: {
 
-    //returns true if quitting was locked by a higher level task
-    wasLocked: function() {
-      var ret = this.isLocked !== null;
-      if (!ret)
-        this.isLocked = true;
-      return ret;
+    //removes task from target task deps
+    //targetTaskNames: string (single task), array or true for all tasks
+    removeDep(taskName, targetTaskNames) {
+      var _this = this;
+
+      if (targetTaskNames === true) {
+        targetTaskNames = [];
+        for (var i in taskReg) {
+          if (taskReg.hasOwnProperty(i)) {
+            targetTaskNames.push(i);
+          }
+        }
+      }
+      else if (!(targetTaskNames instanceof Array)) {
+        targetTaskNames = [targetTaskNames];
+      }
+
+      targetTaskNames.forEach((targetTaskName) => {
+        var deps = taskReg[targetTaskName].deps;
+        if (deps instanceof Array) {
+          taskReg[targetTaskName].deps = deps = _this.removeDepArray(taskName, deps);
+          deps.forEach((dep, index) => {
+            deps[index] = _this.removeDepArray(taskName, dep);
+          });
+        }
+      });
     },
 
-    //exits if a task was not locked before
-    finalize: function(wasLocked, cb) {
-      if (cb)
-        cb();
-      if (!wasLocked)
-        process.exit();
+    //utility for removeDep()
+    removeDepArray(taskName, array) {
+      if (array instanceof Array) {
+        var index = array.indexOf(taskName);
+        if (index >= 0) {
+          delete array[index];
+          array = array.filter((dep) => {
+            return typeof dep !== 'undefined';
+          });
+        }
+      }
+      return array;
     }
   }
 }
@@ -112,253 +182,303 @@ app.init();
 
 
 
-/* MAIN TASKS */
-gulp.task('default', ['watch']);
-
-
-gulp.task('start', function(cb) {
-  app.quit.wasLocked();
-  runSequence('build', 'watch', cb);
-});
-
-gulp.task('watch', function(cb) {
-  app.quit.wasLocked();
-  //styles
-  if (dirs.src.styles.main) {
-    //exclude sprite stylesheets
-    var watchGlob = [dirs.vendor + '**/*.scss', dirs.vendor + '**/*.css', dirs.src.styles.main + '**/*.scss', dirs.src.styles.main + '**/*.css'];
-    watchGlob.push('!' + dirs.src.styles.sprites);
-    
-    watch(watchGlob, batch(function (events, done) {
-      gulp.start('styles', done);
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-  }
-
-  //fonts
-  if (dirs.src.fonts) {
-    watch(dirs.src.fonts + '**/*', batch(function (events, done) {
-      gulp.start('fonts', app.reload(done));
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-  }
-
-  //sprites
-  config.sprites.items.forEach(function(itemInfo) {
-    watch(itemInfo.imgSource + '**/*.*', batch(function (events, done) {
-      tasks.sprites.run({ itemInfo: itemInfo, cb: app.reload(done) });
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-  });
-
-  //JS
-  var comps = tasks.js.getComps().getContent();
-  for (var compId in comps) {
-    if (!comps.hasOwnProperty(compId))
-      continue;
-    var comp = comps[compId];
-    
-    //js - app
-    (() => {
-      var curCompId = compId;
-      //console.log('Watching app', compId, comp.getGlob('app', true));
-      var globApp = comp.getGlob('app', true);
-      if (globApp.length) {
-        watch(globApp, batch(function (events, done) {
-          tasks.js.run({ compId: curCompId, isApp: true, taskNameBegin: 'js:app (' + curCompId + ')', taskNameEnd: true, cb: done });
-        })).on('error', function(err) {
-          //console.error(err);
-        });
-      }
-
-      //console.log('Watching vendor', curCompId, comp.getGlob('bower', true).concat(comp.getGlob('vendor', true)));
-      //js - vendor
-      var globVendor = comp.getGlob('bower', true).concat(comp.getGlob('vendor', true));
-      if (globVendor.length) {
-        watch(globVendor, batch(function (events, done) {
-          tasks.js.run({ compId: curCompId, isApp: false, taskNameBegin: 'js (' + curCompId + ')', taskNameEnd: false, cb: (tasks) => {
-            tasks.js.run({ compId: curCompId, isApp: true, taskNameBegin: false, taskNameEnd: 'js (' + curCompId + ')', cb: done });
-          } });
-        })).on('error', function(err) {
-          //console.error(err);
-        });
-      }
-    })();
-  }
-  
-  //images
-  if (dirs.src.images) {
-    //exclude sprite dirs
-    var watchGlob = [dirs.src.images + '**/*'];
-    config.sprites.items.forEach((spriteInfo) => {
-      watchGlob.push('!' + spriteInfo.imgSource);
-    });
-
-    watch(watchGlob, batch(function (events, done) {
-      //timeout for temp files to be erased
-      setTimeout(() => {
-        gulp.start('images', app.reload(done));
-      }, 500);
-    })).on('unlink', function(path) {
-      //TODO: handle images removal in dist dir
-    }).on('error', function(err) {
-      //console.error(err);
-    });
-  }
-
-  //views
-  if (dirs.src.views) {
-    watch([dirs.src.views + '**/*'], batch(function (events, done) {
-      gulp.start('views', app.reload(done));
-    })).on('error', function(err) {
-      //console.error(err);
-    });
-  }
-
-  //custom dirs
-  for (var dirName in dirs.custom) {
-    if (!dirs.custom.hasOwnProperty(dirName))
-      continue;
-
-    var dirInfo = dirs.custom[dirName];
-
-    ((dirInfo) => {
-      watch(dirInfo.from, batch(function (events, done) {
-        tasks.customDirs.run({ dirInfos: [dirInfo], cb: app.reload(done) });
-      })).on('error', function(err) {
-        //console.error(err);
-      });
-    })(dirInfo);
-  }
-
-  tasks.browserSync.run({ blockOpen: config.main.isRestart }).then(() => {
-    cb();
-  });
-});
-
-gulp.task('build', function(cb) {
-  var wasLocked = app.quit.wasLocked();
-  runSequence('clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs'], function() {
-    //just tu ensure all assets are ready
-    setTimeout(function() {
-      app.quit.finalize(wasLocked, cb);
-      browserSync.reload();
-    }, 1000);
-  });
-});
-
-
-
-//tasks container
-var tasks = {}
-
-//autoload tasks
-var tasksList = ['js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
+//autoload core tasks
+var tasksList = ['watch', 'js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
+var appData = { dirs: dirs, config: config, app: app, tasks: tasks, gulp: gulp, browserSync: browserSync, Injector: Injector };
 tasksList.forEach((t) => {
-  require(dirs.lib.tasks + t + '.js')({ dirs: dirs, config: config, app: app, tasks: tasks, Injector: Injector });
-})
+  require(dirs.lib.tasks + t + '.js')(appData);
+});
+
+
+//task registry
+taskReg = {
+  'default': {
+    deps: ['watch'],
+    blockQuitOnFinish: true
+  },
+
+  'start': {
+    deps: ['build', 'watch'],
+    blockQuitOnFinish: true
+  },
+
+  'watch': {
+    fn() {
+      return tasks.watch.run();
+    },
+    blockQuitOnFinish: true
+  },
+
+  'build': {
+    // fn() {
+    //   setTimeout(function() {
+    //     browserSync.reload();
+    //   }, 1000);
+
+    //   return Promise.resolve();
+    // },
+    deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs']]
+  },
+
+  'styles': {
+    fn() {
+      return tasks.styles.run({});
+    }
+  },
+
+  'fonts': {
+    fn() {
+      return tasks.fonts.run({});
+    }
+  },
+
+  'sprites': {
+    fn() {
+      var promises = [];
+
+      config.sprites.items.forEach(function(itemInfo) {
+        promises.push(tasks.sprites.run({ itemInfo: itemInfo }));
+      });
+
+      return Promise.all(promises);
+    }
+  },
+
+  'js:app': {
+    fn() {
+      var promises = [];
+
+      var comps = tasks.js.getComps().getContent();
+      for (var compId in comps) {
+        if (!comps.hasOwnProperty(compId))
+          continue;
+        var comp = comps[compId];
+
+        promises.push(tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: ''}));
+      }
+
+      return Promise.all(promises);
+    }
+  },
+
+  'js:vendor': {
+    fn() {
+      var promises = [];
+
+      var comps = tasks.js.getComps().getContent();
+      for (var compId in comps) {
+        if (!comps.hasOwnProperty(compId))
+          continue;
+
+        promises.push(tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '' }));
+      }
+
+      return Promise.all(promises);
+    }
+  },
+
+  'js': {
+    deps: ['js:vendor', 'js:app']
+  },
+
+  'images': {
+    fn() {
+      return tasks.images.run({});
+    }
+  },
+
+  'views': {
+    fn() {
+      return tasks.views.run({});
+    }
+  },
+
+  'custom-dirs': {
+    fn() {
+      return tasks.customDirs.run({});
+    }
+  },
+
+  'browser-sync': {
+    fn() {
+      return tasks.browserSync.run({});
+    }
+  },
+
+  'clean': {
+    fn() {
+      return tasks.clean.run({});
+    }
+  }
+}
+
+//register tasks
+for (let taskName in taskReg) {
+  if (!taskReg.hasOwnProperty(taskName))
+    continue;
+  let taskData = taskReg[taskName],
+      deps = taskData.deps;
+
+  if (deps) {
+    if (!(deps instanceof Array))
+      deps = [deps];
+
+    gulp.task(taskName, function(cb) {
+      runSequence.apply(runSequence, deps.concat([() => {
+        let promise;
+        if (taskData.fn) {
+          promise = taskData.fn();
+        }
+        else {
+          promise = Promise.resolve();
+        }
+        promise.then(() => {
+          cb();
+          if (!taskData.blockQuitOnFinish) {
+            app.quitIfInvoked(taskName);
+          }
+        });
+
+        return promise;
+      }]));
+    });
+  }
+  else {
+    gulp.task(taskName, () => {
+      let promise;
+      if (taskData.fn) {
+        promise = taskData.fn();
+      }
+      else {
+        promise = Promise.resolve();
+      }
+
+      promise.then(() => {
+        if (!taskData.blockQuitOnFinish) {
+          app.quitIfInvoked(taskName);
+        }
+      });
+      return promise;
+    });
+  }
+}
+
+/* MAIN TASKS */
+// gulp.task('default', ['watch']);
+
+
+// gulp.task('start', function(cb) {
+//   runSequence('build', 'watch', cb);
+// });
+
+// gulp.task('watch', function(cb) {
+//   tasks.watch.run({ cb: cb });
+// });
+
+// gulp.task('build', function(cb) {
+//   runSequence('clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs'], function() {
+//     //just tu ensure all assets are ready
+//     setTimeout(function() {
+//       app.quitIfInvoked('build', cb);
+//       browserSync.reload();
+//     }, 1000);
+//   });
+// });
 
 
 
 /* STYLES */
-gulp.task('styles', function() {
-  return tasks.styles.run({})
-    .pipe(browserSync.stream());
-});
+// gulp.task('styles', function() {
+//   return tasks.styles.run({});
+// });
 
-gulp.task('fonts', function() {
-  return tasks.fonts.run({});
-});
+// gulp.task('fonts', function() {
+//   return tasks.fonts.run({});
+// });
 
-gulp.task('sprites', function() {
-  var ret = [];
+// gulp.task('sprites', function() {
+//   var promises = [];
 
-  config.sprites.items.forEach(function(itemInfo) {
-    ret.push(tasks.sprites.run({ itemInfo: itemInfo, cb: null }));
-  });
+//   config.sprites.items.forEach(function(itemInfo) {
+//     promises.push(tasks.sprites.run({ itemInfo: itemInfo }));
+//   });
 
-  return merge.apply(null, ret);
-});
+//   return Promise.all(promises);
+// });
 
 
-/* JS SCRIPTS */
-gulp.task('js:app', function() {
-  var promises = [];
+// /* JS SCRIPTS */
+// gulp.task('js:app', function() {
+//   var promises = [];
 
-  var comps = tasks.js.getComps().getContent();
-  for (var compId in comps) {
-    if (!comps.hasOwnProperty(compId))
-      continue;
-    var comp = comps[compId];
+//   var comps = tasks.js.getComps().getContent();
+//   for (var compId in comps) {
+//     if (!comps.hasOwnProperty(compId))
+//       continue;
+//     var comp = comps[compId];
 
-    promises.push(new Promise((resolve, reject) => {
-      tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: '', cb: resolve });
-    }));
-  }
+//     promises.push(tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: ''}));
+//   }
 
-  return Promise.all(promises);
-});
+//   return Promise.all(promises);
+// });
 
-gulp.task('js:vendor', function() {
-  var promises = [];
+// gulp.task('js:vendor', function() {
+//   var promises = [];
 
-  var comps = tasks.js.getComps().getContent();
-  for (var compId in comps) {
-    if (!comps.hasOwnProperty(compId))
-      continue;
+//   var comps = tasks.js.getComps().getContent();
+//   for (var compId in comps) {
+//     if (!comps.hasOwnProperty(compId))
+//       continue;
 
-    promises.push(new Promise((resolve, reject) => {
-      tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '', cb: resolve });
-    }));
-  }
+//     promises.push(tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '' }));
+//   }
 
-  return Promise.all(promises);
-});
+//   return Promise.all(promises);
+// });
 
-gulp.task('js', function(cb) {
-  return runSequence('js:vendor', 'js:app', cb);
-});
+// gulp.task('js', function(cb) {
+//   return runSequence('js:vendor', 'js:app', cb);
+// });
 
 
 /* IMAGES */
-gulp.task('images', function() {
-  return tasks.images.run({});
-});
+// gulp.task('images', function() {
+//   return tasks.images.run({});
+// });
 
 
 
 /* VIEWS */
-gulp.task('views', function() {
-  if (dirs.src.views) {
+/*gulp.task('views', function() {
+  // if (dirs.src.views) {
     return tasks.views.run({});
-  }
-  else {
-    return Promise.resolve();
-  }
+  // }
+  // else {
+  //   return Promise.resolve();
+  // }
 });
-
+*/
 
 
 /* CUSTOM DIRS */
-gulp.task('custom-dirs', function(cb) {
+/*gulp.task('custom-dirs', function(cb) {
   return tasks.customDirs.run({});
 });
-
+*/
 
 
 /* CLEAN DIST FOLDERS */
-gulp.task('clean', function(cb) {
-  var wasLocked = app.quit.wasLocked();
+/*gulp.task('clean', function(cb) {
+  //var wasLocked = app.quit.wasLocked();
   tasks.clean.run({}).then(function() {
-    app.quit.finalize(wasLocked, cb);
+    app.quitIfInvoked('clean', cb);
+    //app.quit.finalize(wasLocked, cb);
   })
 });
-
+*/
 
 /* BROWSER SYNC */
-gulp.task('browser-sync', function() {
-  return tasks.browserSync.run({});
-});
+// gulp.task('browser-sync', function() {
+//   return tasks.browserSync.run({});
+// });
