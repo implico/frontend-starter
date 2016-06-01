@@ -151,7 +151,10 @@ module.exports = function(appDir) {
     //     limit: true, //gulp-changed plugin
     //     dest: true,
 
-    //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second
+    //     //watch task, receives undefined and { id, dirInfo } with id and definition as a second parameter
+    //     watch: true,
+
+    //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second parameter
     //     //not needed to disable if "to" is null
     //     clean: true
     //   }

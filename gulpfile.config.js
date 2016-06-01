@@ -335,6 +335,27 @@ module.exports = function(dirs) {
           cache: false
         }
       }
+    },
+
+    watch: {
+      inject: {
+        init: true,
+        styles: true,
+        fonts: true,
+        sprites: true,
+        js: true,
+        jsApp: true,
+        jsVendor: true,
+        images: true,
+        views: true,
+        finish: true
+      },
+
+      dev: {
+      },
+
+      prod: {
+      }
     }
   }
 
@@ -361,7 +382,7 @@ module.exports = function(dirs) {
   }
   catch (ex) {
     noCustomFile = true;
-    console.error('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ').');
+    console.error('Frontend-starter warning: no custom config definitions file present (' + dirs.customConfig.configFile + ')');
   }
 
   //custom config file - require

@@ -162,7 +162,7 @@ var app = {
       });
     },
 
-    //utility for removeDep()
+    //helper for removeDep()
     removeDepArray(taskName, array) {
       if (array instanceof Array) {
         var index = array.indexOf(taskName);
@@ -174,6 +174,28 @@ var app = {
         }
       }
       return array;
+    },
+
+    removeTask: function(taskName) {
+      if (taskReg[taskName]) {
+        delete taskReg[taskName];
+        this.removeDep(taskName, true);
+        if (['styles', 'fonts', 'sprites', 'js', 'images', 'views', 'lint'].indexOf(taskName) >= 0) {
+          if (config.watch.inject[taskName] === true) {
+            config.watch.inject[taskName] = false;
+          }
+          if (config.watch.dev && config.watch.dev.inject && config.watch.dev.inject[taskName] === true) {
+            config.watch.dev.inject[taskName] = false;
+          }
+          if (config.watch.prod && config.watch.prod.inject && config.watch.prod.inject[taskName] === true) {
+            config.watch.prod.inject[taskName] = false;
+          }
+        }
+      }
+      else {
+        console.err('Frontend-starter error: task to remove not found (' + taskName + ')');
+        exit(1);
+      }
     }
   }
 }
@@ -311,6 +333,8 @@ taskReg = {
     }
   }
 }
+
+app.taskReg.removeTask('js');
 
 //register tasks
 for (let taskName in taskReg) {
