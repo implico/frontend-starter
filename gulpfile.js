@@ -134,6 +134,16 @@ var app = {
   //taskReg utils
   taskReg: {
 
+    addDep(taskName, targetTaskName, relatedDepName, isBefore) {
+      if (taskReg[targetTaskName]) {
+        taskReg[targetTaskName].deps = this.addDepArray(taskReg[targetTaskName].deps, taskName, relatedDepName, isBefore);
+      }
+      else {
+        console.err('Frontend-starter error: task to add dependency not found (' + targetTaskName + ')');
+        exit(1);
+      }
+    },
+
     //removes task from target task deps
     //targetTaskNames: string (single task), array or true for all tasks
     removeDep(taskName, targetTaskNames) {
@@ -162,20 +172,6 @@ var app = {
       });
     },
 
-    //helper for removeDep()
-    removeDepArray(taskName, array) {
-      if (array instanceof Array) {
-        var index = array.indexOf(taskName);
-        if (index >= 0) {
-          delete array[index];
-          array = array.filter((dep) => {
-            return typeof dep !== 'undefined';
-          });
-        }
-      }
-      return array;
-    },
-
     removeTask: function(taskName) {
       if (taskReg[taskName]) {
         delete taskReg[taskName];
@@ -196,6 +192,55 @@ var app = {
         console.err('Frontend-starter error: task to remove not found (' + taskName + ')');
         exit(1);
       }
+    },
+
+    //helper for removeDep()
+    removeDepArray(taskName, array) {
+      if (array instanceof Array) {
+        var index = array.indexOf(taskName);
+        if (index >= 0) {
+          delete array[index];
+          array = array.filter((dep) => {
+            return typeof dep !== 'undefined';
+          });
+        }
+      }
+      return array;
+    },
+
+    //helper for addDep()
+    addDepArray(deps, taskName, relatedDepName, isBefore, startIndex) {
+      var _this = this;
+          //depsCopy = deps.slice(0);
+      startIndex = startIndex || 0;
+
+      deps.every((dep, index) => {
+        if (index >= startIndex) {
+
+          //add at the beginning
+          if (relatedDepName === true) {
+            deps.splice(0, 0, taskName);
+            return false;
+          }
+          //add at the end
+          else if (relatedDepName === false) {
+            if (index == (deps.length - 1)) {
+              deps.splice(index + 1, 0, taskName);
+              return false;
+            }
+          }
+          else if (dep instanceof Array) {
+            deps[index] = _this.addDepArray(deps[index], taskName, relatedDepName, isBefore);
+          }
+          else if (dep == relatedDepName) {
+            deps.splice(index + (isBefore ? 0 : 1), 0, taskName);
+            deps = _this.addDepArray(deps, taskName, relatedDepName, isBefore, index + 2);
+            return false;
+          }
+          return true;
+        }
+      });
+      return deps;
     }
   }
 }
@@ -334,7 +379,10 @@ taskReg = {
   }
 }
 
-app.taskReg.removeTask('js');
+// app.taskReg.removeTask('js');
+// app.taskReg.addDep('nowaDep', 'build', 'js', true);
+// console.log(taskReg.build.deps);
+// process.exit();
 
 //register tasks
 for (let taskName in taskReg) {
