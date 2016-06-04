@@ -1,7 +1,7 @@
 /**
   Frontend-starter
 
-  @author Bartosz Sak, Archas
+  @author Bartosz Sak
   
   https://github.com/implico/frontend-starter
   

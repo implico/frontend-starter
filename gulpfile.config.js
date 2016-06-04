@@ -1,7 +1,7 @@
 /**
   Frontend-starter
 
-  @author Bartosz Sak, Archas
+  @author Bartosz Sak
   
   https://github.com/implico/frontend-starter
   
@@ -126,7 +126,13 @@ module.exports = function(dirs) {
       sourceMaps: true,
       sourceMapsRoot: '/src/',
       concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
-      bowerFilter: ['**/*.js'],
+      babel: {
+        app: true,
+        vendor: false,
+        options: {
+          presets: ['es2015']
+        }
+      },
 
       comps: {
         main: {
@@ -154,12 +160,6 @@ module.exports = function(dirs) {
           excludeIn: false,
 
           watch: true  //not needed, watch blocked only if false
-        },
-
-        html5shiv: {
-          bower: ['html5shiv'],
-          excludeIn: true,
-          watch: false
         }
       },
 
@@ -172,16 +172,13 @@ module.exports = function(dirs) {
         overrides: {}
       },
       
-      jsHint: {
-        enable: false,
-        options: {},
-        reporter: 'default'
-      },
-
       inject: {
         //receive stream and an object { comp, ...} (see the source injectorData for more)
         src: true,
+        lint: true,
+        lintFailAfterError: true,
         sourceMapsInit: true,
+        babel: true,
         concat: true,
         sourceMapsWrite: true,
         minify: true,
@@ -278,6 +275,44 @@ module.exports = function(dirs) {
       dev: {
       },
       prod: {
+      }
+    },
+
+    lint: {
+
+      options: {
+        extends: 'eslint:recommended',
+        parserOptions: {
+          ecmaVersion: 6
+        },
+        envs: ['browser', 'jquery'],
+        globals: {
+          //allowed global variables
+        },
+        rules: {
+          //your ESLint rules here
+        }
+      },
+      formatParams: [], //parameters passed to format function
+      formatOnce: true, //use eslint.format() vs eslint.formatEach()
+
+      inject: {
+        src: true,
+        lint: true,
+        format: true,
+        finish: true
+      },
+
+      dev: {
+        options: {
+          rules: {
+            'no-console': 0
+          }
+        }
+      },
+
+      prod: {
+
       }
     },
 

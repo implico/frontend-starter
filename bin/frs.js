@@ -68,6 +68,10 @@ process.stdin.on('keypress', function(ch, key) {
         console.log('--- Invoked build development task from keyboard ---');
         spawnGulp('build');
         break;
+      case 'l':
+        console.log('--- Invoked lint task from keyboard ---');
+        spawnGulp('lint');
+        break;
     }
   }
 });
@@ -78,6 +82,7 @@ process.stdin.resume();
 console.log('Use keys:')
 console.log('Ctrl+P: build production');
 console.log('Ctrl+D: build development');
+console.log('Ctrl+L: lint');
 console.log('Ctrl+C: exit\n');
 
 

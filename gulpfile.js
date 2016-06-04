@@ -1,7 +1,7 @@
 /**
   Frontend-starter
 
-  @author Bartosz Sak, Archas
+  @author Bartosz Sak
   
   https://github.com/implico/frontend-starter
   
@@ -21,7 +21,7 @@
     runs build and watch
 
   gulp build
-    cleans and compiles/builds the app (with -p: optimized for production)
+    cleans and builds the app (with -p: optimized for production)
 
   gulp watch
     runs watch with Browsersync
@@ -56,9 +56,6 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     Injector     = require(dirs.lib.main + 'injector'),
 
     browserSync  = require('browser-sync'),
-    merge        = require('merge-stream'),
-    runSequence  = require('run-sequence'),
-
     gulp         = require('gulp'),
     debug        = require('gulp-debug');
 
@@ -250,307 +247,10 @@ app.init();
 
 
 //autoload core tasks
-var tasksList = ['watch', 'js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'browserSync', 'clean'];
-var appData = { dirs: dirs, config: config, app: app, tasks: tasks, gulp: gulp, browserSync: browserSync, Injector: Injector };
+var tasksList = ['watch', 'js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'lint', 'browserSync', 'clean'];
+var appData = { dirs, config, app, tasks, taskReg, gulp, browserSync, Injector };
 tasksList.forEach((t) => {
   require(dirs.lib.tasks + t + '.js')(appData);
 });
 
-
-//task registry
-taskReg = {
-  'default': {
-    deps: ['watch'],
-    blockQuitOnFinish: true
-  },
-
-  'start': {
-    deps: ['build', 'watch'],
-    blockQuitOnFinish: true
-  },
-
-  'watch': {
-    fn() {
-      return tasks.watch.run();
-    },
-    blockQuitOnFinish: true
-  },
-
-  'build': {
-    // fn() {
-    //   setTimeout(function() {
-    //     browserSync.reload();
-    //   }, 1000);
-
-    //   return Promise.resolve();
-    // },
-    deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs']]
-  },
-
-  'styles': {
-    fn() {
-      return tasks.styles.run({});
-    }
-  },
-
-  'fonts': {
-    fn() {
-      return tasks.fonts.run({});
-    }
-  },
-
-  'sprites': {
-    fn() {
-      var promises = [];
-
-      config.sprites.items.forEach(function(itemInfo) {
-        promises.push(tasks.sprites.run({ itemInfo: itemInfo }));
-      });
-
-      return Promise.all(promises);
-    }
-  },
-
-  'js:app': {
-    fn() {
-      var promises = [];
-
-      var comps = tasks.js.getComps().getContent();
-      for (var compId in comps) {
-        if (!comps.hasOwnProperty(compId))
-          continue;
-        var comp = comps[compId];
-
-        promises.push(tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: ''}));
-      }
-
-      return Promise.all(promises);
-    }
-  },
-
-  'js:vendor': {
-    fn() {
-      var promises = [];
-
-      var comps = tasks.js.getComps().getContent();
-      for (var compId in comps) {
-        if (!comps.hasOwnProperty(compId))
-          continue;
-
-        promises.push(tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '' }));
-      }
-
-      return Promise.all(promises);
-    }
-  },
-
-  'js': {
-    deps: ['js:vendor', 'js:app']
-  },
-
-  'images': {
-    fn() {
-      return tasks.images.run({});
-    }
-  },
-
-  'views': {
-    fn() {
-      return tasks.views.run({});
-    }
-  },
-
-  'custom-dirs': {
-    fn() {
-      return tasks.customDirs.run({});
-    }
-  },
-
-  'browser-sync': {
-    fn() {
-      return tasks.browserSync.run({});
-    }
-  },
-
-  'clean': {
-    fn() {
-      return tasks.clean.run({});
-    }
-  }
-}
-
-// app.taskReg.removeTask('js');
-// app.taskReg.addDep('nowaDep', 'build', 'js', true);
-// console.log(taskReg.build.deps);
-// process.exit();
-
-//register tasks
-for (let taskName in taskReg) {
-  if (!taskReg.hasOwnProperty(taskName))
-    continue;
-  let taskData = taskReg[taskName],
-      deps = taskData.deps;
-
-  if (deps) {
-    if (!(deps instanceof Array))
-      deps = [deps];
-
-    gulp.task(taskName, function(cb) {
-      runSequence.apply(runSequence, deps.concat([() => {
-        let promise;
-        if (taskData.fn) {
-          promise = taskData.fn();
-        }
-        else {
-          promise = Promise.resolve();
-        }
-        promise.then(() => {
-          cb();
-          if (!taskData.blockQuitOnFinish) {
-            app.quitIfInvoked(taskName);
-          }
-        });
-
-        return promise;
-      }]));
-    });
-  }
-  else {
-    gulp.task(taskName, () => {
-      let promise;
-      if (taskData.fn) {
-        promise = taskData.fn();
-      }
-      else {
-        promise = Promise.resolve();
-      }
-
-      promise.then(() => {
-        if (!taskData.blockQuitOnFinish) {
-          app.quitIfInvoked(taskName);
-        }
-      });
-      return promise;
-    });
-  }
-}
-
-/* MAIN TASKS */
-// gulp.task('default', ['watch']);
-
-
-// gulp.task('start', function(cb) {
-//   runSequence('build', 'watch', cb);
-// });
-
-// gulp.task('watch', function(cb) {
-//   tasks.watch.run({ cb: cb });
-// });
-
-// gulp.task('build', function(cb) {
-//   runSequence('clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs'], function() {
-//     //just tu ensure all assets are ready
-//     setTimeout(function() {
-//       app.quitIfInvoked('build', cb);
-//       browserSync.reload();
-//     }, 1000);
-//   });
-// });
-
-
-
-/* STYLES */
-// gulp.task('styles', function() {
-//   return tasks.styles.run({});
-// });
-
-// gulp.task('fonts', function() {
-//   return tasks.fonts.run({});
-// });
-
-// gulp.task('sprites', function() {
-//   var promises = [];
-
-//   config.sprites.items.forEach(function(itemInfo) {
-//     promises.push(tasks.sprites.run({ itemInfo: itemInfo }));
-//   });
-
-//   return Promise.all(promises);
-// });
-
-
-// /* JS SCRIPTS */
-// gulp.task('js:app', function() {
-//   var promises = [];
-
-//   var comps = tasks.js.getComps().getContent();
-//   for (var compId in comps) {
-//     if (!comps.hasOwnProperty(compId))
-//       continue;
-//     var comp = comps[compId];
-
-//     promises.push(tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: ''}));
-//   }
-
-//   return Promise.all(promises);
-// });
-
-// gulp.task('js:vendor', function() {
-//   var promises = [];
-
-//   var comps = tasks.js.getComps().getContent();
-//   for (var compId in comps) {
-//     if (!comps.hasOwnProperty(compId))
-//       continue;
-
-//     promises.push(tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '' }));
-//   }
-
-//   return Promise.all(promises);
-// });
-
-// gulp.task('js', function(cb) {
-//   return runSequence('js:vendor', 'js:app', cb);
-// });
-
-
-/* IMAGES */
-// gulp.task('images', function() {
-//   return tasks.images.run({});
-// });
-
-
-
-/* VIEWS */
-/*gulp.task('views', function() {
-  // if (dirs.src.views) {
-    return tasks.views.run({});
-  // }
-  // else {
-  //   return Promise.resolve();
-  // }
-});
-*/
-
-
-/* CUSTOM DIRS */
-/*gulp.task('custom-dirs', function(cb) {
-  return tasks.customDirs.run({});
-});
-*/
-
-
-/* CLEAN DIST FOLDERS */
-/*gulp.task('clean', function(cb) {
-  //var wasLocked = app.quit.wasLocked();
-  tasks.clean.run({}).then(function() {
-    app.quitIfInvoked('clean', cb);
-    //app.quit.finalize(wasLocked, cb);
-  })
-});
-*/
-
-/* BROWSER SYNC */
-// gulp.task('browser-sync', function() {
-//   return tasks.browserSync.run({});
-// });
+require('./gulpfile.tasks.js')(appData);
