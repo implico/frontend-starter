@@ -41,8 +41,11 @@ module.exports = function(dirs) {
       inject: {
         src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         sourceMapsInit: true,
+        sassGlob: true,
         sass: true,
         autoprefixer: true,
+        optimizeMediaQueries: true,
+        optimize: true,
         sourceMapsWrite: true,
         dest: true,
         reload: true,
@@ -130,7 +133,8 @@ module.exports = function(dirs) {
         app: true,
         vendor: false,
         options: {
-          presets: ['es2015']
+          presets: ['es2015'],
+          plugins: []
         }
       },
 
@@ -175,7 +179,7 @@ module.exports = function(dirs) {
       inject: {
         //receive stream and an object { comp, ...} (see the source injectorData for more)
         src: true,
-        lint: true,
+        lint: false,
         lintFailAfterError: true,
         sourceMapsInit: true,
         babel: true,
