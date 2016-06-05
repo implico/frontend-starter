@@ -38,14 +38,18 @@ module.exports = function(dirs) {
       sass: {
       },
 
+      cssnano: {
+        safe: true
+      },
+
       inject: {
         src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         sourceMapsInit: true,
         sassGlob: true,
         sass: true,
         autoprefixer: true,
-        optimizeMediaQueries: true,
-        optimize: true,
+        optimizeMediaQueries: true, //group-css-media-queries
+        optimize: true,             //cssnano
         sourceMapsWrite: true,
         dest: true,
         reload: true,
@@ -53,14 +57,17 @@ module.exports = function(dirs) {
       },
 
       dev: {
-
         sass: {
           outputStyle: 'expanded'
+        },
+
+        inject: {
+          optimizeMediaQueries: false,
+          optimize: false
         }
       },
 
       prod: {
-
         sourceMaps: false,
 
         sass: {
@@ -222,7 +229,7 @@ module.exports = function(dirs) {
 
 
     images: {
-      optimize: {
+      imagemin: {
         optimizationLevel: 3,
         progressive: true,
         interlaced: true
@@ -247,20 +254,28 @@ module.exports = function(dirs) {
       },
 
       //compatibility fallback
-      imagemin: {}
+      optimize: {}
     },
 
 
     views: {
 
+      htmlmin: {
+        collapseWhitespace: true
+      },
+
       inject: {
-        src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
-        limit: true,  //gulp-changed plugin
+        src: true,      //function must return: a stream (if cancels) or a glob array passed to the src
+        limit: true,    //gulp-changed plugin
+        optimize: true, //htmlmin
         dest: true,
         finish: true
       },
 
       dev: {
+        inject: {
+          optimize: false
+        }
       },
 
       prod: {
