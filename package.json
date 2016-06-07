@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 5.0.0"
+    "node": ">= 4.0.0"
   },
   "keywords": [
     "gulp",
@@ -23,6 +23,7 @@
     "gulpfile.js",
     "gulpfile.dirs.js",
     "gulpfile.config.js",
+    "gulpfile.tasks.js",
     "bin",
     "lib"
   ],
