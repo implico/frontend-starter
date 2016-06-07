@@ -7,7 +7,7 @@ Development is based on fully customizable bundles, which modify the core config
 
 ## About
 
-This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (named comps), no AMD-like build-in support.
+This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (named comps) - but you can still replace/adjust the `js` task to your needs.
 
 The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
 
@@ -16,13 +16,13 @@ What distinguishes this tool is basically:
 * core, including tasks, separated from your project code (as a global Node.js package):
   - you can update it independently and use new features
   - create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific project types (e.g. clients) with common configuration
-  - you don't have to run `npm install` and wait years to initialize a project - just start coding
+  - go back to a previous or other developer's project and use the same API
+  - you don't have to run `npm install` and wait to initialize a project - just start coding
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
 * by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
   - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
-* as you know, the standard `gulp.watch` does not see any new files, just changes; this framework uses [gulp-watch], so new file will also trigger a task
 * automatically creates sprites for defined directories (and you can use them responsively)
 * `clean` task does not remove the whole dist directory, but handles them separately; that's why you can mix your framework assets with files from other sources (e.g. backend)
 * provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, restart
@@ -31,7 +31,7 @@ Thanks to the above parameters, it is very easy to integrate with a backend appl
 
 The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs [gulp] in the framework directory (so it uses the core `gulpfile.js`), but gets the assets from (and builds to) the directories defined in your configuration files. So you can consider it as a kind of [gulp.js][gulp] pipeline.
 
-The result: you just develop fast. Modify/create new stylesheets or images and see your page automatically refreshing with changes. Put pictures into sprites dir and get all things done. Install or paste new JavaScript files and see the results instantly, with source maps. Use [Swig's][swig] template inheritance, includes and variables.
+The result: you just develop fast. Modify/create new stylesheets or images and see your page automatically refreshing with changes. Put pictures into sprites dir and get all things done. Install or paste new JavaScript files and see the results instantly, with source maps.
 
 
 ## Features

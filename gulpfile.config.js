@@ -69,10 +69,6 @@ module.exports = function(dirs) {
 
       prod: {
         sourceMaps: false,
-
-        sass: {
-          outputStyle: 'compressed'
-        }
       },
 
       //compatibility fallback, to be removed
@@ -87,6 +83,12 @@ module.exports = function(dirs) {
         limit: true,  //gulp-changed plugin
         dest: true,
         finish: true
+      },
+
+      dev: {
+      },
+      
+      prod: {
       }
     },
 

@@ -10,10 +10,12 @@
   "engines": {
     "node": ">= 5.0.0"
   },
+  "keywords": ["gulp", "builder"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/implico/frontend-starter.git"
   },
+  "preferGlobal": true,
   "files": [
     "gulpfile.js",
     "gulpfile.dirs.js",
