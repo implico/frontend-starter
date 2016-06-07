@@ -291,9 +291,9 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 [browsersync]: https://www.browsersync.io/
 [babel]: https://babeljs.io/
 [bower]: http://bower.io/
-[bundle-default]: https://github.com/implico/fs-bundle-default
-[bundle-default-dir]: https://github.com/implico/fs-bundle-default/blob/master/frs.dirs.js
-[bundle-default-config]: https://github.com/implico/fs-bundle-default/blob/master/frs.config.js
+[bundle-default]: https://github.com/implico/frs-bundle-default
+[bundle-default-dir]: https://github.com/implico/frs-bundle-default/blob/master/frs.dirs.js
+[bundle-default-config]: https://github.com/implico/frs-bundle-default/blob/master/frs.config.js
 [chokidar]: https://github.com/paulmillr/chokidar
 [eslint]: http://eslint.org/
 [gulp]: http://gulpjs.com/
