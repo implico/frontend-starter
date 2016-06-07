@@ -186,8 +186,8 @@ var app = {
         }
       }
       else {
-        console.err('Frontend-starter error: task to remove not found (' + taskName + ')');
-        exit(1);
+        console.error('Frontend-starter error: task to remove not found (' + taskName + ')');
+        process.exit(1);
       }
     },
 

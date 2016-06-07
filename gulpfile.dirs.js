@@ -34,7 +34,8 @@ module.exports = function(appDir) {
 
     customConfig: {
       dirsFile: '',
-      configFile: ''
+      configFile: '',
+      tasksFile: ''
     },
 
     src: {
@@ -69,6 +70,7 @@ module.exports = function(appDir) {
   //custom config files
   dirs.customConfig.dirsFile = 'frs.dirs.js';
   dirs.customConfig.configFile = 'frs.config.js';
+  dirs.customConfig.tasksFile = 'frs.tasks.js';
 
   dirs.app = appDir;
 

@@ -13,7 +13,8 @@
 
 */
 
-const runSequence = require('run-sequence');
+const fs          = require('fs'),
+      runSequence = require('run-sequence');
 
 
 module.exports = function(appData) {
@@ -25,13 +26,12 @@ module.exports = function(appData) {
       config = appData.config,
       app = appData.app,
       tasks = appData.tasks,
-      taskReg = appData.taskReg,
       gulp = appData.gulp,
       browserSync = appData.browserSync,
       Injector = appData.Injector;
 
   //task registry
-  taskReg = {
+  var taskReg = {
     'default': {
       deps: ['watch'],
       blockQuitOnFinish: true
@@ -151,12 +151,31 @@ module.exports = function(appData) {
     }
   }
 
+  //change the appData object
+  for (let taskName in taskReg) {
+    if (taskReg.hasOwnProperty(taskName)) {
+      appData.taskReg[taskName] = taskReg[taskName];
+    }
+  }
+
+  //custom tasks file
+  var noCustomFile = false;
+  try {
+    fs.accessSync(dirs.app + dirs.customConfig.tasksFile, fs.R_OK);
+  }
+  catch (ex) {
+    noCustomFile = true;
+  }
+  if (!noCustomFile) {
+    require(dirs.app + dirs.customConfig.tasksFile)(appData);
+  }
+
 
   //register tasks in gulp
-  for (let taskName in taskReg) {
-    if (!taskReg.hasOwnProperty(taskName))
+  for (let taskName in appData.taskReg) {
+    if (!appData.taskReg.hasOwnProperty(taskName))
       continue;
-    let taskData = taskReg[taskName],
+    let taskData = appData.taskReg[taskName],
         deps = taskData.deps;
 
     if (deps) {
