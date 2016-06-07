@@ -7,7 +7,7 @@ Development is based on fully customizable bundles, which modify the core config
 
 ## About
 
-This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (named comps) - but you can still replace/adjust the `js` task to your needs.
+This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (called comps) - but you can still replace/adjust the `js` task to your needs.
 
 The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
 
@@ -16,8 +16,8 @@ What distinguishes this tool is basically:
 * core, including tasks, separated from your project code (as a global Node.js package):
   - you can update it independently and use new features
   - create your own preconfigured starter-bundles, e.g. for AngularJS, React, Wordpress or just for specific project types (e.g. clients) with common configuration
-  - go back to a previous or other developer's project and use the same API
   - you don't have to run `npm install` and wait to initialize a project - just start coding
+  - after some time you can go back to an old or other developer's project and use the same API
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
 * by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
   - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
@@ -25,7 +25,7 @@ What distinguishes this tool is basically:
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
 * automatically creates sprites for defined directories (and you can use them responsively)
 * `clean` task does not remove the whole dist directory, but handles them separately; that's why you can mix your framework assets with files from other sources (e.g. backend)
-* provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, restart
+* provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, lint
 
 Thanks to the above parameters, it is very easy to integrate with a backend application, including non-RESTful/SPAs (Single Page Applications).
 
@@ -38,9 +38,9 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 The framework provides the following functionality via [gulp][gulp] plugins:
 * separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
-* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [JSHint][gulp-jshint], vendor dirs cache (concat only on change), custom packages (compositions)
-* Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
-* Views: [Swig template engine][swig] with [gulp-swig]
+* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [ESLint][eslint], [Babel][babel] (ES2015 support by default), vendor dirs cache (concat only on change), custom compositions (bundles)
+* Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, [sass-glob] (using globs in SASS imports), optimization: [group-css-media-queries][gulp-group-css-media-queries] and [cssnano][gulp-cssnano], use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
+* Views: optimized with [htmlmin][gulp-htmlmin]
 * Server: [Browsersync][browsersync] (automatic refreshing on every change)
 * easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
 
@@ -77,40 +77,33 @@ Use on of the available bundles (bootstrap configuration and asset structure) or
 Use the following tasks from the command line:
 
 
-### Dev build & watch together
-`frs dev`
+### Build & watch together
+`frs start`
 
-For your first run, or when you want to rebuild a clean dist version. This will run both `dev:build` and `dev:watch` tasks.
+For your first run, or when you want to rebuild a clean dist version. This will run both `build` and `watch` tasks.
 
 
 
 ### Watch - the default task
 `frs`
 or
-`frs dev:watch`
+`frs watch`
 
 Gulp watches for any changes in your src directory and runs the appropiate task.
 
 
 
 ### Build
-`frs dev:build`
+`frs build`
 
 Cleans and builds the dist version.
 
 
 
-### Production
-`frs prod`
+### Lint
+`frs lint`
 
-Prepares a production build (minified resources).
-
-
-
-### Production with preview
-`frs prod:preview`
-
-Same as `prod`, but additionally launches a Browsersync preview.
+Runs a linter (currently only [ESLint][eslint]).
 
 
 
@@ -120,26 +113,32 @@ Same as `prod`, but additionally launches a Browsersync preview.
 Cleans the dist directory.
 
 
+
+### Production
+`frs build -p`
+
+Add the `-p` parameter to any task, to get the optimized version. Or set `NODE_ENV` variable to `production` (e.g. `$ NODE_ENV=production frs build`).
+
+
+
 ### Restart
-To restart the builder without opening a new Browsersync window in the browser, add a `-r` parameter for the tasks: default (`dev:watch`) and `dev`, e.g.
+To restart the builder without opening a new Browsersync window in the browser, add a `-r` parameter for the tasks: default (`watch`) and `start`, e.g.
 
 ```
 frs -r
-frs dev -r
+frs start -r
 ```
 
 
 ### Partial tasks
-* common: `sprites`, `fonts`
-* dev: `styles:dev`, `js:dev`, `images:dev`, `views:dev`, `custom-dirs:dev`, `browser-sync:dev`
-* prod: `styles:prod`, `js:prod`, `images:prod`, `views:prod`, `custom-dirs:prod`, `browser-sync:prod`
+`styles`, `sprites`, `fonts`, `js`, `images`, `views`, `custom-dirs`, `browser-sync`
 
 
 ### Keyboard shortcuts
 While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
-* Ctrl+P: to build the prod version (init `prod` task)
-* Ctrl+D: to build the dev version (init `dev:build` task)
-* Ctrl+R: to restart watching (without opening new Browsersync window in the browser)
+* Ctrl+P: to build the production version (init `build -p` task)
+* Ctrl+D: to build the development version (init `build` task)
+* Ctrl+L: to run lint (init `lint` task)
 * Ctrl+C: to exit
 
 
@@ -217,26 +216,25 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
-All configuration definitions are placed in core files: `gulpfile.dirs.js` and `gulpfile.config.js`. See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
+All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
 
 
 ### Directories
-You can see the default definitons of each directory in the `gulpfile.dirs.js` file. The `fs.dirs.custom.js` is included in three stages:
+You can see the default definitons of each directory in the [gulpfile.dirs.js](gulpfile.dirs.js) file. The `frs.dirs.js` is included in 2 stages:
 
-* right after defining the src directory (so you can change it and the value will populate to src subdirectories like images, styles...)
-* right after defining the dist directory (simiralry as in the previous case or for change some src directories)
-* at the end (to change some dist directories or set custom dirs). See the [default bundle dir config][bundle-default-dir].
+* right after defining the src and dist directory (so you can change it and the value will populate to subdirectories like images, styles...)
+* at the end (to change particular src/dist directories or set custom dirs). See the [default bundle dir config][bundle-default-dir].
 
 
 ### Config object
-See the `gulpfile.config.js` file. `config` object contains configuration parameters divided into key sections. Most of them have subsets, with options applied according to the environment mode: `common` (all), `dev` and `prod`.
+See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains configuration parameters divided into key sections. Use the subsets to target specific environment mode: `dev` and `prod`.
 
 * *styles*: sourcemap generation, [gulp-autoprefixer] and [gulp-sass] options
 * *sprites*: you can generate multiple sprite files by adding subsequent elements to the `items` array
 * *js*: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
-* *views*: [gulp-swig] options
+* *views*: [gulp-htmlmin] options
 * *images*: [imagemin][gulp-imagemin] options
 * *browserSync*: [Browsersync][browsersync] options
 * *clean*: modify deletion options
@@ -270,15 +268,20 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 <br>
 ## TODO
-* take advantage of [cssnano](https://github.com/ben-eb/cssnano), [HTMLMinifier](https://github.com/kangax/html-minifier)
-* [Babel](https://babeljs.io/) support
-* full task customization based on hooks (injected for every task step, allowing to modify or remove it)
-* ability to register custom tasks with key shortcuts
+- [x] take advantage of [cssnano][gulp-cssnano], [htmlmin][gulp-htmlmin]
+- [x] supporting [Babel][babel]
+- [x] full task customization based on hooks (injected for every task step, allowing to modify or remove it)
+- [x] ability to register custom tasks
+- [ ] custom tasks key shortcuts
+- [ ] unit tests task
+- [ ] unit tests for the framework
+- [ ] plugins API
+
 
 
 <br>
 ## Known issues
-* to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restarting by Ctrl+R); depends on [Chokidar][chokidar]
+* to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restart); depends on [Chokidar][chokidar]
 
 
 
@@ -286,16 +289,21 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 [angularjs]: https://angularjs.org/
 [browsersync]: https://www.browsersync.io/
+[babel]: https://babeljs.io/
 [bower]: http://bower.io/
 [bundle-default]: https://github.com/implico/fs-bundle-default
-[bundle-default-dir]: https://github.com/implico/fs-bundle-default/blob/master/fs.dirs.custom.js
-[bundle-default-config]: https://github.com/implico/fs-bundle-default/blob/master/fs.config.custom.js
+[bundle-default-dir]: https://github.com/implico/fs-bundle-default/blob/master/frs.dirs.js
+[bundle-default-config]: https://github.com/implico/fs-bundle-default/blob/master/frs.config.js
 [chokidar]: https://github.com/paulmillr/chokidar
+[eslint]: http://eslint.org/
 [gulp]: http://gulpjs.com/
 [gulp-autoprefixer]: https://github.com/sindresorhus/gulp-autoprefixer
 [gulp-concat]: https://github.com/contra/gulp-concat
+[gulp-cssnano]: https://github.com/ben-eb/gulp-cssnano
 [gulp-imagemin]: https://github.com/sindresorhus/gulp-imagemin
-[gulp-jshint]: https://github.com/spalger/gulp-jshint
+[gulp-group-css-media-queries]: https://github.com/avaly/gulp-group-css-media-queries
+[gulp-eslint]: https://github.com/adametry/gulp-eslint
+[gulp-htmlmin]: https://github.com/jonschlinkert/gulp-htmlmin
 [gulp-sass]: https://github.com/dlmanning/gulp-sass
 [gulp-sourcemaps]: https://github.com/floridoo/gulp-sourcemaps
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
@@ -309,4 +317,5 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 [sass]: http://sass-lang.com/
 [sass-breakpoint]: http://breakpoint-sass.com/
 [sass-core]: https://github.com/implico/sass-core
+[sass-glob]: https://github.com/tomgrooffer/gulp-sass-glob
 [swig]: http://paularmstrong.github.io/swig/
