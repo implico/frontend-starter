@@ -117,6 +117,14 @@ var app = {
     return stream;
   },
 
+  //dummy workaround for not accepting empty globs by gulp.src
+  sanitizeGlob(glob) {
+    if ((glob instanceof Array) && (glob.length === 0)) {
+      glob = ['_835e99fa880c36c1828e55361d228fab/*']; //non-existing dir
+    }
+    return glob;
+  },
+
   //aux: reloads Browsersync and calls the callback
   reload: function(cb) {
     var _this = this;
