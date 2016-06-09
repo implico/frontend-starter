@@ -2,7 +2,7 @@
 
 Frontend gulp builder. A prepared, configurable [gulp][gulp] environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
-Development is based on fully customizable bundles, which modify the core configuration and provide directory structure. The [default bundle][bundle-default] adds [Bower][bower] support and useful [SASS][sass] mixins ([SASS-core][sass-core]).
+Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
 
 
 ## About
@@ -36,7 +36,7 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 
 ## Features
 The framework provides the following functionality via [gulp][gulp] plugins:
-* separate source and distribution directories (configurable path), watching for new/changed files using [gulp-watch]
+* separate source and distribution directories (configurable path), watching for new/changed files
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
 * JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [ESLint][eslint], [Babel][babel] (ES2015 support by default), vendor dirs cache (concat only on change), custom compositions (bundles)
 * Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, [sass-glob] (using globs in SASS imports), optimization: [group-css-media-queries][gulp-group-css-media-queries] and [cssnano][gulp-cssnano], use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
@@ -309,7 +309,6 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 [gulp-spritesmith]: https://github.com/twolfson/gulp.spritesmith
 [gulp-swig]: https://github.com/colynb/gulp-swig
 [gulp-uglify]: https://github.com/terinjokes/gulp-uglify
-[gulp-watch]: https://github.com/floatdrop/gulp-watch
 [main-bower-files]: https://github.com/ck86/main-bower-files
 [minimatch]: https://github.com/isaacs/minimatch
 [nodejs]: https://nodejs.org/

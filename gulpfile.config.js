@@ -52,8 +52,8 @@ module.exports = function(dirs) {
         optimize: true,             //cssnano
         sourceMapsWrite: true,
         dest: true,
-        reload: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -82,7 +82,8 @@ module.exports = function(dirs) {
         src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
         limit: true,  //gulp-changed plugin
         dest: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -120,7 +121,8 @@ module.exports = function(dirs) {
         imgDest: true,
         cssSrc: true,
         cssDest: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -197,8 +199,8 @@ module.exports = function(dirs) {
         minify: true,
         concatVendorApp: true,
         dest: true,
-        reload: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -242,7 +244,8 @@ module.exports = function(dirs) {
         limit: true,    //gulp-changed plugin
         optimize: true,
         dest: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -271,7 +274,8 @@ module.exports = function(dirs) {
         limit: true,    //gulp-changed plugin
         optimize: true, //htmlmin
         dest: true,
-        finish: true
+        finish: true,
+        reload: true
       },
 
       dev: {
@@ -290,8 +294,9 @@ module.exports = function(dirs) {
 
     customDirs: {
       inject: {
-        init: true, //receives the object of custom directory definitions
-        finish: true  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
+        init: true,    //receives the object of custom directory definitions
+        finish: true,  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
+        reload: true
       },
       dev: {
       },

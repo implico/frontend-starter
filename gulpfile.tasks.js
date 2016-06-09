@@ -13,8 +13,8 @@
 
 */
 
-const fs          = require('fs'),
-      runSequence = require('run-sequence');
+const fs          = require('fs');
+      //runSequence = require('run-sequence');
 
 
 module.exports = function(appData) {
@@ -32,25 +32,11 @@ module.exports = function(appData) {
 
   //task registry
   var taskReg = {
-    'default': {
-      deps: ['watch'],
-      blockQuitOnFinish: true
-    },
-
-    'start': {
-      deps: ['build', 'watch'],
-      blockQuitOnFinish: true
-    },
-
     'watch': {
       fn() {
         return tasks.watch.run();
       },
       blockQuitOnFinish: true
-    },
-
-    'build': {
-      deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs']]
     },
 
     'styles': {
@@ -148,6 +134,20 @@ module.exports = function(appData) {
       fn() {
         return tasks.clean.run({});
       }
+    },
+
+    'default': {
+      deps: ['watch'],
+      blockQuitOnFinish: true
+    },
+
+    'build': {
+      deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs']]
+    },
+
+    'start': {
+      deps: ['build', 'watch'],
+      blockQuitOnFinish: true
     }
   }
 
@@ -178,49 +178,61 @@ module.exports = function(appData) {
     let taskData = appData.taskReg[taskName],
         deps = taskData.deps;
 
-    if (deps) {
-      if (!(deps instanceof Array))
-        deps = [deps];
-
-      gulp.task(taskName, function(cb) {
-        runSequence.apply(runSequence, deps.concat([() => {
-          let promise;
-          if (taskData.fn) {
-            promise = taskData.fn();
-          }
-          else {
-            promise = Promise.resolve();
-          }
-          promise.then(() => {
-            cb();
-            if (!taskData.blockQuitOnFinish) {
+    deps = deps || [];
+    if (taskData.fn) {
+      if (!taskData.blockQuitOnFinish) {
+        deps.push(() => {
+          return taskData.fn().then(() => {
+            setTimeout(() => {
               app.quitIfInvoked(taskName);
-            }
+            }, 0);
           });
-
-          return promise;
-        }]));
-      });
+        });
+      }
+      else {
+        deps.push(taskData.fn);
+      }
     }
-    else {
-      gulp.task(taskName, () => {
-        let promise;
-        if (taskData.fn) {
-          promise = taskData.fn();
-        }
-        else {
-          promise = Promise.resolve();
-        }
 
-        promise.then(() => {
+    if (deps.length) {
+      let gulpParams = [];
+          //curSeries = null;
+      for (let depIndex = 0; depIndex < deps.length; depIndex++) {
+        let curDep = deps[depIndex];
+        // if (curSeries && ((curDep instanceof Array) || (depIndex == (deps.length - 1)))) {
+        //   gulpParams.push(gulp.parallel.apply(gulp, curSeries));
+        //   curSeries = null;
+        // }
+        if ((typeof curDep == 'string') || (typeof curDep == 'function')) {
+          // curSeries = curSeries || [];
+          gulpParams.push(curDep);
+        }
+        else if (curDep instanceof Array) {
+          gulpParams.push(gulp.parallel.apply(gulp, curDep));
+        }
+      }
+
+      if (!taskData.fn) {
+        let finalizeFn = function () {
           if (!taskData.blockQuitOnFinish) {
             setTimeout(() => {
               app.quitIfInvoked(taskName);
             }, 0);
           }
-        });
-        return promise;
-      });
+
+          return Promise.resolve();
+        }
+        finalizeFn.displayName = 'finalize ' + taskName;
+        gulpParams.push(finalizeFn);
+      }
+
+      if ((gulpParams.length == 1) && (typeof gulpParams[0] == 'function')) {
+        //only one function
+        gulp.task(taskName, gulpParams[0]);
+      }
+      else {
+        gulp.task(taskName, gulp.series.apply(gulp, gulpParams));
+      }
     }
   }
 }
