@@ -20,7 +20,7 @@ What distinguishes this tool is basically:
   - after some time you can go back to an old or other developer's project and use the same API
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
 * by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
-  - adding any new file using [Bower][bower], manually placing any package into `vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
+  - adding any new file using [Bower][bower], manually placing any package into `_vendor` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
 * automatically creates sprites for defined directories (and you can use them responsively)
@@ -153,7 +153,7 @@ See your [bundle](#bundles) docs.
 
 ### JavaScript
 
-You can use [Bower][bower], place any file into the `src/js/vendor` directory or create any file in `src/js`. By default, they will be merged into single `app.js` file (in the above order).
+You can use [Bower][bower], place any file into the `src/js/_vendor` directory or create any file in `src/js`. By default, they will be merged into single `app.js` file (in the above order).
 
 #### JavaScript compositions
 
