@@ -144,7 +144,7 @@ module.exports = function(dirs) {
         app: true,
         vendor: false,
         options: {
-          presets: ['es2015'],
+          presets: ['es2015-without-strict'],
           plugins: []
         }
       },

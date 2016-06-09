@@ -118,7 +118,7 @@ module.exports = function(appDir) {
   dirs.src.fonts = dirs.src.main + 'fonts/';
 
   dirs.src.js.main = dirs.src.main + 'js/';
-  dirs.src.js.vendor = dirs.src.js.main + 'vendor/';
+  dirs.src.js.vendor = dirs.src.js.main + '_vendor/';
   dirs.src.js.app = dirs.src.js.main;
 
   dirs.src.images = dirs.src.main + 'img/';
