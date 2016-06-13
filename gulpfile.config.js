@@ -39,7 +39,9 @@ module.exports = function(dirs) {
       },
 
       cssnano: {
-        safe: true
+        safe: true,
+        mergeIdents: false,
+        discardUnused: false
       },
 
       inject: {
