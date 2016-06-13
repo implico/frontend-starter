@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
   "description": "A simple frontend builder.",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "author": {
     "name": "Bartosz Sak",
     "email": "bartosz.sak@gmail.com"
