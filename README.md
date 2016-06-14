@@ -241,7 +241,7 @@ See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains 
 
 See the [default bundle custom config][bundle-default-config] for examples.
 
-#### Modifying tasks
+#### Customizing core tasks
 Each gulp pipeline step has a kind of hook, that allows to inject own code and/or disable default stream transformation. Consider the following configuration code for `styles` task:
 
 ```js
@@ -316,9 +316,9 @@ Available properties available from within the inject function are:
 - `this.isDev`: indicates whether dev or prod mode
 
 
-### Tasks
+### Adding/removing tasks
 
-All core tasks are organized in the `taskReg` object. Consider the following example definition that may be placed in the `frs.tasks.js` file:
+All tasks to be registered in gulp are organized in the `taskReg` object. Consider the following example definition that may be placed in the `frs.tasks.js` file:
 
 ```js
 appData.taskReg['mytask'] = {
@@ -337,6 +337,8 @@ appData.taskReg['mytask'] = {
   // blockQuitOnFinish: true  //set this option only for permanent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
 }
 ```
+
+This adds `mytask` task, that copies contents of images dir to somewhere.
 
 The `deps` is an array of tasks invoked before. It follows the [run-sequence](https://github.com/OverZealous/run-sequence#usage) convention: by default tasks are run synchronously (one by one), but placing them in an array will allow to run asynchronously (at once). In the above example, `js` and `views` will run in parallel after `clean` is complete. This notation is converted internally to gulp 4's [series](https://github.com/gulpjs/gulp/blob/4.0/docs/API.md#gulpseriestasks)/[parallel](https://github.com/gulpjs/gulp/blob/4.0/docs/API.md#gulpparalleltasks).
 
@@ -364,7 +366,7 @@ appData.app.taskRegUtils.removeDep('images', 'build');
 appData.app.taskRegUtils.removeDep('images', true);
 ```
 
-See the default tasks registry in [gulpfile.tasks.js](gulpfile.tasks.js).
+See the core tasks registry definitions in [gulpfile.tasks.js](gulpfile.tasks.js).
 
 
 
@@ -391,7 +393,7 @@ If you want to have mapping for Bower files, follow the same instructions for th
 <br />
 ## Standalone (local) version
 
-To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the higher-level directory (`../`).
+To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the parent directory (`../`).
 
 
 <br>
