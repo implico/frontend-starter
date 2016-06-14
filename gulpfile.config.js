@@ -28,7 +28,7 @@ module.exports = function(dirs) {
 
     styles: {
 
-      sourceMaps: true,
+      sourceMaps: false,
       sourceMapsRoot: '/src/styles/',
 
       autoprefixer: {
@@ -59,6 +59,7 @@ module.exports = function(dirs) {
       },
 
       dev: {
+        sourceMaps: true,
         sass: {
           outputStyle: 'expanded'
         },
@@ -70,7 +71,6 @@ module.exports = function(dirs) {
       },
 
       prod: {
-        sourceMaps: false,
       },
 
       //compatibility fallback, to be removed
@@ -139,7 +139,7 @@ module.exports = function(dirs) {
 
 
     js: {
-      sourceMaps: true,
+      sourceMaps: false,
       sourceMapsRoot: '/src/',
       concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
       babel: {
@@ -192,31 +192,27 @@ module.exports = function(dirs) {
       inject: {
         //receive stream and an object { comp, ...} (see the source injectorData for more)
         src: true,
-        lint: false,
-        lintFailAfterError: true,
+        lint: false,              //run linter
+        lintFailAfterError: true, //if true and lint is not canceled, fails the build if errored
         sourceMapsInit: true,
         babel: true,
         concat: true,
         sourceMapsWrite: true,
         minify: true,
-        concatVendorApp: true,
+        concatVendorApp: true,    //on prepending vendor before app code
         dest: true,
         finish: true,
         reload: true
       },
 
       dev: {
+        sourceMaps: true,
         inject: {
-          minify: false
+          minify: false   //disable minify for dev
         }
       },
 
       prod: {
-        sourceMaps: false,
-
-        jsHint: {
-          enable: false
-        }
       },
 
       //compatibility fallback, to be removed

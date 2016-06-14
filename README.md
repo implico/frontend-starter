@@ -218,7 +218,7 @@ You can setup custom directories to watch (and optionally copy). For example, if
 ## Directories and configuration
 All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
-To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
+To change the defaults, edit the `frs.dirs.js`, `frs.config.js` and `frs.tasks.js` files located in your bundle root directory.
 
 
 ### Directories
@@ -239,7 +239,135 @@ See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains 
 * *browserSync*: [Browsersync][browsersync] options
 * *clean*: modify deletion options
 
-See the [default bundle custom config][bundle-default-config].
+See the [default bundle custom config][bundle-default-config] for examples.
+
+#### Modifying tasks
+Each gulp pipeline step has a kind of hook, that allows to inject own code and/or disable default stream transformation. Consider the following configuration code for `styles` task:
+
+```js
+var config = {
+  // (...)
+  styles: {
+    // (...)
+    inject: {
+      src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
+      sourceMapsInit: true,
+      sassGlob: true,
+      sass: true,
+      autoprefixer: true,
+      optimizeMediaQueries: true, //group-css-media-queries
+      optimize: true,             //cssnano
+      sourceMapsWrite: true,
+      dest: true,
+      finish: true,
+      reload: true
+    },
+
+    dev: {
+      // (...)
+      inject: {
+        optimizeMediaQueries: false,
+        optimize: false
+      }
+    }
+// (...)
+
+```
+
+To remove any of above steps, set the inject config value to `false`:
+
+```js
+config.styles.inject.optimizeMediaQueries = false;
+```
+
+To add any transformation before the step, or replace it, assign it to a function:
+
+```js
+var cleanCss = require('gulp-clean-css');
+config.styles.inject.optimize = function(stream, name) {
+  // stream: current stream
+  // name: injection name
+  stream = stream.pipe(cleanCss());
+
+  // return stream;   //if you don't want to cancel the original step
+
+  // but we want to cancel the default step (cssnano)
+  return this.cancel(stream);
+}
+```
+
+This replaces [gulp-cssnano] with [gulp-clean-css](https://github.com/scniro/gulp-clean-css) (you have to run `npm install gulp-clean-css --save-dev` first).
+
+
+The `src` injects are handled a bit differenlty. When the function returns a truthy value:
+
+- if default step is canceled, the value is used as a stream (instead of `gulp.src`)
+- if default step is not canceled, this value is used as a glob for `gulp.src`
+
+If it returns a falsy value and cancels the default step, whole task is canceled (the task returns a resolved Promise).
+
+For the `clean` task, the inject function receives current glob array with paths to be removed (assigned incrementally).
+
+Available properties available from within the inject function are:
+
+- `this.task`: task name
+- `this.appData`: an object `{ dirs, config, app, tasks, taskReg, gulp, browserSync }`
+- `this.taskParams`: an object with task paramters (common param for all tasks is `isWatch` that indicates that it was called by the watcher; see the tasks source for other params, defined at the beginning of the run method)
+- `this.isDev`: indicates whether dev or prod mode
+
+
+### Tasks
+
+All core tasks are organized in the `taskReg` object. Consider the following example definition that may be placed in the `frs.tasks.js` file:
+
+```js
+appData.taskReg['mytask'] = {
+  fn() {
+    var stream = appData.gulp.src(appData.dirs.src.images)
+      .pipe(appData.gulp.dest('/some-dir'));
+
+    //you can also access config, e.g. check if dev vs. prod mode
+    //console.log(appData.config.main.isDev);
+
+    //currently all tasks must return a promise
+    return appData.app.streamToPromise(stream);
+  },
+  deps: ['clean', ['js', 'views']],
+
+  // blockQuitOnFinish: true  //set this option only for permanent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
+}
+```
+
+The `deps` is an array of tasks invoked before. It follows the [run-sequence](https://github.com/OverZealous/run-sequence#usage) convention: by default tasks are run synchronously (one by one), but placing them in an array will allow to run asynchronously (at once). In the above example, `js` and `views` will run in parallel after `clean` is complete. This notation is converted internally to gulp 4's [series](https://github.com/gulpjs/gulp/blob/4.0/docs/API.md#gulpseriestasks)/[parallel](https://github.com/gulpjs/gulp/blob/4.0/docs/API.md#gulpparalleltasks).
+
+To add a task as a dependency to an existing task, use the helper:
+
+```js
+//appData.app.taskRegUtils.addDep(taskToAdd, targetTask, relatedTask, isBefore);
+appData.app.taskRegUtils.addDep('mytask', 'build', 'images', true);*/
+```
+
+The above code adds `mytask` to the `build` pipeline, before `images` (last parameter defines the placement, for false it would be placed after).
+
+To replace the original (core) task, just override its `appData.taskReg` definition.
+
+To remove a core task, or remove a dependency, use the helpers:
+
+```js
+// removes views task (and from all tasks' depenedencies)
+appData.app.taskRegUtils.removeTask('views');
+
+// removes images dependency from build task
+appData.app.taskRegUtils.removeDep('images', 'build');
+
+// removes images dependency from any task
+appData.app.taskRegUtils.removeDep('images', true);
+```
+
+See the default tasks registry in [gulpfile.tasks.js](gulpfile.tasks.js).
+
+
+
 
 
 <br>
