@@ -28,7 +28,7 @@ module.exports = function(dirs) {
 
     styles: {
 
-      sourceMaps: true,
+      sourceMaps: false,
       sourceMapsRoot: '/src/styles/',
 
       autoprefixer: {
@@ -39,7 +39,9 @@ module.exports = function(dirs) {
       },
 
       cssnano: {
-        safe: true
+        safe: true,
+        mergeIdents: false,
+        discardUnused: false
       },
 
       inject: {
@@ -57,6 +59,7 @@ module.exports = function(dirs) {
       },
 
       dev: {
+        sourceMaps: true,
         sass: {
           outputStyle: 'expanded'
         },
@@ -68,7 +71,6 @@ module.exports = function(dirs) {
       },
 
       prod: {
-        sourceMaps: false,
       },
 
       //compatibility fallback, to be removed
@@ -96,21 +98,37 @@ module.exports = function(dirs) {
 
     sprites: {
 
+      auto: true,   //sprite items for directories not defined as an item will be automatically created
+                    //with default parameters, unless the dir name starts with underscore (_)
+
       items: [
         //you can add more items (dirs), simply add an element
         {
-          imgSource: dirs.src.images + 'sprites/',
-          imgDest: dirs.dist.images,
-          //options passed to the plugin
+          name: 'default',
+          varPrepend: '',
+          imgSource: dirs.src.sprites.main + '*.*'  //all files in the sprites dir, excluding subdirs
+
+          //all options - example of auto generation for name="name"
+          //any option that was not set will be auto generated
+          /*
+          name: 'name',            //sprite base name, the only required parameter
+          // REMOVED: disableAutoFill: false,  //not required (false by default), if true, the below auto population for unspecified fields does not occur
+          filename: 'name',        //filename of the generated output file
+          varPrepend: 'name-',     //prepended before SASS sprite variable name
+          imgSource: dirs.src.sprites.main + 'name/**' + '/*.*', //source dir, concat just to avoid comment ending
+          imgDest: dirs.dist.images,                             //dest dir
+
+          //Spritesmith options
           options: {
-            imgName: 'sprites.png',
-            imgPath: '../img/sprites.png',
-            cssName: '_sprites.scss',
-            cssSpritesheetName: 'spritesheet',
+            imgName: 'name.png',                    //output sprite image name
+            imgPath: '../img/name.png',             //path to the output image relative to the CSS file
+            cssName: '_name.scss',                  //name of the output SASS file created in the styles dir
+            cssSpritesheetName: 'spritesheet-name', //stylesheet is a SASS map containing info about all sprite images
             cssVarMap: function (sprite) {
-              sprite.name = /*'sprite_' + */sprite.name;
+              sprite.name = 'name-' + sprite.name;  //sprite variable builder
             }
           }
+          */
         }
       ],
 
@@ -137,7 +155,7 @@ module.exports = function(dirs) {
 
 
     js: {
-      sourceMaps: true,
+      sourceMaps: false,
       sourceMapsRoot: '/src/',
       concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
       babel: {
@@ -190,31 +208,27 @@ module.exports = function(dirs) {
       inject: {
         //receive stream and an object { comp, ...} (see the source injectorData for more)
         src: true,
-        lint: false,
-        lintFailAfterError: true,
+        lint: false,              //run linter
+        lintFailAfterError: true, //if true and lint is not canceled, fails the build if errored
         sourceMapsInit: true,
         babel: true,
         concat: true,
         sourceMapsWrite: true,
         minify: true,
-        concatVendorApp: true,
+        concatVendorApp: true,    //on prepending vendor before app code
         dest: true,
         finish: true,
         reload: true
       },
 
       dev: {
+        sourceMaps: true,
         inject: {
-          minify: false
+          minify: false   //disable minify for dev
         }
       },
 
       prod: {
-        sourceMaps: false,
-
-        jsHint: {
-          enable: false
-        }
       },
 
       //compatibility fallback, to be removed

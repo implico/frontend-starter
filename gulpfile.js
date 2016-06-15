@@ -137,7 +137,7 @@ var app = {
   },
 
   //taskReg utils
-  taskReg: {
+  taskRegUtils: {
 
     addDep(taskName, targetTaskName, relatedDepName, isBefore) {
       if (taskReg[targetTaskName]) {

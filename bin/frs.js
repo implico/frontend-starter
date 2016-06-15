@@ -10,11 +10,11 @@ var childrenProc = [],
 
 env.FRS_BASE_DIR = process.cwd();
 process.chdir(__dirname);
-GLOBAL.frsBlockWatch = false;
+global.frsBlockWatch = false;
 
 
 var spawnGulp = function(task, exitOnClose) {
-  GLOBAL.frsBlockWatch = true;
+  global.frsBlockWatch = true;
   var child = exec('gulp ' + task, { cwd: __dirname, env: env }).on('error', function() {
     console.error('Frontend-starter: error while executing "gulp". Check if you have gulp.js installed.')
     process.exit(1);
@@ -27,7 +27,7 @@ var spawnGulp = function(task, exitOnClose) {
     process.stdout.write(data);
   });
   child.on('close', function() {
-    GLOBAL.frsBlockWatch = false;
+    global.frsBlockWatch = false;
     if (exitOnClose) {
       process.exit();
     }

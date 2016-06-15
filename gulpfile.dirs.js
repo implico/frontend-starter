@@ -26,6 +26,7 @@ module.exports = function(appDir) {
 
     app: '',
     bower: '',
+    vendor: '',
 
     lib: {
       main: '',
@@ -40,11 +41,12 @@ module.exports = function(appDir) {
 
     src: {
       main: '',
-      styles: {
-        main: '',
-        sprites: ''
-      },
+      styles: '',
       fonts: '',
+      sprites: {
+        main: '',
+        styles: ''
+      },
 
       js:  {
         main: '',
@@ -79,6 +81,7 @@ module.exports = function(appDir) {
 
   dirs.cache = dirs.app + '.cache/';
   dirs.bower = dirs.app + 'bower_components/';  //change also .bowerrc
+  dirs.vendor = dirs.app + 'vendor/';
 
   //main src/dist dirs
   dirs.src.main = dirs.app + 'src/';
@@ -112,13 +115,15 @@ module.exports = function(appDir) {
 
 
   //src subdirs
-  dirs.src.styles.main = dirs.src.main + 'styles/';
-  dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
+  dirs.src.styles = dirs.src.main + 'styles/';
 
   dirs.src.fonts = dirs.src.main + 'fonts/';
 
+  dirs.src.sprites.main = dirs.src.main + 'sprites/';
+  dirs.src.sprites.styles = dirs.src.styles.main + 'sprites/';
+
   dirs.src.js.main = dirs.src.main + 'js/';
-  dirs.src.js.vendor = dirs.src.js.main + '_vendor/';
+  dirs.src.js.vendor = dirs.vendor + 'js/';
   dirs.src.js.app = dirs.src.js.main;
 
   dirs.src.images = dirs.src.main + 'img/';
