@@ -35,6 +35,7 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 
 
 ## Features
+
 The framework provides the following functionality via [gulp][gulp] plugins:
 * separate source and distribution directories (configurable path), watching for new/changed files
 * images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
@@ -46,6 +47,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 
 
 ## Installation
+
 You need the following tools to start using the framework:
 * [nodejs]
   - for Windows, use the [installer](https://nodejs.org/en/download/)
@@ -66,6 +68,7 @@ Installation registers a `frs` command to run the tasks.
 
 <a name="bundles"></a>
 ## Bundles
+
 Use on of the available bundles (bootstrap configuration and asset structure) or create your own:
 
 * [default bundle][bundle-default]
@@ -216,12 +219,14 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
+
 All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
 To change the defaults, edit the `frs.dirs.js`, `frs.config.js` and `frs.tasks.js` files located in your bundle root directory.
 
 
 ### Directories
+
 You can see the default definitons of each directory in the [gulpfile.dirs.js](gulpfile.dirs.js) file. The `frs.dirs.js` is included in 2 stages:
 
 * right after defining the src and dist directory (so you can change it and the value will populate to subdirectories like images, styles...)
@@ -229,6 +234,7 @@ You can see the default definitons of each directory in the [gulpfile.dirs.js](g
 
 
 ### Config object
+
 See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains configuration parameters divided into key sections. Use the subsets to target specific environment mode: `dev` and `prod`.
 
 * *styles*: sourcemap generation, [gulp-autoprefixer] and [gulp-sass] options
@@ -242,6 +248,7 @@ See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains 
 See the [default bundle custom config][bundle-default-config] for examples.
 
 #### Customizing core tasks
+
 Each gulp pipeline step has a kind of hook, that allows to inject own code and/or disable default stream transformation. Consider the following configuration code for `styles` task:
 
 ```js
@@ -374,6 +381,7 @@ See the core tasks registry definitions in [gulpfile.tasks.js](gulpfile.tasks.js
 
 <br>
 ## Source maps
+
 Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
 
 1. Open Chrome Dev Tools.
@@ -398,6 +406,7 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 <br>
 ## TODO
+
 - [x] take advantage of [cssnano][gulp-cssnano], [htmlmin][gulp-htmlmin]
 - [x] supporting [Babel][babel]
 - [x] full task customization based on hooks (injected for every task step, allowing to modify or remove it)
@@ -411,6 +420,7 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 <br>
 ## Known issues
+
 * to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restart); depends on [Chokidar][chokidar]
 
 
