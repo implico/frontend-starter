@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
   "description": "A simple frontend builder.",
-  "version": "1.6.9",
+  "version": "1.6.10",
   "author": {
     "name": "Bartosz Sak",
     "email": "bartosz.sak@gmail.com"
@@ -58,7 +58,6 @@
     "gulp-group-css-media-queries": "1.*",
     "gulp-htmlmin": "2.*",
     "gulp-imagemin": "^2.4.0",
-    "gulp-minify-css": "1.2.0",
     "gulp-plumber": "1.0.1",
     "gulp-postcss": "^6.0.1",
     "gulp-rename": "1.2.2",
