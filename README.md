@@ -150,6 +150,7 @@ While watching for changes (tasks: `frs`/`frs watch` or `frs start`), you can us
 
 
 <br>
+
 ## Functionality
 
 ### Views, Styles (including fonts, sprites)
@@ -220,6 +221,7 @@ You can setup custom directories to watch (and optionally copy). For example, if
 
 
 <br>
+
 <a name="configuration"></a>
 ## Directories and configuration
 
@@ -383,6 +385,7 @@ See the core tasks registry definitions in [gulpfile.tasks.js](gulpfile.tasks.js
 
 
 <br>
+
 ## Source maps
 
 Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
@@ -408,6 +411,7 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 
 <br>
+
 ## TODO
 
 - [x] take advantage of [cssnano][gulp-cssnano], [htmlmin][gulp-htmlmin]
