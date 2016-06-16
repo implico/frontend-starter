@@ -55,13 +55,14 @@ You need the following tools to start using the framework:
 
 <br>
 Then, install the framework globally:
+
 ```
 npm install frontend-starter -g
 ```
 
-If you use Visual Studio, close it while npm installs the modules.
+If you are experiencing any problems during installation, try updating your Node.js (recommended [nvm](https://github.com/creationix/nvm), then use the latest version) and [npm](https://docs.npmjs.com/getting-started/installing-node). If you use Visual Studio, close it while npm installs the modules.
 
-Installation registers a `frs` command to run the tasks.
+Installation registers an `frs` command to run the tasks.
 
 
 <a name="bundles"></a>
@@ -74,6 +75,7 @@ Use on of the available bundles (bootstrap configuration and asset structure) or
 
 <br>
 ## CLI (tasks)
+
 Use the following tasks from the command line:
 
 
@@ -135,7 +137,7 @@ frs start -r
 
 
 ### Keyboard shortcuts
-While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
+While watching for changes (tasks: `frs`/`frs watch` or `frs start`), you can use the following shortcuts:
 * Ctrl+P: to build the production version (init `build -p` task)
 * Ctrl+D: to build the development version (init `build` task)
 * Ctrl+L: to run lint (init `lint` task)
@@ -216,6 +218,7 @@ You can setup custom directories to watch (and optionally copy). For example, if
 <br>
 <a name="configuration"></a>
 ## Directories and configuration
+
 All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
 
 To change the defaults, edit the `fs.dirs.custom.js` and `fs.config.custom.js` files located in your bundle root directory.
