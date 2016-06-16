@@ -1,5 +1,7 @@
 # Frontend-starter
 
+**PLEASE NOTE:** this tool is under development and will be finished with a stable release on approx. 24 of June 2016 (v1.7). Until then, there may occur changes with no backward compatibility - a migration guide will be published. As it was an internal tool with no information spread anywhere, current traffic is unexpected. Thank you for the interest, please submit any problems or ideas to the issues section.
+
 Frontend gulp builder. A prepared, configurable [gulp][gulp] environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
 Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
@@ -163,7 +165,7 @@ For third-party srcipts, you can use [Bower][bower] or place any file into the `
 You can generate separate JavaScript compositions, dependent on selected Bower, vendor and/or own script files. Let's say, that you want to create previously mentioned `register.js` file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
 
 ```js
-config.js.common.comps.register = {
+config.js.comps.register = {
   filename: 'register', //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
 
   bower: [],                                  //set only name of the package
@@ -189,7 +191,7 @@ config.js.common.comps.register = {
 }
 
 //we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
-config.js.common.comps.jQuery: {
+config.js.comps.jQuery: {
   filename: false,    //we don't want to create any output - this is just an auxiliary comp
   bower: ['jquery'],
   watch: false
