@@ -59,13 +59,14 @@ You need the following tools to start using the framework:
 
 <br>
 Then, install the framework globally:
+
 ```
 npm install frontend-starter -g
 ```
 
-If you use Visual Studio, close it while npm installs the modules.
+If you are experiencing any problems during installation, you probably have to update your Node.js (recommended [nvm](https://github.com/creationix/nvm), then use the latest Node.js version) and [npm](https://docs.npmjs.com/getting-started/installing-node). In some cases system restart may be needed before installation. If you use Visual Studio, close it while npm installs the modules.
 
-Installation registers a `frs` command to run the tasks.
+Installation registers an `frs` command to run the tasks.
 
 
 <a name="bundles"></a>
@@ -140,7 +141,7 @@ frs start -r
 
 
 ### Keyboard shortcuts
-While watching for changes (tasks: `frs`/`frs dev:watch` or `frs dev`), you can use the following shortcuts:
+While watching for changes (tasks: `frs`/`frs watch` or `frs start`), you can use the following shortcuts:
 * Ctrl+P: to build the production version (init `build -p` task)
 * Ctrl+D: to build the development version (init `build` task)
 * Ctrl+L: to run lint (init `lint` task)
