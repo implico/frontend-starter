@@ -177,16 +177,16 @@ var app = {
 
           let name = item.name;
 
-          _this.setIfUndef(item, 'varPrepend', name + '-');
+          _this.setIfUndef(item, 'varPrepend', name.length ? (name + '-') : '');
           _this.setIfUndef(item, 'src', dirs.src.sprites.main + name + '/**/*.*');
           _this.setIfUndef(item, 'dest', dirs.dist.sprites);
           _this.setIfUndef(item, 'options', {});
           _this.setIfUndef(item.options, 'imgName', name + '.png');
           _this.setIfUndef(item.options, 'imgPath', '../img/' + name + '.png');
           _this.setIfUndef(item.options, 'cssName', '_' + name + '.scss');
-          _this.setIfUndef(item.options, 'cssSpritesheetName', 'spritesheet-' + name);
+          _this.setIfUndef(item.options, 'cssSpritesheetName', item.varPrepend + 'spritesheet');
           _this.setIfUndef(item.options, 'cssVarMap', function(sprite) {
-            sprite.name = name + '-' + sprite.name;
+            sprite.name =  item.varPrepend + sprite.name;
           });
         });
       },
