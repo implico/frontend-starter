@@ -184,7 +184,7 @@ module.exports = function(appData) {
         deps.push(() => {
           return taskData.fn().then(() => {
             setTimeout(() => {
-              app.quitIfInvoked(taskName);
+              app.taskUtils.quitIfInvoked(taskName);
             }, 0);
           });
         });
@@ -216,7 +216,7 @@ module.exports = function(appData) {
         let finalizeFn = function () {
           if (!taskData.blockQuitOnFinish) {
             setTimeout(() => {
-              app.quitIfInvoked(taskName);
+              app.taskUtils.quitIfInvoked(taskName);
             }, 0);
           }
 

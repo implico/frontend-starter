@@ -11,19 +11,19 @@
   *******************
   API
 
-  gulp
-    default task, equals to gulp watch
+  frs
+    default task, equals to frs watch
 
-  gulp clean
+  frs clean
     cleans dist dir
 
-  gulp start
+  frs start
     runs build and watch
 
-  gulp build
+  frs build
     cleans and builds the app (with -p: optimized for production)
 
-  gulp watch
+  frs watch
     runs watch with Browsersync
 
   options:
@@ -72,71 +72,71 @@ process.stdin.on('data', function(data) {
 //core tasks container
 var tasks = {};
 
-//tasks registry
+//task registry
 var taskReg = {};
 
 
 var app = {
 
-  invokedTask: 'default',
-
-  init: function() {
-    this.setInvokedTask();
+  init() {
+    this.taskUtils.init();
   },
 
-  setInvokedTask: function() {
-    var args = process.argv.slice(2),
-        task;
-    args.some((arg) => {
-      if (arg.charAt(0) != '-') {
-        task = arg;
-        return true;
-      }
-    });
+  //a mix of utilities used by tasks
+  taskUtils: {
+    invokedTask: 'default',
 
-    if (task) {
-      this.invokedTask = task;
-    }
-  },
+    init() {
+      this.setInvokedTask();
+    },
 
-  quitIfInvoked: function(taskName, cb) {
-    if (cb) {
-      cb();
-    }
-    if (this.invokedTask == taskName) {
-      process.exit();
-    }
-  },
-
-  streamToPromise: function(stream) {
-    if (!(stream instanceof Promise)) {
-      return new Promise((resolve, reject) => {
-        stream.on('finish', resolve);
+    //sets current cli task
+    setInvokedTask() {
+      var args = process.argv.slice(2),
+          task;
+      args.some((arg) => {
+        if (arg.charAt(0) != '-') {
+          task = arg;
+          return true;
+        }
       });
-    }
-    return stream;
-  },
 
-  //dummy workaround for not accepting empty globs by gulp.src
-  sanitizeGlob(glob) {
-    if ((glob instanceof Array) && (glob.length === 0)) {
-      glob = ['_835e99fa880c36c1828e55361d228fab/*']; //non-existing dir
-    }
-    return glob;
-  },
+      if (task) {
+        this.invokedTask = task;
+      }
+    },
 
-  //aux: reloads Browsersync and calls the callback
-  reload: function(cb) {
-    var _this = this;
-    return function() {
-      browserSync.reload();
+    //exits if current cli task is equal to the passed one
+    quitIfInvoked(taskName, cb) {
       if (cb) {
         cb();
       }
+      if (this.invokedTask == taskName) {
+        process.exit();
+      }
+    },
+
+    //converts stream to promise
+    streamToPromise(stream) {
+      if (!(stream instanceof Promise)) {
+        return new Promise((resolve, reject) => {
+          stream.on('finish', resolve);
+        });
+      }
+      return stream;
+    },
+
+    //dummy workaround for not accepting empty globs by gulp.src
+    sanitizeGlob(glob) {
+      if ((glob instanceof Array) && (glob.length === 0)) {
+        glob = ['_835e99fa880c36c1828e55361d228fab/*']; //non-existing dir
+      }
+      return glob;
     }
   },
 
-  //taskReg utils
+
+  //taskReg utilities
   taskRegUtils: {
 
     addDep(taskName, targetTaskName, relatedDepName, isBefore) {
