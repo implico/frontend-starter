@@ -13,6 +13,8 @@
 
 */
 
+'use strict';
+
 var path = require('path'),
     fs   = require('fs');
 
@@ -41,11 +43,12 @@ module.exports = function(appDir) {
 
     src: {
       main: '',
-      styles: {
-        main: '',
-        sprites: ''
-      },
+      styles: '',
       fonts: '',
+      sprites: {
+        main: '',
+        styles: ''
+      },
 
       js:  {
         main: '',
@@ -114,10 +117,12 @@ module.exports = function(appDir) {
 
 
   //src subdirs
-  dirs.src.styles.main = dirs.src.main + 'styles/';
-  dirs.src.styles.sprites = dirs.src.styles.main + 'sprites/';
+  dirs.src.styles = dirs.src.main + 'styles/';
 
   dirs.src.fonts = dirs.src.main + 'fonts/';
+
+  dirs.src.sprites.main = dirs.src.main + 'sprites/';
+  dirs.src.sprites.styles = dirs.src.styles + 'sprites/';
 
   dirs.src.js.main = dirs.src.main + 'js/';
   dirs.src.js.vendor = dirs.vendor + 'js/';
@@ -135,36 +140,10 @@ module.exports = function(appDir) {
   dirs.dist.fonts = dirs.dist.styles + 'fonts/';
   dirs.dist.js = dirs.dist.main + 'js/';
   dirs.dist.images = dirs.dist.main + 'img/';
-  //compatibility fallback, to be removed
-  dirs.dist.img = dirs.dist.images;
+  dirs.dist.img = dirs.dist.images; //compatibility fallback, to be removed
+  dirs.dist.sprites = dirs.dist.images;
 
   dirs.dist.views = dirs.dist.main;
-
-
-  //additional custom dirs to watch and (optionally) copy
-  dirs.custom = {
-
-    // //Example:
-    // my_dir: {
-    //   from: dirs.src.main + 'custom/**/*',
-    //   to: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
-
-    //   inject: {
-    //     //main task, receives stream and { id: dirName, dirInfo: dirInfo } as a second parameter
-    //     src: true,   //function must return: a stream (if cancels) or a glob array passed to the src
-    //     limit: true, //gulp-changed plugin
-    //     dest: true,
-
-    //     //watch task, receives undefined and { id, dirInfo } with id and definition as a second parameter
-    //     watch: true,
-
-    //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second parameter
-    //     //not needed to disable if "to" is null
-    //     clean: true
-    //   }
-    // }
-
-  };
 
 
   //custom src/dist subdir modifications

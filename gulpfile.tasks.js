@@ -13,13 +13,13 @@
 
 */
 
+'use strict';
+
 const fs          = require('fs');
       //runSequence = require('run-sequence');
 
 
 module.exports = function(appData) {
-
-  'use strict';
 
   //future: var { dirs, config, app, tasks, taskReg, gulp, browserSync, Injector } = appData;
   var dirs = appData.dirs,
@@ -53,13 +53,7 @@ module.exports = function(appData) {
 
     'sprites': {
       fn() {
-        var promises = [];
-
-        config.sprites.items.forEach(function(itemInfo) {
-          promises.push(tasks.sprites.run({ itemInfo: itemInfo }));
-        });
-
-        return Promise.all(promises);
+        return tasks.sprites.run({});
       }
     },
 
@@ -73,7 +67,7 @@ module.exports = function(appData) {
             continue;
           var comp = comps[compId];
 
-          promises.push(tasks.js.run({ compId: compId, isApp: true, taskNameBegin: '', taskNameEnd: ''}));
+          promises.push(tasks.js.run({ compId: compId, isApp: true }));
         }
 
         return Promise.all(promises);
@@ -89,7 +83,7 @@ module.exports = function(appData) {
           if (!comps.hasOwnProperty(compId))
             continue;
 
-          promises.push(tasks.js.run({ compId: compId, isApp: false, taskNameBegin: compId, taskNameEnd: '' }));
+          promises.push(tasks.js.run({ compId: compId, isApp: false }));
         }
 
         return Promise.all(promises);
@@ -184,7 +178,7 @@ module.exports = function(appData) {
         deps.push(() => {
           return taskData.fn().then(() => {
             setTimeout(() => {
-              app.quitIfInvoked(taskName);
+              app.taskUtils.quitIfInvoked(taskName);
             }, 0);
           });
         });
@@ -216,7 +210,7 @@ module.exports = function(appData) {
         let finalizeFn = function () {
           if (!taskData.blockQuitOnFinish) {
             setTimeout(() => {
-              app.quitIfInvoked(taskName);
+              app.taskUtils.quitIfInvoked(taskName);
             }, 0);
           }
 

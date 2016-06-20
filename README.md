@@ -1,15 +1,17 @@
 # Frontend-starter
 
-**PLEASE NOTE:** this tool is under development and will be finished with a stable release on approx. 24 of June 2016 (v1.7). Until then, there may occur changes with no backward compatibility - a migration guide will be published. As it was an internal tool with no information spread anywhere, current traffic is unexpected. Thank you for the interest, please submit any problems or ideas to the issues section.
-
-Frontend gulp builder. A prepared, configurable [gulp][gulp] environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
+Frontend [gulp.js][gulp]-based (v4) build framework. A prepared, configurable environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
 Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
 
 
+**PLEASE NOTE:** this tool is under development and will be finished with a stable release on approx. 24 of June 2016 (v1.7). Until then, there may occur changes with no backward compatibility - see the [Migration guide](MIGRATION.md). As it was an internal tool with no information spread anywhere, current traffic is unexpected. Thank you for the interest, please submit any problems or ideas to the issues section.
+
+
+
 ## About
 
-This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (called comps) - but you can still replace/adjust the `js` task to your needs.
+This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (in webpack - bundles, here called comps) - but you can still replace/adjust the `js` task to your needs.
 
 The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
 
@@ -25,13 +27,13 @@ What distinguishes this tool is basically:
   - adding any new file using [Bower][bower], manually placing any package into `vendor/js` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
-* automatically creates sprites for defined directories (and you can use them responsively)
+* automatically creates separate sprite images for `src/sprites` subdirectories (and you can use them responsively)
 * `clean` task does not remove the whole dist directory, but handles them separately; that's why you can mix your framework assets with files from other sources (e.g. backend)
 * provides keyboard shortcuts (Ctrl+...) while watching: rebuild, build production version, lint
 
-Thanks to the above parameters, it is very easy to integrate with a backend application, including non-RESTful/SPAs (Single Page Applications).
+Thanks to the above parameters, it is very easy to integrate with a backend application, including classic, non-RESTful/SPAs (Single Page Applications).
 
-The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs [gulp] in the framework directory (so it uses the core `gulpfile.js`), but gets the assets from (and builds to) the directories defined in your configuration files. So you can consider it as a kind of [gulp.js][gulp] pipeline.
+The architecture, in few words, is as follows: when you invoke the main `frs [task]` command, the script runs [gulp] in the framework directory (so it uses the core `gulpfile.js`), but gets the assets from (and builds to) the directories defined in your configuration files. So you can consider it as a kind of [gulp][gulp] pipeline.
 
 The result: you just develop fast. Modify/create new stylesheets or images and see your page automatically refreshing with changes. Put pictures into sprites dir and get all things done. Install or paste new JavaScript files and see the results instantly, with source maps.
 
@@ -39,13 +41,13 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 ## Features
 
 The framework provides the following functionality via [gulp][gulp] plugins:
-* separate source and distribution directories (configurable path), watching for new/changed files
-* images: [imagemin][gulp-imagemin], [sprites][gulp-spritesmith]
-* JS: [source maps][gulp-sourcemaps], [concatenation][gulp-concat], [compression][gulp-uglify], [ESLint][eslint], [Babel][babel] (ES2015 support by default), vendor dirs cache (concat only on change), custom compositions (bundles)
-* Styles: [SASS][sass] with [node-sass], [media queries with Breakpoint library][sass-breakpoint], source maps, [Autoprefixer][gulp-autoprefixer]; by default, [sass-glob] (using globs in SASS imports), optimization: [group-css-media-queries][gulp-group-css-media-queries] and [cssnano][gulp-cssnano], use of [SASS-core][sass-core] (mixins and functions: automatic rem/vw/percentage unit converters for dimensions and fonts, responsive sprites)
+* Separate source and distribution directories (configurable path), watching for new/changed files
+* Images: [imagemin][gulp-imagemin] for optimization, [spritesmith][gulp-spritesmith] for sprites
+* JS: [source maps][gulp-sourcemaps] ([read about](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
+* Styles: [SASS][sass] preprocessor with [node-sass], source maps ([read about](http://thesassway.com/intermediate/using-source-maps-with-sass)), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping) and [cssnano][gulp-cssnano]. The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
 * Views: optimized with [htmlmin][gulp-htmlmin]
-* Server: [Browsersync][browsersync] (automatic refreshing on every change)
-* easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
+* Server: [Browsersync][browsersync], providing automatic refresh on every change
+* Easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
 
 
 ## Installation
@@ -153,18 +155,60 @@ While watching for changes (tasks: `frs`/`frs watch` or `frs start`), you can us
 
 ## Functionality
 
-### Views, Styles (including fonts, sprites)
+### Styles, Fonts, Views
 
 See your [bundle](#bundles) docs.
 
 
+### Sprites
+All files placed in the sprites directory will be merged into one sprite image (by default - `sprites.png`). To create more than one sprite bundle, place them in separate directories (directory name will be the output sprite filename by default). Example usage:
+
+```
+/src/sprites/home/
+  icon-1.png
+  icon-2.png
+/src/sprites/contact/
+  icon-1.png
+  icon-2.png
+/src/sprites/ (root dir)
+  icon-1.png
+  icon-2.png
+```
+
+This will generate sprite files in `/dist/img/` directory: `home.png`, `contact.png` and `sprites.png`. To use a sprite in your stylesheets, include the generated SASS file(s) and then use the mixins:
+
+```sass
+//to get /src/sprites/home/icon-1.png
+@include sprite($home-icon-1);
+
+//to get /src/sprites/contact/icon-2.png
+@include sprite($contact-icon-2);
+
+//to get /src/sprites/icon-1.png
+@include sprite($icon-1);
+```
+
+As you can see, by default each Spritesmith generated sprite variable has a prefix equal to the directory name (except for the root dir, that has none).
+
+You can customize any of the directories options, by adding an item explicitly in the config file. For example, this will disable a variable prefix for sprites from `/home` directory (so you can use it like it was in the root):
+
+```
+config.sprites.items.push({
+  name: 'home',
+  varPrepend: '',
+}
+```
+
+See more in the [default bundle][bundle-default] example configuration.
+
+
 ### JavaScript
 
-For third-party srcipts, you can use [Bower][bower] or place any file into the `/vendor/js` directory. For you app, just create any file in `src/js`. By default, all of them will be merged into single `app.js` file (in the above order).
+For third-party scripts, you can use [Bower][bower] or place any file in the `/vendor/js` directory. For your own code, just create any file in `src/js`. By default, all of them will be merged into single `app.js` file (in the above order).
 
 #### JavaScript compositions
 
-You can generate separate JavaScript compositions, dependent on selected Bower, vendor and/or own script files. Let's say, that you want to create previously mentioned `register.js` file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
+You can generate separate JavaScript compositions, dependent on selected Bower, vendor and/or own (app) script files. Let's say, that you want to create `register.js` output file, that uses jQuery, `register.js` and `utilities.js` from the sources. We assume, that we don't want these files to be included in our main `app.js` file:
 
 ```js
 config.js.comps.register = {
@@ -172,7 +216,7 @@ config.js.comps.register = {
 
   bower: [],                                  //set only name of the package
   vendor: [],                                 //just example, you don't have to define when not used
-  app: ['utilities.js', 'register.js'],      //path relative to the appropriate directory
+  app: ['utilities.js', 'register.js'],       //path relative to the appropriate directory
 
   //set prioritized paths
   priority: {
@@ -183,7 +227,7 @@ config.js.comps.register = {
   //set other comp ids to include
   dependencies: ['jQuery'],
 
-  //set comps to exclude all loaded scripts in other comps, e.g.
+  //exclude (ignore) all loaded here scripts in other comps, e.g.
   //excludeIn: ['comp1', 'comp2']   //excluded in selected comps
   //excludeIn: true                 //excluded in all other comps
   //excludeIn: false                //no exclusion
@@ -207,10 +251,19 @@ config.js.comps.jQuery: {
 Images are optimized (for production, [gulp-imagemin]) and copied into the dist directory.
 
 
-
 ### Custom directories
 
-You can setup custom directories to watch (and optionally copy). For example, if you integrate the framework with backend that has own view templating system, set the appropriate directory to be watched. In this case, you will also probably need to set [Browsersync][browsersync] proxy (see the [default bundle][bundle-default] example configuration) to have your page refreshing on each time the view files change.
+You can setup custom directories to watch (and optionally copy). For example, if you integrate the framework with backend that has own view templating system, set the appropriate directory to be watched. In this case, you will also probably need to set [Browsersync][browsersync] proxy (see the [default bundle][bundle-default] example configuration) to use the original server (like Apache) but have your page being refreshed on each time the view or any other files change.
+
+Example - watch and copy contents of "php" dir from src to dist:
+
+```js
+config.customDirs.items.push({
+  name: 'php views',  //optional, displayed in the console during watch
+  src: dirs.src.main + 'php/**/*.php',
+  dest: dirs.dist.main + 'php/',  //set to null to just watch the dir without copying (e.g. external backend views)
+});
+```
 
 
 ### Server
@@ -235,18 +288,19 @@ To change the defaults, edit the `frs.dirs.js`, `frs.config.js` and `frs.tasks.j
 You can see the default definitons of each directory in the [gulpfile.dirs.js](gulpfile.dirs.js) file. The `frs.dirs.js` is included in 2 stages:
 
 * right after defining the src and dist directory (so you can change it and the value will populate to subdirectories like images, styles...)
-* at the end (to change particular src/dist directories or set custom dirs). See the [default bundle dir config][bundle-default-dir].
+* at the end (to change particular src/dist directories). See the [default bundle dir config][bundle-default-dir].
 
 
 ### Config object
 
 See the [gulpfile.config.js](gulpfile.config.js) file. `config` object contains configuration parameters divided into key sections. Use the subsets to target specific environment mode: `dev` and `prod`.
 
-* *styles*: sourcemap generation, [gulp-autoprefixer] and [gulp-sass] options
-* *sprites*: you can generate multiple sprite files by adding subsequent elements to the `items` array
+* *styles*: sourcemap generation, [gulp-autoprefixer], [gulp-sass] and [gulp-cssnano] options
+* *sprites*: you can customize sprite files by adding subsequent elements to the `items` array
 * *js*: sourcemap generation, minification, merging vendor and app into one file (true by default), scripts loading priority
-* *views*: [gulp-htmlmin] options
 * *images*: [imagemin][gulp-imagemin] options
+* *views*: [gulp-htmlmin] options
+* *customDirs*: custom, additional directories (to watch/copy)
 * *browserSync*: [Browsersync][browsersync] options
 * *clean*: modify deletion options
 
@@ -311,12 +365,7 @@ config.styles.inject.optimize = function(stream, name) {
 This replaces [gulp-cssnano] with [gulp-clean-css](https://github.com/scniro/gulp-clean-css) (you have to run `npm install gulp-clean-css --save-dev` first).
 
 
-The `src` injects are handled a bit differenlty. When the function returns a truthy value:
-
-- if default step is canceled, the value is used as a stream (instead of `gulp.src`)
-- if default step is not canceled, this value is used as a glob for `gulp.src`
-
-If it returns a falsy value and cancels the default step, whole task is canceled (the task returns a resolved Promise).
+The `src` injects are handled a bit differenlty. The function obtain a glob array to be passed to the `gulp.src`. If the default step is canceled, the return value is considered as an input stream (unless it is falsy - ten the whole task is canceled). In other case, the returned value must be a glob.
 
 For the `clean` task, the inject function receives current glob array with paths to be removed (assigned incrementally).
 

@@ -13,6 +13,8 @@
 
 */
 
+'use strict';
+
 module.exports = function(dirs) {
 
   var fs        = require('fs'),
@@ -39,7 +41,9 @@ module.exports = function(dirs) {
       },
 
       cssnano: {
-        safe: true
+        safe: true,
+        mergeIdents: false,
+        discardUnused: false
       },
 
       inject: {
@@ -96,30 +100,42 @@ module.exports = function(dirs) {
 
     sprites: {
 
+      auto: true,   //sprite items for directories not defined as an item will be automatically created with default parameters
+
       items: [
         //you can add more items (dirs), simply add an element
         {
-          imgSource: dirs.src.images + 'sprites/',
-          imgDest: dirs.dist.images,
-          //options passed to the plugin
+          name: 'sprites',
+          varPrepend: '',
+          src: dirs.src.sprites.main + '*.*'  //all files in the sprites dir, excluding subdirs
+
+          //all options - example of auto generation for name="name"
+          //any option that was not set will be auto generated
+          /*
+          name: 'name',                                     //sprite base name, the only required parameter
+          src: dirs.src.sprites.main + 'name/**' + '/*.*',  //source dir, concat used just to avoid comment ending
+          dest: dirs.dist.sprites,                          //dest dir
+          varPrepend: 'name-',                              //prepended before SASS sprite variable name
+
+          //Spritesmith options
           options: {
-            imgName: 'sprites.png',
-            imgPath: '../img/sprites.png',
-            cssName: '_sprites.scss',
-            cssSpritesheetName: 'spritesheet',
+            imgName: 'name.png',                    //output sprite image name
+            imgPath: '../img/name.png',             //path to the output image relative to the CSS file
+            cssName: '_name.scss',                  //name of the output SASS file created in the styles dir
+            cssSpritesheetName: 'spritesheet-name', //stylesheet is a SASS map containing info about all sprite images
             cssVarMap: function (sprite) {
-              sprite.name = /*'sprite_' + */sprite.name;
+              sprite.name = 'name-' + sprite.name;  //sprite variable builder
             }
           }
+          */
         }
       ],
 
       inject: {
         init: true,
-        imgSrc: true,
+        imgLimit: true,
         imgOptimize: true,
         imgDest: true,
-        cssSrc: true,
         cssDest: true,
         finish: true,
         reload: true
@@ -262,7 +278,8 @@ module.exports = function(dirs) {
     views: {
 
       htmlmin: {
-        collapseWhitespace: true
+        collapseWhitespace: true,
+        removeComments: true
       },
 
       inject: {
@@ -289,6 +306,33 @@ module.exports = function(dirs) {
 
 
     customDirs: {
+
+      //additional custom dirs to watch and (optionally) copy
+      items: [
+
+        // //Example:
+        // {
+        //   name: '',  //optional, displayed in the console during watch
+        //   src: dirs.src.main + 'custom/**/*',
+        //   dest: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
+
+        //   inject: {
+        //     //main task, receives stream and { dirInfo } as a second parameter
+        //     src: true,   //function must return: a stream (if cancels) or a glob array passed to the src
+        //     limit: true, //gulp-changed plugin
+        //     dest: true,
+
+        //     //watch task, receives undefined and { dirInfo } with id and definition as a second parameter
+        //     watch: true,
+
+        //     //clean task, receives current glob to delete (see the clean task injector docs) and { id, dirInfo } with id and definition as a second parameter
+        //     //not needed to disable if "dest" is null
+        //     clean: true
+        //   }
+        // }
+
+      ],
+
       inject: {
         init: true,    //receives the object of custom directory definitions
         finish: true,  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
@@ -374,7 +418,8 @@ module.exports = function(dirs) {
         init: true,
         cache: true,
         styles: true,
-        sprites: true,
+        spritesStyles: true,
+        spritesImages: true,
         fonts: true,
         js: true,
         images: true,

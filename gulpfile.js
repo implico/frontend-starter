@@ -11,19 +11,19 @@
   *******************
   API
 
-  gulp
-    default task, equals to gulp watch
+  frs
+    default task, equals to frs watch
 
-  gulp clean
+  frs clean
     cleans dist dir
 
-  gulp start
+  frs start
     runs build and watch
 
-  gulp build
+  frs build
     cleans and builds the app (with -p: optimized for production)
 
-  gulp watch
+  frs watch
     runs watch with Browsersync
 
   options:
@@ -34,7 +34,8 @@
 
 'use strict';
 
-var path = require('path');
+var path = require('path'),
+    fs   = require('fs');
 
 
 //gett app root dir
@@ -72,71 +73,134 @@ process.stdin.on('data', function(data) {
 //core tasks container
 var tasks = {};
 
-//tasks registry
+//task registry
 var taskReg = {};
 
 
 var app = {
 
-  invokedTask: 'default',
-
-  init: function() {
-    this.setInvokedTask();
+  init() {
+    this.taskUtils.init();
   },
 
-  setInvokedTask: function() {
-    var args = process.argv.slice(2),
-        task;
-    args.some((arg) => {
-      if (arg.charAt(0) != '-') {
-        task = arg;
-        return true;
-      }
-    });
+  //a mix of utilities used by tasks
+  taskUtils: {
+    invokedTask: 'default',
 
-    if (task) {
-      this.invokedTask = task;
-    }
-  },
+    init() {
+      this.setInvokedTask();
+      this.sprites.init();
+    },
 
-  quitIfInvoked: function(taskName, cb) {
-    if (cb) {
-      cb();
-    }
-    if (this.invokedTask == taskName) {
-      process.exit();
-    }
-  },
-
-  streamToPromise: function(stream) {
-    if (!(stream instanceof Promise)) {
-      return new Promise((resolve, reject) => {
-        stream.on('finish', resolve);
+    //sets current cli task
+    setInvokedTask() {
+      var args = process.argv.slice(2),
+          task;
+      args.some((arg) => {
+        if (arg.charAt(0) != '-') {
+          task = arg;
+          return true;
+        }
       });
-    }
-    return stream;
-  },
 
-  //dummy workaround for not accepting empty globs by gulp.src
-  sanitizeGlob(glob) {
-    if ((glob instanceof Array) && (glob.length === 0)) {
-      glob = ['_835e99fa880c36c1828e55361d228fab/*']; //non-existing dir
-    }
-    return glob;
-  },
+      if (task) {
+        this.invokedTask = task;
+      }
+    },
 
-  //aux: reloads Browsersync and calls the callback
-  reload: function(cb) {
-    var _this = this;
-    return function() {
-      browserSync.reload();
+    //exits if current cli task is equal to the passed one
+    quitIfInvoked(taskName, cb) {
       if (cb) {
         cb();
       }
-    }
+      if (this.invokedTask == taskName) {
+        process.exit();
+      }
+    },
+
+    //converts stream to promise
+    streamToPromise(stream) {
+      if (!(stream instanceof Promise)) {
+        return new Promise((resolve, reject) => {
+          stream.on('finish', resolve);
+        });
+      }
+      return stream;
+    },
+
+    //dummy workaround for not accepting empty globs by gulp.src
+    sanitizeGlob(glob) {
+      if ((glob instanceof Array) && (glob.length === 0)) {
+        glob = ['_835e99fa880c36c1828e55361d228fab/*']; //non-existing dir
+      }
+      return glob;
+    },
+
+    //fills undefined sprite properties as defaults, adds undefined dirs
+    sprites: {
+      init() {
+        var _this = this;
+
+        //add undefined dirs
+        if (config.sprites.auto) {
+          var spritesDirExists = true;
+          try {
+            fs.accessSync(dirs.src.sprites.main);
+          }
+          catch(ex) {
+            spritesDirExists = false;
+          }
+          if (spritesDirExists) {
+            config.sprites.items = config.sprites.items.concat(fs.readdirSync(dirs.src.sprites.main).filter(function(dir) {
+              var ret;
+              if (ret = fs.statSync(path.join(dirs.src.sprites.main, dir)).isDirectory()) {
+                config.sprites.items.every(function(item, index) {
+                  if (item.name == dir) {
+                    ret = false;
+                    return false;
+                  }
+                  else return true;
+                });
+              }
+              return ret;
+            }).map(function(dir) {
+              return { name: dir };
+            }));
+          }
+        }
+
+        config.sprites.items.forEach(function(item, index) {
+          if (typeof item.name === 'undefined') {
+            console.err('Frontend-starter error: unspecified sprite item name (index: ' + index + ')');
+            process.exit(1);
+          }
+
+          let name = item.name;
+
+          _this.setIfUndef(item, 'varPrepend', name + '-');
+          _this.setIfUndef(item, 'src', dirs.src.sprites.main + name + '/**/*.*');
+          _this.setIfUndef(item, 'dest', dirs.dist.sprites);
+          _this.setIfUndef(item, 'options', {});
+          _this.setIfUndef(item.options, 'imgName', name + '.png');
+          _this.setIfUndef(item.options, 'imgPath', '../img/' + name + '.png');
+          _this.setIfUndef(item.options, 'cssName', '_' + name + '.scss');
+          _this.setIfUndef(item.options, 'cssSpritesheetName', 'spritesheet-' + name);
+          _this.setIfUndef(item.options, 'cssVarMap', function(sprite) {
+            sprite.name = name + '-' + sprite.name;
+          });
+        });
+      },
+
+      setIfUndef(item, index, val) {
+        if (typeof item[index] === 'undefined') {
+          item[index] = val;
+        }
+      }
+    }    
   },
 
-  //taskReg utils
+
+  //taskReg utilities
   taskRegUtils: {
 
     addDep(taskName, targetTaskName, relatedDepName, isBefore) {
