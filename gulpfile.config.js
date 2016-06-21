@@ -132,13 +132,13 @@ module.exports = function(dirs) {
       ],
 
       inject: {
-        init: true,
+        init: true,         //receives itemInfos (sprite items definitions)
         imgLimit: true,
         imgOptimize: true,
         imgDest: true,
         cssDest: true,
-        finish: true,
-        reload: true
+        finish: true,       //receives 2 arguments: output streams (array) and itemInfos (sprite items definitions)
+        reload: true        //receives itemInfos (custom directory item definitions)
       },
 
       dev: {
@@ -334,9 +334,9 @@ module.exports = function(dirs) {
       ],
 
       inject: {
-        init: true,    //receives the object of custom directory definitions
-        finish: true,  //receives an object: { streams, dirInfos } (array of streams, custom directory definitions)
-        reload: true
+        init: true,    //receives itemInfos (custom directory item definitions)
+        finish: true,  //receives 2 arguments: output streams (array) and itemInfos (custom directory item definitions)
+        reload: true   //receives itemInfos (custom directory item definitions)
       },
       dev: {
       },

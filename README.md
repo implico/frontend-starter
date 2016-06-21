@@ -60,6 +60,7 @@ You need the following tools to start using the framework:
 
 
 <br>
+
 Then, install the framework globally:
 
 ```
@@ -81,6 +82,7 @@ Use on of the available bundles (bootstrap configuration and asset structure) or
 
 
 <br>
+
 ## CLI (tasks)
 Use the following tasks from the command line:
 
@@ -195,11 +197,11 @@ You can customize any of the directories options, by adding an item explicitly i
 ```
 config.sprites.items.push({
   name: 'home',
-  varPrepend: '',
+  varPrepend: ''
 }
 ```
 
-See more in the [default bundle][bundle-default] example configuration.
+See more in the [default bundle example configuration][bundle-default-config].
 
 
 ### JavaScript
@@ -350,9 +352,8 @@ To add any transformation before the step, or replace it, assign it to a functio
 
 ```js
 var cleanCss = require('gulp-clean-css');
-config.styles.inject.optimize = function(stream, name) {
+config.styles.inject.optimize = function(stream) {
   // stream: current stream
-  // name: injection name
   stream = stream.pipe(cleanCss());
 
   // return stream;   //if you don't want to cancel the original step
@@ -365,7 +366,7 @@ config.styles.inject.optimize = function(stream, name) {
 This replaces [gulp-cssnano] with [gulp-clean-css](https://github.com/scniro/gulp-clean-css) (you have to run `npm install gulp-clean-css --save-dev` first).
 
 
-The `src` injects are handled a bit differenlty. The function obtain a glob array to be passed to the `gulp.src`. If the default step is canceled, the return value is considered as an input stream (unless it is falsy - ten the whole task is canceled). In other case, the returned value must be a glob.
+The `src` injects are handled a bit differenlty. The function obtains a glob array to be passed to the `gulp.src`. If the default step is canceled, the return value is considered as an input stream (unless it is falsy - then the whole task is canceled). In other case, the returned value must be a glob.
 
 For the `clean` task, the inject function receives current glob array with paths to be removed (assigned incrementally).
 
@@ -374,6 +375,10 @@ Available properties available from within the inject function are:
 - `this.task`: task name
 - `this.appData`: an object `{ dirs, config, app, tasks, taskReg, gulp, browserSync }`
 - `this.taskParams`: an object with task paramters (common param for all tasks is `isWatch` that indicates that it was called by the watcher; see the tasks source for other params, defined at the beginning of the run method)
+- `this.taskData`: an object created for some tasks with additional info:
+  - `sprites`: `{ itemInfo }` (current item config object)
+  - `js`: `{ comp, filename, filenameVendor, vendorDir }` (current internal comp object, not the comp config definition)
+  - `customDirs`: `{ dirInfo }` (current item config object)
 - `this.isDev`: indicates whether dev or prod mode
 
 
@@ -454,6 +459,7 @@ If you want to have mapping for Bower files, follow the same instructions for th
 
 
 <br />
+
 ## Standalone (local) version
 
 To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the parent directory (`../`).
@@ -475,6 +481,7 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 
 <br>
+
 ## Known issues
 
 * to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restart); depends on [Chokidar][chokidar]
