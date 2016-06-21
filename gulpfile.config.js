@@ -107,7 +107,8 @@ module.exports = function(dirs) {
         {
           name: 'sprites',
           varPrepend: '',
-          src: dirs.src.sprites.main + '*.*'  //all files in the sprites dir, excluding subdirs
+          src: dirs.src.sprites.main + '*.*',  //all files in the sprites dir, excluding subdirs
+          options: {}
 
           //all options - example of auto generation for name="name"
           //any option that was not set will be auto generated
