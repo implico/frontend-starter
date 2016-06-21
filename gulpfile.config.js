@@ -115,7 +115,7 @@ module.exports = function(dirs) {
           /*
           name: 'name',                                     //sprite base name, the only required parameter
           src: dirs.src.sprites.main + 'name/**' + '/*.*',  //source dir, concat used just to avoid comment ending
-          dest: dirs.dist.sprites,                          //dest dir
+          dest: dirs.dist.sprites,                          //dest dir, set to null to ignore
           varPrepend: 'name-',                              //prepended before SASS sprite variable name
 
           //Spritesmith options

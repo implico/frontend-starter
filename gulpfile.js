@@ -169,10 +169,18 @@ var app = {
           }
         }
 
+        //indexes to be deleted (dest is null)
+        let deleteIndex = [];
+
         config.sprites.items.forEach(function(item, index) {
           if (typeof item.name === 'undefined') {
             console.err('Frontend-starter error: unspecified sprite item name (index: ' + index + ')');
             process.exit(1);
+          }
+
+          if (item.dest === null) {
+            deleteIndex.push(index);
+            return;
           }
 
           let name = item.name;
@@ -188,6 +196,10 @@ var app = {
           _this.setIfUndef(item.options, 'cssVarMap', function(sprite) {
             sprite.name =  item.varPrepend + sprite.name;
           });
+        });
+
+        config.sprites.items = config.sprites.items.filter((v, i) => {
+          return deleteIndex.indexOf(i) < 0;
         });
       },
 
