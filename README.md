@@ -214,7 +214,7 @@ You can generate separate JavaScript compositions, dependent on selected Bower, 
 
 ```js
 config.js.comps.register = {
-  filename: 'register', //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
+  filename: 'register', //set to null to not produce any output file (for sub-comps); if not set, defaults to comp id
 
   bower: [],                                  //set only name of the package
   vendor: [],                                 //just example, you don't have to define when not used
