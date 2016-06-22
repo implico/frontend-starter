@@ -41,9 +41,9 @@ module.exports = function(dirs) {
       },
 
       cssnano: {
-        safe: true,
-        mergeIdents: false,
-        discardUnused: false
+        safe: true
+        // mergeIdents: false,
+        // discardUnused: false
       },
 
       inject: {
@@ -52,7 +52,7 @@ module.exports = function(dirs) {
         sassGlob: true,
         sass: true,
         autoprefixer: true,
-        optimizeMediaQueries: true, //group-css-media-queries
+        optimizeMediaQueries: false, //group-css-media-queries, disabled by default as unsafe
         optimize: true,             //cssnano
         sourceMapsWrite: true,
         dest: true,

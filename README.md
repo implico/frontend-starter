@@ -43,8 +43,8 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 The framework provides the following functionality via [gulp][gulp] plugins:
 * Separate source and distribution directories (configurable path), watching for new/changed files
 * Images: [imagemin][gulp-imagemin] for optimization, [spritesmith][gulp-spritesmith] for sprites
-* JS: [source maps][gulp-sourcemaps] ([read about](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
-* Styles: [SASS][sass] preprocessor with [node-sass], source maps ([read about](http://thesassway.com/intermediate/using-source-maps-with-sass)), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping) and [cssnano][gulp-cssnano]. The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
+* JS: [source maps][gulp-sourcemaps] ([read about]), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
+* Styles: [SASS][sass] preprocessor with [node-sass], source maps ([read about](http://thesassway.com/intermediate/using-source-maps-with-sass)), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping - disabled by default as unsafe) and [cssnano][gulp-cssnano] (with only safe optimisations by default). The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
 * Views: optimized with [htmlmin][gulp-htmlmin]
 * Server: [Browsersync][browsersync], providing automatic refresh on every change
 * Easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
@@ -53,7 +53,7 @@ The framework provides the following functionality via [gulp][gulp] plugins:
 ## Installation
 
 You need the following tools to start using the framework:
-* [nodejs]
+* [Node.js][nodejs]
   - for Windows, use the [installer](https://nodejs.org/en/download/)
   - for Linux, the easiest way is to [install via package manager](https://nodejs.org/en/download/package-manager/)
 * [gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
@@ -240,7 +240,7 @@ config.js.comps.register = {
 
 //we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
 config.js.comps.jQuery: {
-  filename: false,    //we don't want to create any output - this is just an auxiliary comp
+  filename: null,    //we don't want to create any output - this is just an auxiliary comp
   bower: ['jquery'],
   watch: false
 }
@@ -280,14 +280,14 @@ config.customDirs.items.push({
 <a name="configuration"></a>
 ## Directories and configuration
 
-All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources. It's very simple.
+All configuration definitions are placed in core files: [gulpfile.dirs.js](gulpfile.dirs.js) and [gulpfile.config.js](gulpfile.config.js). See the [default bundle][bundle-default] config files for common examples and the [dir](gulpfile.dirs.js) or [config](gulpfile.config.js) sources for full list of options. It's very simple.
 
 To change the defaults, edit the `frs.dirs.js`, `frs.config.js` and `frs.tasks.js` files located in your bundle root directory.
 
 
 ### Directories
 
-You can see the default definitons of each directory in the [gulpfile.dirs.js](gulpfile.dirs.js) file. The `frs.dirs.js` is included in 2 stages:
+You can see the default definitons of each directory in the [gulpfile.dirs.js](gulpfile.dirs.js) file. The `frs.dirs.js` is included in two stages:
 
 * right after defining the src and dist directory (so you can change it and the value will populate to subdirectories like images, styles...)
 * at the end (to change particular src/dist directories). See the [default bundle dir config][bundle-default-dir].
@@ -323,7 +323,7 @@ var config = {
       sassGlob: true,
       sass: true,
       autoprefixer: true,
-      optimizeMediaQueries: true, //group-css-media-queries
+      optimizeMediaQueries: false, //group-css-media-queries, disabled by default as unsafe
       optimize: true,             //cssnano
       sourceMapsWrite: true,
       dest: true,
@@ -345,7 +345,7 @@ var config = {
 To remove any of above steps, set the inject config value to `false`:
 
 ```js
-config.styles.inject.optimizeMediaQueries = false;
+config.styles.inject.optimize = false;
 ```
 
 To add any transformation before the step, or replace it, assign it to a function:
@@ -366,7 +366,7 @@ config.styles.inject.optimize = function(stream) {
 This replaces [gulp-cssnano] with [gulp-clean-css](https://github.com/scniro/gulp-clean-css) (you have to run `npm install gulp-clean-css --save-dev` first).
 
 
-The `src` injects are handled a bit differenlty. The function obtains a glob array to be passed to the `gulp.src`. If the default step is canceled, the return value is considered as an input stream (unless it is falsy - then the whole task is canceled). In other case, the returned value must be a glob.
+The `src` injects are handled a bit differenlty. The function obtains a glob array to be passed to the `gulp.src`. If the default step is canceled, the return value is considered as an input stream (unless it is falsy - then the whole task is canceled). In other case, the returned value must be a glob (e.g. you can change the default one), that will be used by `gulp.src`.
 
 For the `clean` task, the inject function receives current glob array with paths to be removed (assigned incrementally).
 
@@ -400,7 +400,7 @@ appData.taskReg['mytask'] = {
   },
   deps: ['clean', ['js', 'views']],
 
-  // blockQuitOnFinish: true  //set this option only for permanent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
+  // blockQuitOnFinish: true  //set this option only for persistent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
 }
 ```
 
@@ -412,7 +412,7 @@ To add a task as a dependency to an existing task, use the helper:
 
 ```js
 //appData.app.taskRegUtils.addDep(taskToAdd, targetTask, relatedTask, isBefore);
-appData.app.taskRegUtils.addDep('mytask', 'build', 'images', true);*/
+appData.app.taskRegUtils.addDep('mytask', 'build', 'images', true);
 ```
 
 The above code adds `mytask` to the `build` pipeline, before `images` (last parameter defines the placement, for false it would be placed after).
@@ -442,7 +442,7 @@ See the core tasks registry definitions in [gulpfile.tasks.js](gulpfile.tasks.js
 
 ## Source maps
 
-Source maps allow you to bind concatenated/minified/compiled dist JS and SASS code with your src resources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
+Source maps allow you to bind concatenated/minified/compiled distribution JS and SASS code with your sources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
 
 1. Open Chrome Dev Tools.
 
