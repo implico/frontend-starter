@@ -114,7 +114,7 @@ module.exports = function(dirs) {
           //any option that was not set will be auto generated
           /*
           name: 'name',                                     //sprite base name, the only required parameter
-          src: dirs.src.sprites.main + 'name/**' + '/*.*',  //source dir, concat used just to avoid comment ending
+          src: dirs.src.sprites.main + 'name/**' + '/*.*',  //source dir (concat used just to avoid comment ending)
           dest: dirs.dist.sprites,                          //dest dir, set to null to ignore
           varPrepend: 'name-',                              //prepended before SASS sprite variable name
 

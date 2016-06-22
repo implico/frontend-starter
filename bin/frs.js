@@ -53,7 +53,7 @@ process.on('exit', function() {
 var task = process.argv[2] ? process.argv[2] : 'default';
 
 
-//register key events
+//register keys
 keypress(process.stdin);
 
 process.stdin.on('keypress', function(ch, key) {
