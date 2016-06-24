@@ -14,6 +14,8 @@ See the new docs with examples for [Frontend-starter](https://github.com/implico
 
 
 ## 1.6.12
+As this version uses gulp@4, you **must** install a global package `gulp-cli` (instead of `gulp`), which registers the `gulp` command to run the locally installed version. Just follow [step 1 of instructions on gulp.js page](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md).
+
 Ensure the following issues are up-to-date:
 - config filenames renamed from `frs.config.custom.js` to `frs.config.js` and `frs.dirs.custom.js` to `frs.dirs.js`
 - `frs.config.js`: remove `.common` references, e.g. change `config.images.common.imagemin.optimizationLevel = 4;` to `config.images.imagemin.optimizationLevel = 4;`
