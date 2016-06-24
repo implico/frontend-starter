@@ -56,7 +56,7 @@ You need the following tools to start using the framework:
 * [Node.js][nodejs]
   - for Windows, use the [installer](https://nodejs.org/en/download/)
   - for Linux, the easiest way is to [install via package manager](https://nodejs.org/en/download/package-manager/)
-* [gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
+* [gulp.js][gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
 
 
 <br>
