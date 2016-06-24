@@ -47,7 +47,6 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-add-src": "0.*",
     "gulp-babel": "^6.0.0",
-    "gulp-batch": "1.*",
     "gulp-changed": "1.*",
     "gulp-concat": "2.6.0",
     "gulp-cli": "^1.2.1",
