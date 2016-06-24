@@ -15,7 +15,7 @@
 
 'use strict';
 
-module.exports = function(dirs) {
+module.exports = function(dirs, appData) {
 
   var fs        = require('fs'),
       minimist  = require('minimist');
@@ -104,15 +104,15 @@ module.exports = function(dirs) {
         {
           name: 'sprites',
           varPrepend: '',
-          src: dirs.src.sprites.main + '*.*',  //all files in the sprites dir, excluding subdirs
+          src: dirs.src.sprites + '*.*',  //all files in the sprites dir, excluding subdirs
           options: {}
 
           //all options - example of auto generation for name="name"
           //any option that was not set will be auto generated
           /*
           name: 'name',                                     //sprite base name, the only required parameter
-          src: dirs.src.sprites.main + 'name/**' + '/*.*',  //source dir (concat used just to avoid comment ending)
-          dest: dirs.dist.sprites,                          //dest dir, set to null to ignore
+          src: dirs.src.sprites + 'name/**' + '/*.*',       //source dir (concat used just to avoid comment ending)
+          dest: dirs.dist.sprites.main,                     //dest dir, set to null to ignore
           varPrepend: 'name-',                              //prepended before SASS sprite variable name
 
           //Spritesmith options
@@ -131,6 +131,7 @@ module.exports = function(dirs) {
 
       inject: {
         init: true,         //receives itemInfos (sprite items definitions)
+        src: true,          //this.taskData = { itemInfo } (current sprite item info)
         imgLimit: true,
         imgOptimize: true,
         imgDest: true,
@@ -432,6 +433,10 @@ module.exports = function(dirs) {
 
       prod: {
       }
+    },
+
+    custom: {
+      //any custom config
     }
   }
 
@@ -463,7 +468,7 @@ module.exports = function(dirs) {
 
   //custom config file - require
   if (!noCustomFile) {
-    require(dirs.app + dirs.customConfig.configFile)(config, dirs);
+    require(dirs.app + dirs.customConfig.configFile)(config, dirs, appData);
   }
 
   return config;

@@ -136,7 +136,7 @@ module.exports = function(appData) {
     },
 
     'build': {
-      deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js', 'custom-dirs']]
+      deps: ['clean', 'views', 'fonts', 'sprites', ['images', 'styles', 'js'], 'custom-dirs']
     },
 
     'start': {
