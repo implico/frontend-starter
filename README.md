@@ -5,10 +5,6 @@ Frontend [gulp.js][gulp]-based (v4) build framework. A prepared, configurable en
 Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
 
 
-**PLEASE NOTE:** this tool is under development and will be finished with a stable release on approx. 24 of June 2016 (v1.7). Until then, there may occur changes with no backward compatibility - see the [Migration guide](MIGRATION.md). As it was an internal tool with no information spread anywhere, current traffic is unexpected. Thank you for the interest, please submit any problems or ideas to the issues section.
-
-
-
 ## About
 
 This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (in webpack - bundles, here called comps) - but you can still replace/adjust the `js` task to your needs.
