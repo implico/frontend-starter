@@ -32,7 +32,6 @@
     "frs": "bin/frs.js"
   },
   "dependencies": {
-    "autoprefixer": "^6.0.3",
     "babel-preset-es2015-without-strict": "0.*",
     "browser-sync": "^2.12.5",
     "del": "^1.2.0",
@@ -46,6 +45,7 @@
     "vinyl-buffer": "1.*",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-add-src": "0.*",
+    "gulp-autoprefixer": "3.*",
     "gulp-babel": "^6.0.0",
     "gulp-batch": "1.*",
     "gulp-changed": "1.*",
@@ -59,7 +59,6 @@
     "gulp-htmlmin": "2.*",
     "gulp-imagemin": "^2.4.0",
     "gulp-plumber": "1.0.1",
-    "gulp-postcss": "^6.0.1",
     "gulp-rename": "1.2.2",
     "gulp-sass": "2.*",
     "gulp-sass-glob": "1.*",

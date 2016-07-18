@@ -67,6 +67,7 @@ module.exports = function(dirs) {
         },
 
         inject: {
+          //autoprefixer: false,
           optimizeMediaQueries: false,
           optimize: false
         }
