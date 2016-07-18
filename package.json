@@ -1,7 +1,7 @@
 {
   "name": "frontend-starter",
   "description": "A simple frontend builder.",
-  "version": "1.6.21",
+  "version": "1.7.0",
   "author": {
     "name": "Bartosz Sak",
     "email": "bartosz.sak@gmail.com"
@@ -38,7 +38,7 @@
     "extend": "3.*",
     "keypress": "0.*",
     "main-bower-files": "2.*",
-    "merge-stream": "1.*",
+    "merge2": "1.*",
     "minimist": "1.*",
     "multimatch": "2.*",
     "path": "^0.11.14",
@@ -47,7 +47,6 @@
     "gulp-add-src": "0.*",
     "gulp-autoprefixer": "3.*",
     "gulp-babel": "^6.0.0",
-    "gulp-batch": "1.*",
     "gulp-changed": "1.*",
     "gulp-concat": "2.6.0",
     "gulp-cli": "^1.2.1",

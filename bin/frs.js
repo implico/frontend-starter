@@ -12,6 +12,8 @@ env.FRS_BASE_DIR = process.cwd();
 process.chdir(__dirname);
 global.frsBlockWatch = false;
 
+var packageJson = require('./../package.json');
+
 
 var spawnGulp = function(task, exitOnClose) {
   global.frsBlockWatch = true;
@@ -82,7 +84,9 @@ if (process.stdin.setRawMode)
   process.stdin.setRawMode(true);
 process.stdin.resume();
 
-console.log('Use keys:')
+console.log('Frontend-starter v' + packageJson.version)
+console.log('-------------------------');
+console.log('Use keys:');
 console.log('Ctrl+P: build production');
 console.log('Ctrl+D: build development');
 console.log('Ctrl+L: lint');

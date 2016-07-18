@@ -5,10 +5,6 @@ Frontend [gulp.js][gulp]-based (v4) build framework. A prepared, configurable en
 Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
 
 
-**PLEASE NOTE:** this tool is under development and will be finished with a stable release on approx. 24 of June 2016 (v1.7). Until then, there may occur changes with no backward compatibility - see the [Migration guide](MIGRATION.md). As it was an internal tool with no information spread anywhere, current traffic is unexpected. Thank you for the interest, please submit any problems or ideas to the issues section.
-
-
-
 ## About
 
 This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (in webpack - bundles, here called comps) - but you can still replace/adjust the `js` task to your needs.
@@ -43,8 +39,8 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 The framework provides the following functionality via [gulp][gulp] plugins:
 * Separate source and distribution directories (configurable path), watching for new/changed files
 * Images: [imagemin][gulp-imagemin] for optimization, [spritesmith][gulp-spritesmith] for sprites
-* JS: [source maps][gulp-sourcemaps] ([read about]), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
-* Styles: [SASS][sass] preprocessor with [node-sass], source maps ([read about](http://thesassway.com/intermediate/using-source-maps-with-sass)), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping - disabled by default as unsafe) and [cssnano][gulp-cssnano] (with only safe optimisations by default). The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
+* JS: [source maps][gulp-sourcemaps] ([read about](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
+* Styles: [SASS][sass] preprocessor with [node-sass], [source maps](http://thesassway.com/intermediate/using-source-maps-with-sass), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping - disabled by default as unsafe) and [cssnano][gulp-cssnano] (with only safe optimisations by default). The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
 * Views: optimized with [htmlmin][gulp-htmlmin]
 * Server: [Browsersync][browsersync], providing automatic refresh on every change
 * Easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
@@ -56,7 +52,7 @@ You need the following tools to start using the framework:
 * [Node.js][nodejs]
   - for Windows, use the [installer](https://nodejs.org/en/download/)
   - for Linux, the easiest way is to [install via package manager](https://nodejs.org/en/download/package-manager/)
-* [gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
+* [gulp.js][gulp] - install [globally](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#1-install-gulp-globally)
 
 
 <br>

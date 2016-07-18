@@ -53,9 +53,7 @@ console.log('Frontend-starter: Project base dir set to ' + appDir);
 
 /* VARS */
 var dirs         = require('./gulpfile.dirs')(appDir),
-    config       = require('./gulpfile.config')(dirs),
     Injector     = require(dirs.lib.main + 'injector'),
-
     browserSync  = require('browser-sync'),
     gulp         = require('gulp'),
     debug        = require('gulp-debug');
@@ -145,15 +143,15 @@ var app = {
         if (config.sprites.auto) {
           var spritesDirExists = true;
           try {
-            fs.accessSync(dirs.src.sprites.main);
+            fs.accessSync(dirs.src.sprites);
           }
           catch(ex) {
             spritesDirExists = false;
           }
           if (spritesDirExists) {
-            config.sprites.items = config.sprites.items.concat(fs.readdirSync(dirs.src.sprites.main).filter(function(dir) {
+            config.sprites.items = config.sprites.items.concat(fs.readdirSync(dirs.src.sprites).filter(function(dir) {
               var ret;
-              if (ret = fs.statSync(path.join(dirs.src.sprites.main, dir)).isDirectory()) {
+              if (ret = fs.statSync(path.join(dirs.src.sprites, dir)).isDirectory()) {
                 config.sprites.items.every(function(item, index) {
                   if (item.name == dir) {
                     ret = false;
@@ -186,8 +184,8 @@ var app = {
           let name = item.name;
 
           _this.setIfUndef(item, 'varPrepend', name.length ? (name + '-') : '');
-          _this.setIfUndef(item, 'src', dirs.src.sprites.main + name + '/**/*.*');
-          _this.setIfUndef(item, 'dest', dirs.dist.sprites);
+          _this.setIfUndef(item, 'src', dirs.src.sprites + name + '/**/*.*');
+          _this.setIfUndef(item, 'dest', dirs.dist.sprites.main);
           _this.setIfUndef(item, 'options', {});
           _this.setIfUndef(item.options, 'imgName', name + '.png');
           _this.setIfUndef(item.options, 'imgPath', '../img/' + name + '.png');
@@ -326,13 +324,16 @@ var app = {
   }
 }
 
+var appData = { dirs, app, tasks, taskReg, gulp, browserSync, Injector };
+
+var config = appData.config = require('./gulpfile.config')(dirs, appData);
+
 app.init();
 
 
 
 //autoload core tasks
 var tasksList = ['watch', 'js', 'styles', 'fonts', 'sprites', 'images', 'views', 'customDirs', 'lint', 'browserSync', 'clean'];
-var appData = { dirs, config, app, tasks, taskReg, gulp, browserSync, Injector };
 tasksList.forEach((t) => {
   require(dirs.lib.tasks + t + '.js')(appData);
 });

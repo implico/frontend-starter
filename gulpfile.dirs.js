@@ -45,10 +45,7 @@ module.exports = function(appDir) {
       main: '',
       styles: '',
       fonts: '',
-      sprites: {
-        main: '',
-        styles: ''
-      },
+      sprites: '',
 
       js:  {
         main: '',
@@ -62,6 +59,10 @@ module.exports = function(appDir) {
       main: '',
       styles: '',
       fonts: '',
+      sprites: {
+        main: '',
+        styles: ''
+      },
       js: '',
       images: '',
       views: ''
@@ -94,21 +95,7 @@ module.exports = function(appDir) {
     fs.accessSync(dirs.app + dirs.customConfig.dirsFile, fs.R_OK);
   }
   catch (ex) {
-    //fallback
-    try {
-      fs.accessSync(dirs.app + 'fs.dirs.custom.js', fs.R_OK);
-      console.error('Frontend-starter error: PLEASE RENAME fs.dirs.custom.js to ' + dirs.customConfig.dirsFile + ' and fs.config.custom.js to ' + dirs.customConfig.configFile);
-    }
-    catch (err) {
-      //fallback2
-      try {
-        fs.accessSync(dirs.app + 'frs.dirs.custom.js', fs.R_OK);
-        console.error('Frontend-starter error: PLEASE RENAME frs.dirs.custom.js to ' + dirs.customConfig.dirsFile + ' and frs.config.custom.js to ' + dirs.customConfig.configFile);
-      }
-      catch (err) {
-        console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ') - check if running in project directory.');
-      }
-    }
+    console.error('Frontend-starter error: no custom dir definitions file present (' + dirs.customConfig.dirsFile + ') - check if running in project directory.');
     process.exit(1);
   }
 
@@ -118,20 +105,14 @@ module.exports = function(appDir) {
 
   //src subdirs
   dirs.src.styles = dirs.src.main + 'styles/';
-
   dirs.src.fonts = dirs.src.main + 'fonts/';
-
-  dirs.src.sprites.main = dirs.src.main + 'sprites/';
-  dirs.src.sprites.styles = dirs.src.styles + 'sprites/';
-
+  dirs.src.sprites = dirs.src.main + 'sprites/';
+  
   dirs.src.js.main = dirs.src.main + 'js/';
   dirs.src.js.vendor = dirs.vendor + 'js/';
   dirs.src.js.app = dirs.src.js.main;
 
   dirs.src.images = dirs.src.main + 'img/';
-  //compatibility fallback, to be removed
-  dirs.src.img = dirs.src.images;
-
   dirs.src.views = dirs.src.main + 'views/';
 
 
@@ -140,8 +121,8 @@ module.exports = function(appDir) {
   dirs.dist.fonts = dirs.dist.styles + 'fonts/';
   dirs.dist.js = dirs.dist.main + 'js/';
   dirs.dist.images = dirs.dist.main + 'img/';
-  dirs.dist.img = dirs.dist.images; //compatibility fallback, to be removed
-  dirs.dist.sprites = dirs.dist.images;
+  dirs.dist.sprites.main = dirs.dist.images;
+  dirs.dist.sprites.styles = dirs.src.styles + 'sprites/';;
 
   dirs.dist.views = dirs.dist.main;
 
