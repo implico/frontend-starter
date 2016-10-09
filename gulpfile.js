@@ -48,7 +48,9 @@ if (!process.env.FRS_BASE_DIR) {
 else {
   appDir = path.normalize(process.env.FRS_BASE_DIR + '/');
 }
+
 console.log('Frontend-starter: Project base dir set to ' + appDir);
+console.log('Loading...');
 
 
 /* VARS */
