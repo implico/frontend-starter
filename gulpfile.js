@@ -48,9 +48,7 @@ if (!process.env.FRS_BASE_DIR) {
 else {
   appDir = path.normalize(process.env.FRS_BASE_DIR + '/');
 }
-
 console.log('Frontend-starter: Project base dir set to ' + appDir);
-console.log('Loading...');
 
 
 /* VARS */
@@ -60,6 +58,9 @@ var dirs         = require('./gulpfile.dirs')(appDir),
     gulp         = require('gulp'),
     debug        = require('gulp-debug');
 
+
+// add global node_modules
+process.env.NODE_PATH = dirs.rootModules;
 
 //terminate Browsersync when the main process sends closing string (or the data is not a string)
 process.stdin.on('data', function(data) {

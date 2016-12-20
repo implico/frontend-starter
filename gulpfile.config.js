@@ -160,8 +160,28 @@ module.exports = function(dirs, appData) {
         app: true,
         vendor: false,
         options: {
-          presets: ['es2015-without-strict'],
+          presets: [dirs.rootModules + 'babel-preset-es2015-without-strict'],
           plugins: []
+        }
+      },
+
+      webpack: {
+        resolve: {
+          modules: [
+            dirs.app + 'node_modules/',
+            dirs.src.js.main
+          ]
+        },
+        module: {
+          loaders: [
+            {
+              test: /\.js$/,
+              loader: dirs.rootModules + 'babel-loader',
+              query: {
+                presets: [dirs.rootModules + 'babel-preset-es2015']
+              }
+            }
+          ]
         }
       },
 
@@ -169,25 +189,29 @@ module.exports = function(dirs, appData) {
         main: {
           filename: 'app',      //set to false to not produce any output file (for sub-comps); if not set, defaults to comp id
                                 //.js extension added automatically unless the name contains a dot
+                                //for webpack: enter a filename or glob, e.g. ['app', 'app2'] (.js extension appended automatically if dot not found)
           //filenameVendor: 'vendor',//if concatVendorApp is false, specifies the vendor filename
 
           bower: ['**/*.js'],   //set only name of the package
           vendor: ['**/*.js'],  //path relative to the appropriate directory
           app: ['**/*.js'],     //path relative to the appropriate directory
+          webpack: false,       //disabled by default
+          // webpack: ['app/**/*.js'],  //example webpack use, disables bower, vendor and app props
 
-          //set prioritized paths
+          //set prioritized paths (does not apply for webpack)
           priority: {
             vendor: [],
             app: []
           },
 
-          //set other comp ids to include
+          //set other comp ids to include (does not apply for webpack)
           dependencies: [],
 
           //set comps to exclude all loaded scripts in other comps, e.g.
           //excludeIn: ['comp1', 'comp2'] //excluded in selected comps
           //excludeIn: true   //excluded in all other comps
           //excludeIn: false  //no exclusion
+          //does not apply for webpack
           excludeIn: false,
 
           watch: true  //not needed, watch blocked only if false
@@ -209,11 +233,12 @@ module.exports = function(dirs, appData) {
         lint: false,              //run linter
         lintFailAfterError: true, //if true and lint is not canceled, fails the build if errored
         sourceMapsInit: true,
-        babel: true,
-        concat: true,
+        webpack: true,            //applies only if webpack is enabled
+        babel: true,              //ignored if webpack is enabled
+        concat: true,             //ignored if webpack is enabled
         sourceMapsWrite: true,
         minify: true,
-        concatVendorApp: true,    //on prepending vendor before app code
+        concatVendorApp: true,    //on prepending vendor before app code, applies only if webpack is not enabled
         dest: true,
         finish: true,
         reload: true
@@ -330,7 +355,8 @@ module.exports = function(dirs, appData) {
       options: {
         extends: 'eslint:recommended',
         parserOptions: {
-          ecmaVersion: 6
+          ecmaVersion: 6,
+          sourceType: 'script', //set to 'module' for ES2015 imports
         },
         envs: ['browser', 'jquery'],
         globals: {

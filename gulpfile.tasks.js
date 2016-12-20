@@ -82,8 +82,11 @@ module.exports = function(appData) {
         for (var compId in comps) {
           if (!comps.hasOwnProperty(compId))
             continue;
+          let comp = comps[compId];
 
-          promises.push(tasks.js.run({ compId: compId, isApp: false }));
+          if (!comp.getData('webpack')) {
+            promises.push(tasks.js.run({ compId: compId, isApp: false }));
+          }
         }
 
         return Promise.all(promises);
