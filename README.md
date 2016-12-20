@@ -264,7 +264,7 @@ The basic configuration is:
 ```js
 config.js.comps.main = {
   filename: 'app',      //entry: a filename or glob, e.g. ['app', 'app2'] (.js extension appended automatically if dot not found)
-  webpack: ['app/**/*.js'],  //files to watch; disables bower, vendor and app props
+  webpack: ['app/**/*.js']  //files to watch; disables bower, vendor and app props
 }
 ```
 
@@ -290,7 +290,7 @@ Example - watch and copy contents of "php" dir from src to dist:
 config.customDirs.items.push({
   name: 'php views',  //optional, displayed in the console during watch
   src: dirs.src.main + 'php/**/*.php',
-  dest: dirs.dist.main + 'php/',  //set to null to just watch the dir without copying (e.g. external backend views)
+  dest: dirs.dist.main + 'php/'  //set to null to just watch the dir without copying (e.g. external backend views)
 });
 ```
 
