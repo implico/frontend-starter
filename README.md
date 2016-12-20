@@ -1,15 +1,13 @@
 # Frontend-starter
 
-Frontend [gulp.js][gulp]-based (v4) build framework. A prepared, configurable environment available as a **global** package. Automatically produces clean and optimized output code. A perfect solution for any frontend work.
+Frontend [gulp.js][gulp]-based (v4) build framework. A prepared, configurable environment available as a **global** package (possible to install locally as well). Automatically produces clean and optimized output code. A perfect solution for any frontend work.
 
-Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure.
+Development is based on fully customizable bundles (currently available only simple [default bundle][bundle-default]), which modify the core configuration and provide directory structure. Supported JavaScript modes: script (concatenated and minified) and module (ES2015 imports via [webpack]).
 
 
 ## About
 
-This is not another [Yeoman](http://yeoman.io/) or [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) - that's why the features tipical for these frameworks will be described further. This is also not an alternative for such tools like [Browserify](http://browserify.org/) or [webpack](https://webpack.github.io/) - in this area it just allows to build separate JavaScript packages (in webpack - bundles, here called comps) - but you can still replace/adjust the `js` task to your needs.
-
-The framework is intended for use in small or medium size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
+The framework is intended for use in any size projects, including those that need be developed quickly, e.g in digital agencies. Produces optimized code, that contains usually single, minified JavaScript and CSS files.
 
 What distinguishes this tool is basically:
 
@@ -19,7 +17,7 @@ What distinguishes this tool is basically:
   - you don't have to run `npm install` and wait to initialize a project - just start coding
   - after some time you can go back to an old or other developer's project and use the same API
 * fully customizable structure, ability to setup exact directory paths (e.g. source image files can be located in `~/Somewhere/On/The/Moon/`, dist HTML files in `../public_html` and JavaScript files in `dist/js`)
-* by default, a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
+* by default, in script mode (non-[webpack]), a **single** output JavaScript file is built (`app.js`), also for the dev environment (with source mapping):
   - adding any new file using [Bower][bower], manually placing any package into `vendor/js` dir (if you can't, don't have time or just don't want to use Bower) or creating your new source script, does not require any markup changes to include new file
   - you can, however, generate separate compositions, for example: a script consisting of jQuery (installed with Bower) and a `register.js` file (and mark the latter one as ignored in other scripts)
   - the output generation is optimized: vendor files are watched separately and cached, so if you change your own code these are just prepended
@@ -39,14 +37,14 @@ The result: you just develop fast. Modify/create new stylesheets or images and s
 The framework provides the following functionality via [gulp][gulp] plugins:
 * Separate source and distribution directories (configurable path), watching for new/changed files
 * Images: [imagemin][gulp-imagemin] for optimization, [spritesmith][gulp-spritesmith] for sprites
-* JS: [source maps][gulp-sourcemaps] ([read about](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)), [concatenation][gulp-concat] into one file, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
+* JS: [source maps][gulp-sourcemaps] ([read about](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)), ES2015 modules importing with [webpack] or [concatenation][gulp-concat] into one file in script mode, [compression][gulp-uglify], [ESLint][eslint] to check your code quality, [Babel][babel] to provide ES2015 (AKA ES6) support, vendor dirs cache (concat only on change), custom file compositions
 * Styles: [SASS][sass] preprocessor with [node-sass], [source maps](http://thesassway.com/intermediate/using-source-maps-with-sass), [Autoprefixer][gulp-autoprefixer] to handle vendor CSS prefixes, [sass-glob] to use globs in SASS imports, optimization: [group-css-media-queries][gulp-group-css-media-queries] (media queries optimization by grouping - disabled by default as unsafe) and [cssnano][gulp-cssnano] (with only safe optimisations by default). The [default bundle][bundle-default] comes additionally with [Breakpoint library][sass-breakpoint] to handle media queries easily and [SASS-core][sass-core] with responsive mixins and functions
 * Views: optimized with [htmlmin][gulp-htmlmin]
 * Server: [Browsersync][browsersync], providing automatic refresh on every change
 * Easy to integrate with MV* frameworks and backend apps (see the [bundles](#bundles))
 
 
-## Installation
+## Installation (global)
 
 You need the following tools to start using the framework:
 * [Node.js][nodejs]
@@ -66,6 +64,22 @@ npm install frontend-starter -g
 If you are experiencing any problems during installation, you probably have to update your Node.js (recommended [nvm](https://github.com/creationix/nvm), then use the latest Node.js version) and [npm](https://docs.npmjs.com/getting-started/installing-node). In some cases system restart may be needed before installation. If you use Visual Studio, close it while npm installs the modules.
 
 Installation registers an `frs` command to run the tasks.
+
+
+## Installation (local)
+Assuming you have [Node.js][nodejs] installed, get the bundle (e.g. the [default][bundle-default]) and run:
+
+```
+npm install frontend-starter --save-dev
+```
+
+Then just use the script run syntax, e.g.:
+
+```
+npm run frs start -- -r
+```
+
+Note the `--` separator for options ([read more](https://docs.npmjs.com/cli/run-script)).
 
 
 <a name="bundles"></a>
@@ -241,6 +255,23 @@ config.js.comps.jQuery: {
   watch: false
 }
 
+```
+
+#### Using ES2015 imports
+
+The basic configuration is:
+
+```js
+config.js.comps.main = {
+  filename: 'app',      //entry: a filename or glob, e.g. ['app', 'app2'] (.js extension appended automatically if dot not found)
+  webpack: ['app/**/*.js'],  //files to watch; disables bower, vendor and app props
+}
+```
+
+Remember to update the linter option:
+
+```js
+config.lint.options.parserOptions.sourceType = 'module';
 ```
 
 
@@ -476,14 +507,6 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 
 
 
-<br>
-
-## Known issues
-
-* to be inspected: on Windows, when editing SASS scripts, the watcher sometimes blocks and does not see any changes (needs restart); depends on [Chokidar][chokidar]
-
-
-
 
 
 [angularjs]: https://angularjs.org/
@@ -517,3 +540,4 @@ To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo 
 [sass-core]: https://github.com/implico/sass-core
 [sass-glob]: https://github.com/tomgrooffer/gulp-sass-glob
 [swig]: http://paularmstrong.github.io/swig/
+[webpack]: https://webpack.github.io/
