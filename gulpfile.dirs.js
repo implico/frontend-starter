@@ -78,6 +78,7 @@ module.exports = function(appDir) {
   dirs.customConfig.tasksFile = 'frs.tasks.js';
 
   dirs.app = appDir;
+  dirs.appModules = dirs.app + 'node_modules/';
 
   dirs.lib.main = dirs.root + 'lib/';
   dirs.lib.tasks = dirs.lib.main + 'tasks/';

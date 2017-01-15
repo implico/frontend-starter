@@ -170,12 +170,13 @@ module.exports = function(dirs, appData) {
           modules: [
             dirs.app + 'node_modules/',
             dirs.src.js.main
-          ]
+          ],
+          extensions: ['', '.js', '.jsx']
         },
         module: {
           loaders: [
             {
-              test: /\.js$/,
+              test: /\.(js|jsx)$/,
               loader: dirs.rootModules + 'babel-loader',
               query: {
                 presets: [dirs.rootModules + 'babel-preset-es2015']
