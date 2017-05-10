@@ -34,7 +34,7 @@ module.exports = function(dirs, appData) {
       sourceMapsRoot: '/src/styles/',
 
       autoprefixer: {
-        browsers: ['> 1%', 'last 3 versions', 'IE >= 9']
+        browsers: ['> 1%', 'last 3 versions', 'IE >= 11']
       },
 
       sass: {
@@ -160,7 +160,7 @@ module.exports = function(dirs, appData) {
         app: true,
         vendor: false,
         options: {
-          presets: [dirs.rootModules + 'babel-preset-es2015-without-strict'],
+          presets: require.resolve('babel-preset-es2015-without-strict'),
           plugins: []
         }
       },
@@ -177,9 +177,15 @@ module.exports = function(dirs, appData) {
           loaders: [
             {
               test: /\.(js|jsx)$/,
-              loader: dirs.rootModules + 'babel-loader',
+              loader: require.resolve('babel-loader'),
               query: {
-                presets: [dirs.rootModules + 'babel-preset-es2015']
+                presets: [
+                  [require.resolve('babel-preset-env'), {
+                    'targets': {
+                      'browsers': ['last 3 versions', 'safari >= 7', 'IE >= 11']
+                    }
+                  }]
+                ]
               }
             }
           ]
@@ -447,8 +453,7 @@ module.exports = function(dirs, appData) {
         init: true,
         styles: true,
         fonts: true,
-        spritesStyles: true,
-        spritesImages: true,
+        sprites: true,
         js: true,
         jsApp: true,
         jsVendor: true,
