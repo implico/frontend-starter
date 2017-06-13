@@ -17,8 +17,8 @@
 
 module.exports = function(dirs, appData) {
 
-  var fs        = require('fs'),
-      minimist  = require('minimist');
+  var fs = require('fs'),
+      minimist = require('minimist');
 
 
   var config = {
@@ -32,6 +32,7 @@ module.exports = function(dirs, appData) {
 
       sourceMaps: false,
       sourceMapsRoot: '/src/styles/',
+      moduleImporter: true,   // automatically resolve Bower/npm package by name
 
       autoprefixer: {
         browsers: ['> 1%', 'last 3 versions', 'IE >= 11']

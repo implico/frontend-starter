@@ -55,7 +55,7 @@
     "gulp-imagemin": "^2.4.0",
     "gulp-plumber": "1.0.1",
     "gulp-rename": "1.2.2",
-    "gulp-sass": "2.*",
+    "gulp-sass": "^3.1.0",
     "gulp-sass-glob": "1.*",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.4.2",
@@ -66,6 +66,7 @@
     "minimist": "1.*",
     "multimatch": "2.*",
     "path": "^0.11.14",
+    "sass-module-importer": "^1.4.0",
     "vinyl-buffer": "1.*",
     "vinyl-named": "^1.1.0",
     "webpack-stream": "^3.2.0"
