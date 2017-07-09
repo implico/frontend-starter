@@ -450,6 +450,7 @@ module.exports = function(dirs, appData) {
     },
 
     watch: {
+      options: {},
       inject: {
         init: true,
         styles: true,
