@@ -33,7 +33,11 @@ module.exports = function(dirs, appData) {
 
       sourceMaps: false,
       sourceMapsRoot: '/src/styles/',
-      moduleImporter: true,   // automatically resolve Bower/npm package by name
+
+      // automatically resolve Bower/npm package by name, set to false to disable
+      moduleImporter: {
+        basedir: dirs.app
+      },
 
       autoprefixer: {
         browsers: ['> 1%', 'last 3 versions', 'IE >= 11']
