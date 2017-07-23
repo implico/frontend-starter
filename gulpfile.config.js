@@ -18,6 +18,7 @@
 module.exports = function(dirs, appData) {
 
   var fs = require('fs'),
+      path = require('path'),
       minimist = require('minimist');
 
 
@@ -167,17 +168,10 @@ module.exports = function(dirs, appData) {
       },
 
       webpack: {
-        resolve: {
-          modules: [
-            dirs.app + 'node_modules/',
-            dirs.src.js.main
-          ],
-          extensions: ['', '.js', '.jsx']
-        },
         module: {
           loaders: [
             {
-              test: /\.(js|jsx)$/,
+              test: path.normalize(dirs.src.js.main),
               loader: require.resolve('babel-loader'),
               query: {
                 presets: [
