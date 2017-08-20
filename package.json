@@ -24,6 +24,7 @@
     "gulpfile.dirs.js",
     "gulpfile.config.js",
     "gulpfile.tasks.js",
+    ".eslintrc",
     "bin",
     "lib"
   ],
