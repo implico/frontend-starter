@@ -190,13 +190,13 @@ All files placed in the sprites directory will be merged into one sprite image (
 This will generate sprite files in `/dist/img/` directory: `home.png`, `contact.png` and `sprites.png`. To use a sprite in your stylesheets, include the generated SASS file(s) and then use the mixins:
 
 ```sass
-//to get /src/sprites/home/icon-1.png
+// To get /src/sprites/home/icon-1.png
 @include sprite($home-icon-1);
 
-//to get /src/sprites/contact/icon-2.png
+// To get /src/sprites/contact/icon-2.png
 @include sprite($contact-icon-2);
 
-//to get /src/sprites/icon-1.png
+// To get /src/sprites/icon-1.png
 @include sprite($icon-1);
 ```
 
@@ -224,33 +224,33 @@ You can generate separate JavaScript compositions, dependent on selected Bower, 
 
 ```js
 config.js.comps.register = {
-  filename: 'register', //set to null to not produce any output file (for sub-comps); if not set, defaults to comp id
+  filename: 'register', // Set to null to not produce any output file (for sub-comps); if not set, defaults to comp id
 
-  bower: [],                                  //set only name of the package
-  vendor: [],                                 //just example, you don't have to define when not used
-  app: ['utilities.js', 'register.js'],       //path relative to the appropriate directory
+  bower: [],                                  // Set only name of the package
+  vendor: [],                                 // Just an example, you don't have to define when not used
+  app: ['utilities.js', 'register.js'],       // Path relative to the appropriate directory
 
-  //set prioritized paths
+  // Set prioritized paths
   priority: {
     vendor: [],
-    app: ['utilities.js']   //this file will be included before register.js
+    app: ['utilities.js']   // This file will be included before register.js
   },
 
-  //set other comp ids to include
+  // Set other comp ids to include
   dependencies: ['jQuery'],
 
-  //exclude (ignore) all loaded here scripts in other comps, e.g.
-  //excludeIn: ['comp1', 'comp2']   //excluded in selected comps
-  //excludeIn: true                 //excluded in all other comps
-  //excludeIn: false                //no exclusion
-  excludeIn: true,                  //here: we exclude it in any other comps
+  // Exclude (ignore) all loaded here scripts in other comps, e.g.
+  // excludeIn: ['comp1', 'comp2']   // Excluded in selected comps
+  // excludeIn: true                 // Excluded in all other comps
+  // excludeIn: false                // No exclusion
+  excludeIn: true,                   // Here: we exclude it in any other comps
 
-  watch: true  //not needed, watch blocked only if false
+  watch: true  // Not needed, watch blocked only if false
 }
 
-//we didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
+// We didn't include jQuery directly in the "register" comp, because in that case it would also be ignored in other comps
 config.js.comps.jQuery: {
-  filename: null,    //we don't want to create any output - this is just an auxiliary comp
+  filename: null,    // We don't want to create any output - this is just an auxiliary comp
   bower: ['jquery'],
   watch: false
 }
@@ -263,8 +263,8 @@ The basic configuration is:
 
 ```js
 config.js.comps.main = {
-  filename: 'app',      //entry: a filename or glob, e.g. ['app', 'app2'] (.js extension appended automatically if dot not found)
-  webpack: ['app/**/*.js']  //files to watch; disables bower, vendor and app props
+  filename: 'app',      // Entry: a filename or glob, e.g. ['app', 'app2'] (.js extension appended automatically if dot not found)
+  webpack: ['**/*.js']  // Files to watch; disables bower, vendor and app props
 }
 ```
 
@@ -288,9 +288,9 @@ Example - watch and copy contents of "php" dir from src to dist:
 
 ```js
 config.customDirs.items.push({
-  name: 'php views',  //optional, displayed in the console during watch
+  name: 'php views',  // Optional, displayed in the console during watch
   src: dirs.src.main + 'php/**/*.php',
-  dest: dirs.dist.main + 'php/'  //set to null to just watch the dir without copying (e.g. external backend views)
+  dest: dirs.dist.main + 'php/'  // Set to null to just watch the dir without copying (e.g. external backend views)
 });
 ```
 
@@ -345,13 +345,13 @@ var config = {
   styles: {
     // (...)
     inject: {
-      src: true,    //function must return: a stream (if cancels) or a glob array passed to the src
+      src: true,    // Function must return: a stream (if cancels) or a glob array passed to the src
       sourceMapsInit: true,
       sassGlob: true,
       sass: true,
       autoprefixer: true,
-      optimizeMediaQueries: false, //group-css-media-queries, disabled by default as unsafe
-      optimize: true,             //cssnano
+      optimizeMediaQueries: false, // group-css-media-queries, disabled by default as unsafe
+      optimize: true,              // cssnano
       sourceMapsWrite: true,
       dest: true,
       finish: true,
@@ -383,9 +383,9 @@ config.styles.inject.optimize = function(stream) {
   // stream: current stream
   stream = stream.pipe(cleanCss());
 
-  // return stream;   //if you don't want to cancel the original step
+  // return stream;   // If you don't want to cancel the original step
 
-  // but we want to cancel the default step (cssnano)
+  // ...but we do want to cancel the default step (cssnano)
   return this.cancel(stream);
 }
 ```
@@ -419,15 +419,15 @@ appData.taskReg['mytask'] = {
     var stream = appData.gulp.src(appData.dirs.src.images)
       .pipe(appData.gulp.dest('/some-dir'));
 
-    //you can also access config, e.g. check if dev vs. prod mode
+    // You can also access config, e.g. check if dev vs. prod mode
     //console.log(appData.config.main.isDev);
 
-    //currently all tasks must return a promise
+    // Currently all tasks must return a promise
     return appData.app.streamToPromise(stream);
   },
   deps: ['clean', ['js', 'views']],
 
-  // blockQuitOnFinish: true  //set this option only for persistent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
+  // blockQuitOnFinish: true  // Set this option only for persistent tasks like watching for changes (by default any task function is wrapped to ensure process quitting)
 }
 ```
 
@@ -438,7 +438,7 @@ The `deps` is an array of tasks invoked before. It follows the [run-sequence](ht
 To add a task as a dependency to an existing task, use the helper:
 
 ```js
-//appData.app.taskRegUtils.addDep(taskToAdd, targetTask, relatedTask, isBefore);
+// appData.app.taskRegUtils.addDep(taskToAdd, targetTask, relatedTask, isBefore);
 appData.app.taskRegUtils.addDep('mytask', 'build', 'images', true);
 ```
 
@@ -449,13 +449,13 @@ To replace the original (core) task, just override its `appData.taskReg` definit
 To remove a core task, or remove a dependency, use the helpers:
 
 ```js
-// removes views task (and from all tasks' depenedencies)
+// Removes views task (and from all tasks' depenedencies)
 appData.app.taskRegUtils.removeTask('views');
 
-// removes images dependency from build task
+// Removes images dependency from build task
 appData.app.taskRegUtils.removeDep('images', 'build');
 
-// removes images dependency from any task
+// Removes images dependency from any task
 appData.app.taskRegUtils.removeDep('images', true);
 ```
 
