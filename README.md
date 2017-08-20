@@ -276,7 +276,7 @@ config.lint.options.parserOptions.sourceType = 'module';
 
 #### Linter
 
-The framework uses [ESLint][eslint] to check the code standards and quality. By default, the [JavaScript Standard Style](https://github.com/standard/standard) with commas is assumed, i.e. (JavaScript Semi-Standard Style)[https://github.com/Flet/semistandard].
+The framework uses [ESLint][eslint] to check the code standards and quality. By default, the [JavaScript Standard Style](https://github.com/standard/standard) with commas is assumed, i.e. [JavaScript Semi-Standard Style](https://github.com/Flet/semistandard).
 
 Frontend starter comes with Semi-Standard, Standard and classic ESLint configurations (like `eslint:recommended`) installed. To change the base config to one of them, you have to create a `.eslintrc` file in you app's root directory with the following example configuration:
 
@@ -286,7 +286,7 @@ Frontend starter comes with Semi-Standard, Standard and classic ESLint configura
 
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: 'module'
+    sourceType: "module"
   }
 }
 ```
