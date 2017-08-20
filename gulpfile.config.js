@@ -21,6 +21,13 @@ module.exports = function(dirs, appData) {
       path = require('path'),
       minimist = require('minimist');
 
+  let linterConfigFile;
+  try {
+    linterConfigFile = path.join(dirs.app, '.eslintrc');
+    fs.accessSync(linterConfigFile, fs.R_OK);
+  } catch (ex) {
+    linterConfigFile = path.join(dirs.root, '.eslintrc');
+  }
 
   var config = {
 
@@ -273,6 +280,28 @@ module.exports = function(dirs, appData) {
     },
 
 
+    lint: {
+      options: {
+        configFile: linterConfigFile
+      },
+      formatParams: [], //parameters passed to format function
+      formatOnce: true, //use eslint.format() vs eslint.formatEach()
+
+      inject: {
+        src: true,
+        lint: true,
+        format: true,
+        finish: true
+      },
+
+      dev: {
+      },
+
+      prod: {
+      }
+    },
+
+
     images: {
       imagemin: {
         optimizationLevel: 3,
@@ -368,44 +397,6 @@ module.exports = function(dirs, appData) {
       }
     },
 
-    lint: {
-
-      options: {
-        extends: 'eslint:recommended',
-        parserOptions: {
-          ecmaVersion: 6,
-          sourceType: 'script', //set to 'module' for ES2015 imports
-        },
-        envs: ['browser', 'jquery'],
-        globals: {
-          //allowed global variables
-        },
-        rules: {
-          //your ESLint rules here
-        }
-      },
-      formatParams: [], //parameters passed to format function
-      formatOnce: true, //use eslint.format() vs eslint.formatEach()
-
-      inject: {
-        src: true,
-        lint: true,
-        format: true,
-        finish: true
-      },
-
-      dev: {
-        options: {
-          rules: {
-            'no-console': 0
-          }
-        }
-      },
-
-      prod: {
-
-      }
-    },
 
     browserSync: {
       options: {
@@ -459,6 +450,7 @@ module.exports = function(dirs, appData) {
       }
     },
 
+
     watch: {
       options: {},
       inject: {
@@ -485,6 +477,7 @@ module.exports = function(dirs, appData) {
       //any custom config
     }
   }
+
 
   //parse cli args
   var optsConfig = {

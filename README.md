@@ -274,6 +274,27 @@ Remember to update the linter option:
 config.lint.options.parserOptions.sourceType = 'module';
 ```
 
+#### Linter
+
+The framework uses [ESLint][eslint] to check the code standards and quality. By default, the [JavaScript Standard Style](https://github.com/standard/standard) with commas is assumed, i.e. (JavaScript Semi-Standard Style)[https://github.com/Flet/semistandard].
+
+Frontend starter comes with Semi-Standard, Standard and classic ESLint configurations (like `eslint:recommended`) installed. To change the base config to one of them, you have to create a `.eslintrc` file in you app's root directory with the following example configuration:
+
+```
+{
+  extends: "eslint:recommended",
+
+  parserOptions: {
+    ecmaVersion: 6,
+    sourceType: 'module'
+  }
+}
+```
+
+Due to the ESLint architecture, you cannot change the "extends" value in an inline way (in the `frs.config.js`) - the configuration file is the only solution.
+
+In the case **you are using Frontend starter as a global module** and want to use any other base configuration than the listed preinstalled ones (`extends: "some-custom-config"`), apart of the config module itself, you will have to additionally install `gulp-eslint` locally (`npm i gulp-eslint --save-dev`). This is needed because ESLint script looks for the configuration module from its location perspective - without the local installation, it would be the global framework's node_modules and would fail to load it, since it is installed locally. The framework will detect that you have a local `gulp-eslint` and use it instead of the preinstalled (global) one.
+
 
 ### Images
 
