@@ -197,6 +197,7 @@ var app = {
           _this.setIfUndef(item.options, 'cssVarMap', function(sprite) {
             sprite.name =  item.varPrepend + sprite.name;
           });
+          _this.setIfUndef(item.options, 'algorithm', 'diagonal');
         });
 
         config.sprites.items = config.sprites.items.filter((v, i) => {

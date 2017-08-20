@@ -112,7 +112,9 @@ module.exports = function(dirs, appData) {
           name: 'sprites',
           varPrepend: '',
           src: dirs.src.sprites + '*.*',  //all files in the sprites dir, excluding subdirs
-          options: {}
+          options: {
+            algorithm: 'diagonal'
+          }
 
           //all options - example of auto generation for name="name"
           //any option that was not set will be auto generated
