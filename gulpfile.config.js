@@ -172,19 +172,28 @@ module.exports = function(dirs, appData) {
       },
 
       webpack: {
+        resolve: {
+          modules: [
+            path.join(path.normalize(dirs.app), 'node_modules')
+          ],
+          extensions: ['.js', '.json', '.jsx']
+        },
         module: {
-          loaders: [
+          rules: [
             {
-              test: path.normalize(dirs.src.js.main),
-              loader: require.resolve('babel-loader'),
-              query: {
-                presets: [
-                  [require.resolve('babel-preset-env'), {
-                    'targets': {
-                      'browsers': ['last 3 versions', 'safari >= 7', 'IE >= 11']
-                    }
-                  }]
-                ]
+              test: /\.(js|jsx)$/,
+              exclude: /(node_modules|bower_components)/,
+              use: {
+                loader: require.resolve('babel-loader'),
+                options: {
+                  presets: [
+                    [require.resolve('babel-preset-env'), {
+                      'targets': {
+                        'browsers': ['last 3 versions', 'safari >= 7', 'IE >= 11']
+                      }
+                    }]
+                  ]
+                }
               }
             }
           ]
