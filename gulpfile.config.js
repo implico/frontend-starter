@@ -337,6 +337,7 @@ module.exports = function(dirs, appData) {
         // {
         //   name: '',  //optional, displayed in the console during watch
         //   src: dirs.src.main + 'custom/**/*',
+        //   srcDot: false,   //whether to include files starting with a dot
         //   dest: dirs.dist.main + 'custom/'  //set to null to just watch the dir without copying (e.g. external backend views)
 
         //   inject: {
