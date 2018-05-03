@@ -48,7 +48,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "extend": "3.*",
     "gulp": "github:gulpjs/gulp#4.0",
-    "gulp-add-src": "0.*",
+    "gulp-add-src": "^1.0.0",
     "gulp-autoprefixer": "3.*",
     "gulp-babel": "^6.0.0",
     "gulp-changed": "1.*",
