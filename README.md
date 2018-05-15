@@ -444,7 +444,7 @@ appData.taskReg['mytask'] = {
     //console.log(appData.config.main.isDev);
 
     // Currently all tasks must return a promise
-    return appData.app.streamToPromise(stream);
+    return appData.app.taskUtils.streamToPromise(stream);
   },
   deps: ['clean', ['js', 'views']],
 
