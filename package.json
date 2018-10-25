@@ -56,7 +56,7 @@
     "gulp-concat": "2.6.0",
     "gulp-cssnano": "2.*",
     "gulp-debug": "2.*",
-    "gulp-eslint": "^4.0.0",
+    "gulp-eslint": "^5.0.0",
     "gulp-filter": "4.*.*",
     "gulp-group-css-media-queries": "1.*",
     "gulp-htmlmin": "2.*",
