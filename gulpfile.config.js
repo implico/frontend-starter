@@ -18,7 +18,7 @@
 module.exports = function(dirs, appData) {
 
   var fs = require('fs'),
-      path = require('path'),
+      path = require('upath'),
       minimist = require('minimist');
 
   let linterConfigFile;

@@ -15,7 +15,7 @@
 
 'use strict';
 
-var path = require('path'),
+var path = require('upath'),
     fs   = require('fs');
 
 
