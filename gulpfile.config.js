@@ -175,7 +175,11 @@ module.exports = function(dirs, appData) {
         app: true,
         vendor: false,
         options: {
-          presets: require.resolve('babel-preset-es2015-without-strict'),
+          presets: [
+            [require.resolve('@babel/preset-env'), {
+              modules: false
+            }]
+          ],
           plugins: []
         }
       },
@@ -196,9 +200,9 @@ module.exports = function(dirs, appData) {
                 loader: require.resolve('babel-loader'),
                 options: {
                   presets: [
-                    [require.resolve('babel-preset-env'), {
-                      'targets': {
-                        'browsers': ['last 3 versions', 'safari >= 7', 'IE >= 11']
+                    [require.resolve('@babel/preset-env'), {
+                      targets: {
+                        browsers: ['last 3 versions', 'safari >= 7', 'IE >= 11']
                       }
                     }]
                   ]

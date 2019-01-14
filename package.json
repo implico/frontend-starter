@@ -33,11 +33,10 @@
     "frs": "bin/frs.js"
   },
   "dependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "autoprefixer": "^9.4.2",
-    "babel-core": "^6.21.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.4.0",
-    "babel-preset-es2015-without-strict": "0.*",
+    "babel-loader": "^8.0.5",
     "browser-sync": "^2.12.5",
     "cssnano": "^4.1.7",
     "del": "^1.2.0",
@@ -51,7 +50,7 @@
     "extend": "3.*",
     "gulp": "^4.0.0",
     "gulp-add-src": "^1.0.0",
-    "gulp-babel": "^6.0.0",
+    "gulp-babel": "^8.0.0",
     "gulp-changed": "1.*",
     "gulp-cli": "^1.2.1",
     "gulp-concat": "2.6.0",
@@ -79,7 +78,7 @@
     "upath": "^1.1.0",
     "vinyl-buffer": "1.*",
     "vinyl-named": "^1.1.0",
-    "webpack-stream": "^4.0.0"
+    "webpack-stream": "^5.2.1"
   },
   "devDependencies": {}
 }
