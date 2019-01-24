@@ -281,6 +281,9 @@ module.exports = function(dirs, appData) {
       },
 
       prod: {
+        webpack: {
+          mode: 'production'
+        }
       }
     },
 
