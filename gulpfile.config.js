@@ -185,6 +185,7 @@ module.exports = function(dirs, appData) {
       },
 
       webpack: {
+        mode: 'development',
         resolve: {
           modules: [
             path.join(path.normalize(dirs.app), 'node_modules')
