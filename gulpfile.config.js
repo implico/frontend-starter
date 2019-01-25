@@ -39,7 +39,6 @@ module.exports = function(dirs, appData) {
     styles: {
 
       sourceMaps: false,
-      sourceMapsRoot: '/src/styles/',
 
       // automatically resolve Bower/npm package by name, set to false to disable
       moduleImporter: {
@@ -169,7 +168,6 @@ module.exports = function(dirs, appData) {
 
     js: {
       sourceMaps: false,
-      sourceMapsRoot: '/src/',
       concatVendorApp: true,    //if true, app.js and vendor.js are merged into app.js
       babel: {
         app: true,

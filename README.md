@@ -488,26 +488,6 @@ See the core tasks registry definitions in [gulpfile.tasks.js](gulpfile.tasks.js
 
 <br>
 
-## Source maps
-
-Source maps allow you to bind concatenated/minified/compiled distribution JS and SASS code with your sources. Inspected elements and JS console messages will lead you to the actual source files, like SASS scripts. Follow these instructions to configure mapping:
-
-1. Open Chrome Dev Tools.
-
-2. Click the Sources tab and drag & drop the `src` folder to the console (alternatively right click on the dir structure on the left and choose "Add folder to workspace"). Confirm permission.
-
-3. Go to the console settings (click the 3 dots in the upper right corner and then "Settings"), choose "Workspace" on the left and add a mapping for this folder:
-  * left field (URL prefix): set to `http://[domain]/src`, e.g. `http://localhost/src/`
-  * right field (folder path): set to `/`
-
-
-Your app JS and SASS files are now mapped. Refresh the browser and you're done!
-
-If you want to have mapping for Bower files, follow the same instructions for the `bower_components` dir. In the last point set the URL prefix to `http://[domain]/bower_components`, e.g. `http://localhost/bower_components`.
-
-
-<br />
-
 ## Standalone (local) version
 
 To use [gulp.js][gulp] directly, not through the `frs` command, clone this repo into a desired directory, run `npm install` and then directly `gulp [task]`. The framework will look for configuration files in the parent directory (`../`).
